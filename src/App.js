@@ -1,18 +1,25 @@
-import { Button } from "@mui/material";
+import { BrowserRouter as Router, Switch } from "react-router-dom";
 import "./App.css";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Header from "./layout/Header";
 
 function App() {
   return (
     <div className="App">
-      ok
-      <Button
-        variant="contained"
-        size="large"
-        sx={{ boxShadow: 0, textTransform: "none" }}
-        // color="primary"
-      >
-        press
-      </Button>
+      <Router>
+        <Header />
+        <Switch>
+          <ProtectedRoute path="/activity-manager" condition>
+            <div>hi</div>
+          </ProtectedRoute>
+          <ProtectedRoute path="/date-manager" condition>
+            <div>date manager</div>
+          </ProtectedRoute>
+          <ProtectedRoute path="/charts" condition>
+            <div>charts</div>
+          </ProtectedRoute>
+        </Switch>
+      </Router>
     </div>
   );
 }
