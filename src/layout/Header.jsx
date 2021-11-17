@@ -30,17 +30,14 @@ const Header = () => {
   const navItems = [
     {
       name: "Activity Manager",
-      icon: <MenuIcon />,
       pathName: "/activity-manager",
     },
     {
       name: "Date Manager",
-      icon: <EventRoundedIcon />,
       pathName: "/date-manager",
     },
     {
       name: "Charts",
-      icon: <TimelineRoundedIcon />,
       pathName: "/charts",
     },
   ];
@@ -135,7 +132,9 @@ const Header = () => {
 
   return (
     <>
-      <Box sx={{ flexGrow: 1, backgroundColor: "#ffffffff" }}>
+      <Box
+        sx={{ flexGrow: 1, backgroundColor: "#ffffff80", mb: theme.spacing(3) }}
+      >
         {/* <AppBar position="static"> */}
         <Toolbar>
           <IconButton
@@ -161,7 +160,7 @@ const Header = () => {
               // fontWeight: 600,
             }}
           >
-            {navItems.find((el) => el.pathName === pathname).name}
+            {navItems.find((el) => el.pathName === pathname)?.name}
           </Typography>
 
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
