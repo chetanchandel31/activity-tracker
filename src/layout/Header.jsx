@@ -1,6 +1,7 @@
-import { useTheme } from "@mui/material/styles";
-import { useState } from "react";
-import { useLocation, useHistory } from "react-router-dom";
+import EventRoundedIcon from "@mui/icons-material/EventRounded";
+import ListAltIcon from "@mui/icons-material/ListAlt";
+import MenuIcon from "@mui/icons-material/Menu";
+import TimelineRoundedIcon from "@mui/icons-material/TimelineRounded";
 import {
   Avatar,
   Box,
@@ -15,10 +16,9 @@ import {
   Typography,
   Zoom,
 } from "@mui/material";
-import ListAltIcon from "@mui/icons-material/ListAlt";
-import EventRoundedIcon from "@mui/icons-material/EventRounded";
-import TimelineRoundedIcon from "@mui/icons-material/TimelineRounded";
-import MenuIcon from "@mui/icons-material/Menu";
+import { useTheme } from "@mui/material/styles";
+import { useState } from "react";
+import { useHistory, useLocation } from "react-router-dom";
 
 const Header = () => {
   const theme = useTheme();
@@ -158,6 +158,7 @@ const Header = () => {
               flexGrow: 1,
               textAlign: "left",
               // fontWeight: 600,
+              ml: { sm: theme.spacing(7) },
             }}
           >
             {navItems.find((el) => el.pathName === pathname)?.name}

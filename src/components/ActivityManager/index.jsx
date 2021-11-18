@@ -1,19 +1,12 @@
-import { useState } from "react";
-import { useTheme } from "@mui/material/styles";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import LabelRoundedIcon from "@mui/icons-material/LabelRounded";
+import RemoveCircleOutlineRoundedIcon from "@mui/icons-material/RemoveCircleOutlineRounded";
 import {
-  Avatar,
   Card,
   CardContent,
   Container,
-  Divider,
   Fab,
-  Grow,
   IconButton,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemIcon,
-  ListItemText,
   Table,
   TableBody,
   TableCell,
@@ -24,11 +17,8 @@ import {
   Typography,
   Zoom,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { Box } from "@mui/system";
-import RemoveCircleOutlineRoundedIcon from "@mui/icons-material/RemoveCircleOutlineRounded";
-import LabelRoundedIcon from "@mui/icons-material/LabelRounded";
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
 const ActivityManager = () => {
   const theme = useTheme();
