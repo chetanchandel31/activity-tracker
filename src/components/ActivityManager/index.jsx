@@ -1,26 +1,25 @@
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import LabelRoundedIcon from "@mui/icons-material/LabelRounded";
 import RemoveCircleOutlineRoundedIcon from "@mui/icons-material/RemoveCircleOutlineRounded";
-import {
-  Card,
-  CardContent,
-  Container,
-  Fab,
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Tooltip,
-  Typography,
-  Zoom,
-} from "@mui/material";
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Container from "@mui/material/Container";
+import Fab from "@mui/material/Fab";
+import IconButton from "@mui/material/IconButton";
 import { useTheme } from "@mui/material/styles";
-import { Box } from "@mui/system";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+import Zoom from "@mui/material/Zoom";
 
 const ActivityManager = () => {
+  //todo: search and sort, maybe filters and labels?
   const theme = useTheme();
 
   return (
@@ -33,15 +32,19 @@ const ActivityManager = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell width="421"></TableCell>
-              <TableCell align="right">
-                <Typography>
-                  <strong>last performed</strong>
+              <TableCell width="421">
+                <Typography sx={{ pl: theme.spacing(4) }}>
+                  <strong>Activity</strong>
                 </Typography>
               </TableCell>
               <TableCell align="right">
                 <Typography>
-                  <strong>tracking since</strong>
+                  <strong>Last performed</strong>
+                </Typography>
+              </TableCell>
+              <TableCell align="right">
+                <Typography>
+                  <strong>Tracking since</strong>
                 </Typography>
               </TableCell>
               <TableCell></TableCell>
@@ -135,11 +138,21 @@ const ActivityManager = () => {
             sx={{ display: "flex", justifyContent: "space-between" }}
           >
             <div>
-              <Typography sx={{ mb: theme.spacing(1) }}>Com</Typography>
-              <Typography variant="caption" component="div">
+              <Typography variant="h6" sx={{ mb: theme.spacing(1) }}>
+                Hap
+              </Typography>
+              <Typography
+                variant="caption"
+                component="div"
+                color="text.secondary"
+              >
                 last performed 99h 99m 33s ago
               </Typography>
-              <Typography variant="caption" component="div">
+              <Typography
+                variant="caption"
+                component="div"
+                color="text.secondary"
+              >
                 tracking since 99d 99h 99m 99s
               </Typography>
             </div>
@@ -164,11 +177,21 @@ const ActivityManager = () => {
             sx={{ display: "flex", justifyContent: "space-between" }}
           >
             <div>
-              <Typography sx={{ mb: theme.spacing(1) }}>Com</Typography>
-              <Typography variant="caption" component="div">
+              <Typography variant="h6" sx={{ mb: theme.spacing(1) }}>
+                Hap hap
+              </Typography>
+              <Typography
+                variant="caption"
+                component="div"
+                color="text.secondary"
+              >
                 last performed 99h 99m 33s ago
               </Typography>
-              <Typography variant="caption" component="div">
+              <Typography
+                variant="caption"
+                component="div"
+                color="text.secondary"
+              >
                 tracking since 99d 99h 99m 99s
               </Typography>
             </div>
