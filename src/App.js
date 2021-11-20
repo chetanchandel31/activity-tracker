@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Switch } from "react-router-dom";
 import "./App.css";
 import ActivityManager from "./components/ActivityManager";
+// import Login from "./components/Auth/Login";
 import Charts from "./components/Charts";
 import DateManager from "./components/DateManager";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -22,6 +23,9 @@ function App() {
           <ProtectedRoute path="/charts" condition>
             <Charts />
           </ProtectedRoute>
+          {/* <ProtectedRoute path="/login" condition>
+            <Login />
+          </ProtectedRoute> */}
         </Switch>
       </Router>
     </div>

@@ -24,7 +24,7 @@ const ActivityManager = () => {
 
   return (
     <Container>
-      <Typography>
+      <Typography sx={{ mb: theme.spacing(3) }}>
         Here is the list of activities you are currently tracking
       </Typography>
 

@@ -8,6 +8,7 @@ import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Container from "@mui/material/Container";
+import Divider from "@mui/material/Divider";
 import FormControl from "@mui/material/FormControl";
 import IconButton from "@mui/material/IconButton";
 import InputLabel from "@mui/material/InputLabel";
@@ -21,9 +22,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TextField from "@mui/material/TextField";
-import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import Zoom from "@mui/material/Zoom";
 import moment from "moment";
 import { useState } from "react";
 
@@ -43,7 +42,6 @@ const DateManager = () => {
 
   return (
     <Container>
-      {/* red input field and red colored invalid date */}
       <Typography
         variant="h4"
         sx={{
@@ -56,10 +54,12 @@ const DateManager = () => {
       <Box
         sx={{
           display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
           justifyContent: "space-between",
           mt: theme.spacing(4),
           // border: "solid 2px black",
-          alignItems: "flex-end",
+          alignItems: "center",
+          gap: theme.spacing(2),
         }}
       >
         <LocalizationProvider dateAdapter={DateAdapter}>
@@ -77,7 +77,7 @@ const DateManager = () => {
                   !selectedDate
                 }
                 // helperText={params?.inputProps?.placeholder}
-                sx={{ width: 150 }}
+                sx={{ width: { xs: "100%", sm: 150 } }}
               />
             )}
           />
@@ -87,9 +87,13 @@ const DateManager = () => {
         <Box
           sx={{
             display: "flex",
+            width: { xs: "100%", sm: "auto" },
           }}
         >
-          <FormControl sx={{ minWidth: 145 }} size="small">
+          <FormControl
+            sx={{ minWidth: 145, flexGrow: { xs: 1, sm: 0 } }}
+            size="small"
+          >
             <InputLabel id="demo-simple-select-helper-label">
               Select Activity
             </InputLabel>
@@ -130,20 +134,20 @@ const DateManager = () => {
         </Box>
       </Box>
 
+      <Divider sx={{ m: theme.spacing(3, 0) }} />
+
       <Container maxWidth="md">
         <TableContainer sx={{ display: { xs: "none", sm: "block" } }}>
           <Table aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell align="left">
-                  <Typography
-                  // sx={{ width: "50vh" }}
-                  >
+                <TableCell align="left" sx={{ width: "400px" }}>
+                  <Typography variant="h6">
                     <strong>Activity</strong>
                   </Typography>
                 </TableCell>
                 <TableCell align="center">
-                  <Typography>
+                  <Typography variant="h6">
                     <strong>Frequency</strong>
                   </Typography>
                 </TableCell>
@@ -156,7 +160,12 @@ const DateManager = () => {
               // sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell align="left">
-                  <Typography>med</Typography>
+                  <Typography variant="h6" component="span">
+                    med
+                  </Typography>
+                  <Typography component="span" color="text.secondary">
+                    &nbsp;x2
+                  </Typography>
                 </TableCell>
                 <TableCell align="center">
                   <Box
@@ -213,7 +222,14 @@ const DateManager = () => {
                   // border: "solid 1px black",
                 }}
               >
-                <Typography variant="h6">Med</Typography>
+                <Box>
+                  <Typography variant="h6" component="span">
+                    Med
+                  </Typography>
+                  <Typography component="span" color="text.secondary">
+                    &nbsp;x2
+                  </Typography>
+                </Box>
                 <IconButton>
                   <RemoveCircleOutlineRoundedIcon
                     sx={{ color: theme.palette.error.main }}
