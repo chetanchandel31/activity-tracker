@@ -20,6 +20,7 @@ import Zoom from "@mui/material/Zoom";
 
 const ActivityManager = () => {
   //todo: search and sort, maybe filters and labels?
+  //todo: show exact date on hover
   const theme = useTheme();
 
   return (

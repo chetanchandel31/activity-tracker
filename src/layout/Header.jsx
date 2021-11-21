@@ -16,12 +16,29 @@ import {
   Typography,
   Zoom,
 } from "@mui/material";
+import Button from "@mui/material/Button";
+import Popover from "@mui/material/Popover";
 import { useTheme } from "@mui/material/styles";
 import { useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
+import { auth } from "../firebase/firebase";
 
 const Header = () => {
   const theme = useTheme();
+
+  // popover start
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleUserAvatarClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleProfilePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const openProfilePopover = Boolean(anchorEl);
+  //popover end
 
   const history = useHistory();
 
@@ -181,9 +198,23 @@ const Header = () => {
               </Tooltip>
             ))}
           </Box>
-          <IconButton sx={{ ml: 2, mr: -1 }}>
+          <IconButton
+            sx={{ ml: 2, mr: -1, cursor: "pointer" }}
+            onClick={handleUserAvatarClick}
+          >
             <Avatar />
           </IconButton>
+          <Popover
+            open={openProfilePopover}
+            anchorEl={anchorEl}
+            onClose={handleProfilePopoverClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+          >
+            <Button onClick={() => auth.signOut()}>Logout</Button>
+          </Popover>
         </Toolbar>
         {/* </AppBar> */}
       </Box>
