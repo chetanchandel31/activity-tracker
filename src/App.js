@@ -42,7 +42,7 @@ function App() {
           >
             <Login />
           </ProtectedRoute>
-          <ProtectedRoute path="/" redirectPath="/auth" />
+          <ProtectedRoute path="/" redirectPath="/login" />
         </Switch>
       </Router>
     </div>

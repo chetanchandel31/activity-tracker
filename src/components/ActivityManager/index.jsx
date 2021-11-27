@@ -17,10 +17,17 @@ import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import Zoom from "@mui/material/Zoom";
+import { useState } from "react";
+import CreateNewActivityDialog from "./CreateNewActivityDialog";
 
 const ActivityManager = () => {
   //todo: search and sort, maybe filters and labels?
   //todo: show exact date on hover
+  // todo: unique activity name
+  // tracking since: "shows exact time when activity was registered with this app"
+  const [isCreateNewActivityDialogOpen, setIsCreateNewActivityDialogOpen] =
+    useState(false);
+
   const theme = useTheme();
 
   return (
@@ -234,11 +241,17 @@ const ActivityManager = () => {
               //   transition: "min-width 2s",
               //   width: "135px",
             }}
+            onClick={() => setIsCreateNewActivityDialogOpen(true)}
           >
             <AddRoundedIcon />
           </Fab>
         </Container>
       </Box>
+
+      <CreateNewActivityDialog
+        open={isCreateNewActivityDialogOpen}
+        handleClose={() => setIsCreateNewActivityDialogOpen(false)}
+      />
     </Container>
   );
 };

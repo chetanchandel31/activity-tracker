@@ -2,23 +2,21 @@ import EventRoundedIcon from "@mui/icons-material/EventRounded";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import MenuIcon from "@mui/icons-material/Menu";
 import TimelineRoundedIcon from "@mui/icons-material/TimelineRounded";
-import {
-  Avatar,
-  Box,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  SwipeableDrawer,
-  Toolbar,
-  Tooltip,
-  Typography,
-  Zoom,
-} from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
 import Popover from "@mui/material/Popover";
 import { useTheme } from "@mui/material/styles";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import Toolbar from "@mui/material/Toolbar";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+import Zoom from "@mui/material/Zoom";
 import { useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { auth } from "../firebase/firebase";
@@ -113,7 +111,7 @@ const Header = () => {
             <ListItem
               key={navItem.name}
               button
-              selected={isSelected(navItem.pathName)} // c
+              selected={isSelected(navItem.pathName)}
               sx={{
                 "&::before": {
                   content: '""',
@@ -121,23 +119,23 @@ const Header = () => {
                   right: 0,
                   top: 0,
                   bottom: 0,
-                  width: isSelected(navItem.pathName) ? 4 : 0, // c
+                  width: isSelected(navItem.pathName) ? 4 : 0,
                   borderTopLeftRadius: "40px",
                   borderBottomLeftRadius: "40px",
                   backgroundColor: theme.palette.primary.main,
                 },
               }}
-              onClick={() => navigateTo(navItem.pathName)} // c
+              onClick={() => navigateTo(navItem.pathName)}
             >
               <ListItemIcon>
                 {renderIcon(navItem, isSelected(navItem.pathName))}
               </ListItemIcon>
               <ListItemText
-                primary={navItem.name} // c
+                primary={navItem.name}
                 sx={{
                   color: isSelected(navItem.pathName)
                     ? theme.palette.primary.main
-                    : theme.palette.text.primary /*c*/,
+                    : theme.palette.text.primary,
                 }}
               />
             </ListItem>
