@@ -9,6 +9,7 @@ import useAuthListener from "./hooks/useAuthListener";
 import Header from "./layout/Header";
 
 function App() {
+  // TODO: navigator.online to show some screen when user is offline
   const [user] = useAuthListener();
   console.log(user);
 

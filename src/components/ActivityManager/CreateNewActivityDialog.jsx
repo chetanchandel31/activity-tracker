@@ -5,10 +5,18 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
+import moment from "moment";
 import { useEffect, useState } from "react";
+import { firestore } from "../../firebase/firebase";
+import useAuthListener from "../../hooks/useAuthListener";
 
 const CreateNewActivityDialog = ({ open, handleClose }) => {
-  // TODO : add notes (optional) placeholder: any additional info you'd like to attach with this activity
+  const [user] = useAuthListener();
+  const activitiesCollectionRef = firestore.collection(
+    `users/${user.uid}/activities`
+  );
+
+  // TODO : add notes (optional). placeholder: any additional info you'd like to attach with this activity
   const [newActivityName, setNewActivityName] = useState("");
 
   const [error, setError] = useState("");
@@ -20,6 +28,25 @@ const CreateNewActivityDialog = ({ open, handleClose }) => {
     // TODO: maybe change later
     else setError("");
   }, [newActivityName]);
+
+  const handleCreateNewActivity = async () => {
+    const now = moment().unix();
+    try {
+      await activitiesCollectionRef.add({
+        createdAt: now,
+        lastPerformedAt: "never",
+        name: newActivityName,
+        lastUpdatedAt: now,
+      });
+
+      setNewActivityName("");
+      handleClose();
+    } catch (err) {
+      console.log(err);
+    }
+    // TODO: add check for duplicate activity name
+    // TODO: success or failure alert or snackbar
+  };
 
   return (
     <Dialog open={open} onClose={handleClose}>
@@ -39,7 +66,7 @@ const CreateNewActivityDialog = ({ open, handleClose }) => {
           required
           onChange={({ target }) => setNewActivityName(target.value)}
           onKeyPress={({ key }) => {
-            if (key === "Enter") console.log(newActivityName);
+            if (key === "Enter") handleCreateNewActivity();
           }}
           error={Boolean(error)}
           helperText={error}
@@ -47,10 +74,7 @@ const CreateNewActivityDialog = ({ open, handleClose }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button
-          onClick={() => console.log(newActivityName)}
-          disabled={Boolean(error)}
-        >
+        <Button onClick={handleCreateNewActivity} disabled={Boolean(error)}>
           Create
         </Button>
         {/* if activity created, close dialog, use await or then */}
