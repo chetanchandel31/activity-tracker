@@ -62,12 +62,14 @@ const ActivityManager = () => {
         Here is the list of activities you are currently tracking
       </Typography>
 
+      {/* 1. loading state */}
       {areActivitiesLoading && (
         <div style={{ textAlign: "center" }}>
-          <CircularProgress />
+          <CircularProgress sx={{ mt: theme.spacing(5) }} />
         </div>
       )}
 
+      {/* 2. actual list */}
       {activitiesList?.length > 0 && (
         <TableContainer sx={{ display: { xs: "none", sm: "block" } }}>
           <Table>
@@ -181,9 +183,10 @@ const ActivityManager = () => {
         </TableContainer>
       )}
 
+      {/* 3. empty state */}
       {activitiesList?.length === 0 && <div>empty state</div>}
 
-      {activitiesList?.length > 1 && (
+      {activitiesList?.length > 0 && (
         <Box
           sx={{
             // border: "solid 2px black"
@@ -213,6 +216,7 @@ const ActivityManager = () => {
                       variant="caption"
                       component="div"
                       color="text.secondary"
+                      sx={{ display: "flex", alignItems: "center" }}
                     >
                       tracking since <Stopwatch date={activity.createdAt} />
                     </Typography>

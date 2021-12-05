@@ -9,8 +9,11 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import { firestore } from "../../firebase/firebase";
 import useAuthListener from "../../hooks/useAuthListener";
+import { useTheme } from "@mui/material/styles";
 
 const CreateNewActivityDialog = ({ open, handleClose }) => {
+  const theme = useTheme();
+
   const [user] = useAuthListener();
   const activitiesCollectionRef = firestore.collection(
     `users/${user.uid}/activities`
@@ -53,8 +56,16 @@ const CreateNewActivityDialog = ({ open, handleClose }) => {
       <DialogTitle>Create new activity</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          You can begin assigning this activity to various dates from date
-          manager and tracking it from charts after creating it
+          You can begin assigning this activity to various dates from{" "}
+          <span
+            style={{
+              backgroundColor: theme.palette.primary.light,
+              borderRadius: 4,
+            }}
+          >
+            date manager
+          </span>{" "}
+          and tracking it from charts after creating it
         </DialogContentText>
         <TextField
           autoFocus
@@ -72,9 +83,14 @@ const CreateNewActivityDialog = ({ open, handleClose }) => {
           helperText={error}
         />
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ padding: theme.spacing(0, 3, 3, 3) }}>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleCreateNewActivity} disabled={Boolean(error)}>
+        <Button
+          onClick={handleCreateNewActivity}
+          disabled={Boolean(error)}
+          variant="contained"
+          sx={{ boxShadow: "none" }}
+        >
           Create
         </Button>
         {/* if activity created, close dialog, use await or then */}

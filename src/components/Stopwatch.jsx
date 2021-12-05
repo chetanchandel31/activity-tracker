@@ -1,7 +1,7 @@
 import { CircularProgress } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
-import { useTheme } from "@mui/material/styles";
 
 const Stopwatch = ({ date }) => {
   const theme = useTheme();
@@ -41,7 +41,6 @@ const Stopwatch = ({ date }) => {
   useEffect(() => {
     return () => {
       clearTimeout(timeout.current);
-      console.log("unmounted", timeout.current);
     };
   }, []);
 
@@ -56,7 +55,7 @@ const Stopwatch = ({ date }) => {
       ) : (
         <CircularProgress
           size={20}
-          sx={{ color: theme.palette.text.secondary }}
+          sx={{ color: theme.palette.text.secondary, ml: 1 }}
         />
       )}
     </>
