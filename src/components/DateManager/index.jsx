@@ -104,13 +104,9 @@ const DateManager = () => {
       .then(() => console.log("added activity to date"));
   };
 
-  const deleteActivityFromDate = () => {
-    const activity = activitiesList.find(
-      (activity) => activity.name === selectedActivity
-    );
-
+  const deleteActivityFromDate = (activityId) => {
     dateSpecificActivitiesCollectionRef
-      .doc(activity.id)
+      .doc(activityId)
       .delete()
       .then(() => console.log("deleted activity from date"));
   };
@@ -314,7 +310,9 @@ const DateManager = () => {
                           </Box>
                         </TableCell>
                         <TableCell align="right">
-                          <IconButton onClick={deleteActivityFromDate}>
+                          <IconButton
+                            onClick={() => deleteActivityFromDate(activityId)}
+                          >
                             <RemoveCircleOutlineRoundedIcon
                               sx={{ color: theme.palette.error.main }}
                             />
@@ -364,7 +362,9 @@ const DateManager = () => {
                           &nbsp;x{frequency?.length}
                         </Typography>
                       </Box>
-                      <IconButton onClick={deleteActivityFromDate}>
+                      <IconButton
+                        onClick={() => deleteActivityFromDate(activityId)}
+                      >
                         <RemoveCircleOutlineRoundedIcon
                           sx={{ color: theme.palette.error.main }}
                         />
