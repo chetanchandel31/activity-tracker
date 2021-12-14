@@ -21,7 +21,7 @@ import TableRow from "@mui/material/TableRow";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import moment from "moment";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { firestore } from "../../firebase/firebase";
 import useAuthListener from "../../hooks/useAuthListener";
 import useFirestore from "../../hooks/useFirestore";
@@ -33,6 +33,7 @@ const DateManager = () => {
   //todo: can add debounce for counters in frequency
   // todo: prevent user from adding activities to future dates
   // TODO: create new activity right from here, mui autocomplete > createable. use same dialog component
+  // seperate out helper functions? currently can't copy paste/reuse
   const theme = useTheme();
 
   const [selectedDate, setSelectedDate] = useState(moment());
@@ -69,8 +70,16 @@ const DateManager = () => {
       .replaceAll("/", "-")}/date-specific-activities`
   );
 
-  const isDateSpecificActivitiesListLoading =
-    dateSpecificActivitiesList === null;
+  useEffect(() => {
+    dateSpecificActivitiesList?.forEach((el) => {
+      const isActivityFoundInActivitiesCollection = activitiesList.find(
+        (activity) => activity.id === el.activityId
+      );
+
+      if (!isActivityFoundInActivitiesCollection)
+        dateSpecificActivitiesCollectionRef.doc(el.activityId).delete();
+    });
+  });
 
   const getAppropriateTimestamp = () => {
     // can't use now() as timestamp if activity is being added to a past date, hence all this
@@ -253,6 +262,9 @@ const DateManager = () => {
   const isDateValid =
     selectedDate?.toDate()?.toDateString() &&
     selectedDate?.toDate()?.toDateString() !== "Invalid Date";
+
+  const isDateSpecificActivitiesListLoading =
+    dateSpecificActivitiesList === null;
 
   const defaultProps = {
     //todo: check and fix warning
