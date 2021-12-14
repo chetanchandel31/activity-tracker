@@ -3,7 +3,7 @@ import { useTheme } from "@mui/material/styles";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 
-const Stopwatch = ({ date }) => {
+const Stopwatch = ({ date, prefix = "", suffix = "" }) => {
   const theme = useTheme();
 
   const [days, setDays] = useState(null);
@@ -48,9 +48,10 @@ const Stopwatch = ({ date }) => {
     <>
       {date && moment().diff(moment.unix(date)) >= 0 && seconds !== null ? (
         <>
+          {`${prefix}`}
           {days > 0 && `${days}d :`} {hours < 10 ? ` 0${hours}` : ` ${hours}`}h
           :{minutes < 10 ? ` 0${minutes}` : ` ${minutes}`}m :
-          {seconds < 10 ? ` 0${seconds}` : ` ${seconds}`}s
+          {seconds < 10 ? ` 0${seconds}` : ` ${seconds}`}s{`${suffix}`}
         </>
       ) : (
         <CircularProgress

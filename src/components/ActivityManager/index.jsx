@@ -115,8 +115,14 @@ const ActivityManager = () => {
                     </TableCell>
                     <TableCell align="right">
                       <Typography variant="caption">
-                        {" "}
-                        99d 99h 99m 33s ago
+                        {activity.performedAt.length === 0 ? (
+                          "never"
+                        ) : (
+                          <Stopwatch
+                            date={activity.performedAt.at(-1)?.timestamp}
+                            suffix=" ago"
+                          />
+                        )}
                       </Typography>
                     </TableCell>
                     <TableCell align="right">

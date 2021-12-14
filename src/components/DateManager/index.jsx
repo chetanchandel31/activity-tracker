@@ -25,7 +25,8 @@ import { useState } from "react";
 import { firestore } from "../../firebase/firebase";
 import useAuthListener from "../../hooks/useAuthListener";
 import useFirestore from "../../hooks/useFirestore";
-import useFirestoreDoc from "../../hooks/useFirestoreDoc";
+// import useFirestoreDoc from "../../hooks/useFirestoreDoc";
+import { v4 as uuidv4 } from "uuid";
 
 const DateManager = () => {
   //todo: tooltip for add button
@@ -39,6 +40,9 @@ const DateManager = () => {
 
   const [user] = useAuthListener();
   const { docs: activitiesList } = useFirestore(`users/${user.uid}/activities`);
+  const activitiesCollectionRef = firestore.collection(
+    `users/${user.uid}/activities`
+  );
   const dateSpecificActivitiesCollectionRef = firestore.collection(
     `users/${user.uid}/dates/${selectedDate
       .toDate()
@@ -46,12 +50,11 @@ const DateManager = () => {
       .replaceAll("/", "-")}/date-specific-activities`
   );
 
-  const { doc: selectedDateActivitiesList } = useFirestoreDoc(
-    `users/${user.uid}/dates`,
-    selectedDate.toDate().toLocaleDateString().replaceAll("/", "-")
-  );
+  // const { doc: selectedDateActivitiesList } = useFirestoreDoc(
+  //   `users/${user.uid}/dates`,
+  //   selectedDate.toDate().toLocaleDateString().replaceAll("/", "-")
+  // );
 
-  console.log(selectedDateActivitiesList, "selectedDateActivitiesList");
   // console.log(
   //   selectedDateActivitiesList?.ref
   //     ?.get()
@@ -69,6 +72,37 @@ const DateManager = () => {
   const isDateSpecificActivitiesListLoading =
     dateSpecificActivitiesList === null;
 
+  const getAppropriateTimestamp = () => {
+    // can't use now() as timestamp if activity is being added to a past date, hence all this
+    const isSelectedDateSameAsCurrentDate =
+      selectedDate.toDate().toLocaleDateString() ===
+      moment().toDate().toLocaleDateString();
+
+    const selectedDateString = selectedDate.toDate().toLocaleDateString(); //"22/2/2222"
+
+    if (isSelectedDateSameAsCurrentDate)
+      return { timestamp: moment().unix(), timestampId: `t-${uuidv4()}` };
+    else
+      return {
+        timestamp: moment(selectedDateString).add(6, "hours").unix(),
+        timestampId: `t-${uuidv4()}`,
+      };
+  };
+
+  const getSortedTimestampArr = (timestampArr) => {
+    return timestampArr.sort((a, b) => a.timestamp - b.timestamp);
+  };
+
+  const getFilteredTimestampsArr = (
+    timestampsArr,
+    timestampsToBeFilteredArr
+  ) => {
+    return timestampsArr.filter(
+      (el) =>
+        !timestampsToBeFilteredArr.find((x) => x.timestampId === el.timestampId)
+    );
+  };
+
   console.log(
     dateSpecificActivitiesList,
     "dateSpecificActivitiesList",
@@ -83,20 +117,31 @@ const DateManager = () => {
     "selected date"
   );
 
-  const isDateValid =
-    selectedDate?.toDate()?.toDateString() &&
-    selectedDate?.toDate()?.toDateString() !== "Invalid Date";
-
+  //whenever frequency gets updated in any way, two places have to be updated:
+  // 1. performedAt in "activities" collection 2. performedAt in "date-specific-activities" collection
   const addActivityToDate = () => {
     const activity = activitiesList.find(
       (activity) => activity.name === selectedActivity
     );
+    const newTimestamp = getAppropriateTimestamp();
 
+    // activities-collection
+    activitiesCollectionRef.doc(activity.id).set(
+      {
+        performedAt: getSortedTimestampArr([
+          ...activity.performedAt,
+          newTimestamp,
+        ]),
+      },
+      { merge: true }
+    );
+
+    // date-specific-activities-collection
     dateSpecificActivitiesCollectionRef
       .doc(activity.id)
       .set({
         activityId: activity.id,
-        frequency: [],
+        performedAt: [newTimestamp],
         activityRef: firestore
           .collection(`users/${user.uid}/activities/`)
           .doc(activity.id),
@@ -104,11 +149,87 @@ const DateManager = () => {
       .then(() => console.log("added activity to date"));
   };
 
-  const deleteActivityFromDate = (activityId) => {
+  const deleteActivityFromDate = (
+    activityId,
+    dateSpecificActivitiesPerformedAtArr
+  ) => {
+    // activities-collection
+    const activity = activitiesList?.find((el) => el.id === activityId);
+    const activitiesCollectionPerformedAtArr = activity.performedAt;
+
+    activitiesCollectionRef.doc(activityId).set(
+      {
+        performedAt: getFilteredTimestampsArr(
+          activitiesCollectionPerformedAtArr,
+          dateSpecificActivitiesPerformedAtArr
+        ),
+      },
+      { merge: true }
+    );
+
+    // date-specific-activities-collection
     dateSpecificActivitiesCollectionRef
       .doc(activityId)
       .delete()
       .then(() => console.log("deleted activity from date"));
+  };
+
+  const updateFrequency = (
+    activityId,
+    updateType,
+    dateSpecificActivitiesPerformedAtArr
+  ) => {
+    if (
+      updateType === "decrease" &&
+      dateSpecificActivitiesPerformedAtArr?.length === 1
+    ) {
+      deleteActivityFromDate(activityId, dateSpecificActivitiesPerformedAtArr);
+      return undefined;
+    }
+
+    const activity = activitiesList?.find((el) => el.id === activityId);
+    const activitiesCollectionPerformedAtArr = activity.performedAt;
+
+    // todo: update lastUpdatedAt
+    if (updateType === "decrease") {
+      // date-specific-activities-collection
+      dateSpecificActivitiesCollectionRef.doc(activityId).set(
+        {
+          performedAt: dateSpecificActivitiesPerformedAtArr.slice(0, -1),
+        },
+        { merge: true }
+      );
+      // activities-collection
+      activitiesCollectionRef.doc(activityId).set(
+        {
+          performedAt: getFilteredTimestampsArr(
+            activitiesCollectionPerformedAtArr,
+            [dateSpecificActivitiesPerformedAtArr.at(-1)]
+          ),
+        },
+        { merge: true }
+      );
+    } else if (updateType === "increase") {
+      const newTimestamp = getAppropriateTimestamp();
+
+      // date-specific-activities-collection
+      dateSpecificActivitiesCollectionRef.doc(activityId).set(
+        {
+          performedAt: [...dateSpecificActivitiesPerformedAtArr, newTimestamp],
+        },
+        { merge: true }
+      );
+      // activities-collection
+      activitiesCollectionRef.doc(activityId).set(
+        {
+          performedAt: getSortedTimestampArr([
+            ...activitiesCollectionPerformedAtArr,
+            newTimestamp,
+          ]),
+        },
+        { merge: true }
+      );
+    }
   };
 
   const isAddActivityBtnDisabled = () => {
@@ -129,7 +250,12 @@ const DateManager = () => {
     return isSelectedActivityInvalid || isSelectedActivityAlreadyAdded;
   };
 
+  const isDateValid =
+    selectedDate?.toDate()?.toDateString() &&
+    selectedDate?.toDate()?.toDateString() !== "Invalid Date";
+
   const defaultProps = {
+    //todo: check and fix warning
     options: activitiesList || [],
     getOptionLabel: (option) => option.name || "",
   };
@@ -258,7 +384,7 @@ const DateManager = () => {
               </TableHead>
               <TableBody>
                 {dateSpecificActivitiesList?.map(
-                  ({ activityId, frequency }) => {
+                  ({ activityId, performedAt }) => {
                     const activity = activitiesList?.find(
                       (el) => el.id === activityId
                     );
@@ -273,7 +399,7 @@ const DateManager = () => {
                             {activity?.name}
                           </Typography>
                           <Typography component="span" color="text.secondary">
-                            &nbsp;x{frequency?.length}
+                            &nbsp;x{performedAt?.length}
                           </Typography>
                         </TableCell>
                         <TableCell align="center">
@@ -291,11 +417,18 @@ const DateManager = () => {
                                 width: "30px",
                                 minWidth: "30px",
                               }}
+                              onClick={() =>
+                                updateFrequency(
+                                  activityId,
+                                  "decrease",
+                                  performedAt
+                                )
+                              }
                             >
                               <Typography variant="h6">-</Typography>
                             </Button>
                             <Typography component="span">
-                              {frequency?.length}
+                              {performedAt?.length}
                             </Typography>
                             <Button
                               size="small"
@@ -304,6 +437,13 @@ const DateManager = () => {
                                 width: "30px",
                                 minWidth: "30px",
                               }}
+                              onClick={() =>
+                                updateFrequency(
+                                  activityId,
+                                  "increase",
+                                  performedAt
+                                )
+                              }
                             >
                               <Typography variant="h6">+</Typography>
                             </Button>
@@ -311,7 +451,9 @@ const DateManager = () => {
                         </TableCell>
                         <TableCell align="right">
                           <IconButton
-                            onClick={() => deleteActivityFromDate(activityId)}
+                            onClick={() =>
+                              deleteActivityFromDate(activityId, performedAt)
+                            }
                           >
                             <RemoveCircleOutlineRoundedIcon
                               sx={{ color: theme.palette.error.main }}
@@ -339,7 +481,7 @@ const DateManager = () => {
             gap: theme.spacing(1.5),
           }}
         >
-          {dateSpecificActivitiesList?.map(({ activityId, frequency }) => {
+          {dateSpecificActivitiesList?.map(({ activityId, performedAt }) => {
             const activity = activitiesList?.find((el) => el.id === activityId);
 
             return (
@@ -356,10 +498,10 @@ const DateManager = () => {
                     >
                       <Box>
                         <Typography variant="h6" component="span">
-                          {activity.name}
+                          {activity?.name}
                         </Typography>
                         <Typography component="span" color="text.secondary">
-                          &nbsp;x{frequency?.length}
+                          &nbsp;x{performedAt?.length}
                         </Typography>
                       </Box>
                       <IconButton
@@ -401,7 +543,7 @@ const DateManager = () => {
                           <Typography variant="h6">-</Typography>
                         </Button>
                         <Typography component="span">
-                          {frequency?.length}
+                          {performedAt?.length}
                         </Typography>
                         <Button
                           size="small"

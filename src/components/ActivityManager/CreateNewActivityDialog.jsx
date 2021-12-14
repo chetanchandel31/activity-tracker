@@ -37,7 +37,7 @@ const CreateNewActivityDialog = ({ open, handleClose }) => {
     try {
       await activitiesCollectionRef.add({
         createdAt: now,
-        lastPerformedAt: "never",
+        performedAt: [],
         name: newActivityName,
         lastUpdatedAt: now,
       });
