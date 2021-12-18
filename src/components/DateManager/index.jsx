@@ -29,6 +29,10 @@ const DateManager = () => {
 
   const [selectedDate, setSelectedDate] = useState(moment());
   const [selectedActivity, setSelectedActivity] = useState("");
+  const selectedDateString = selectedDate
+    .toDate()
+    .toLocaleDateString()
+    .replaceAll("/", "-");
 
   const [user] = useAuthListener();
   const { docs: activitiesList } = useFirestore(`users/${user.uid}/activities`);
@@ -36,10 +40,7 @@ const DateManager = () => {
     `users/${user.uid}/activities`
   );
   const dateSpecificActivitiesCollectionRef = firestore.collection(
-    `users/${user.uid}/dates/${selectedDate
-      .toDate()
-      .toLocaleDateString()
-      .replaceAll("/", "-")}/date-specific-activities`
+    `users/${user.uid}/dates/${selectedDateString}/date-specific-activities`
   );
 
   // const { doc: selectedDateActivitiesList } = useFirestoreDoc(
@@ -55,10 +56,7 @@ const DateManager = () => {
   // );
 
   const { docs: dateSpecificActivitiesList } = useFirestore(
-    `users/${user.uid}/dates/${selectedDate
-      .toDate()
-      .toLocaleDateString()
-      .replaceAll("/", "-")}/date-specific-activities`
+    `users/${user.uid}/dates/${selectedDateString}/date-specific-activities`
   );
 
   useEffect(() => {

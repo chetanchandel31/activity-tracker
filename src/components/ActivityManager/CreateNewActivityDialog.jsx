@@ -57,15 +57,8 @@ const CreateNewActivityDialog = ({ open, handleClose }) => {
       <DialogContent>
         <DialogContentText>
           You can begin assigning this activity to various dates from{" "}
-          <span
-            style={{
-              backgroundColor: theme.palette.primary.light,
-              borderRadius: 4,
-            }}
-          >
-            date manager
-          </span>{" "}
-          and tracking it from charts after creating it
+          <strong>date manager</strong> and tracking it from{" "}
+          <strong>charts</strong> after creating it
         </DialogContentText>
         <TextField
           autoFocus
@@ -84,7 +77,14 @@ const CreateNewActivityDialog = ({ open, handleClose }) => {
         />
       </DialogContent>
       <DialogActions sx={{ padding: theme.spacing(0, 3, 3, 3) }}>
-        <Button onClick={handleClose}>Cancel</Button>
+        <Button
+          onClick={() => {
+            handleClose();
+            setNewActivityName("");
+          }}
+        >
+          Cancel
+        </Button>
         <Button
           onClick={handleCreateNewActivity}
           disabled={Boolean(error)}

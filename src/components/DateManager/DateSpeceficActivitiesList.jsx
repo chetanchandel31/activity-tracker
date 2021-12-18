@@ -197,6 +197,7 @@ const DateSpecificActivitiesList = ({
                   <TableCell></TableCell>
                 </TableRow>
               </TableHead>
+
               <TableBody>{tableRows}</TableBody>
             </Table>
           </TableContainer>

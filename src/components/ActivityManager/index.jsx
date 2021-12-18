@@ -1,13 +1,22 @@
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import LabelRoundedIcon from "@mui/icons-material/LabelRounded";
-import RemoveCircleOutlineRoundedIcon from "@mui/icons-material/RemoveCircleOutlineRounded";
+import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
+import LoadingButton from "@mui/lab/LoadingButton";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CircularProgress from "@mui/material/CircularProgress";
 import Container from "@mui/material/Container";
+import Divider from "@mui/material/Divider";
 import Fab from "@mui/material/Fab";
 import IconButton from "@mui/material/IconButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MenuList from "@mui/material/MenuList";
 import { useTheme } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -18,7 +27,9 @@ import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import Zoom from "@mui/material/Zoom";
+import moment from "moment";
 import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { firestore } from "../../firebase/firebase";
 import useAuthListener from "../../hooks/useAuthListener";
 import useFirestore from "../../hooks/useFirestore";
@@ -39,7 +50,27 @@ const ActivityManager = () => {
     `users/${user.uid}/activities`
   );
 
-  console.log(activitiesList, "activities list");
+  const currentDateString = moment()
+    .toDate()
+    .toLocaleDateString()
+    .replaceAll("/", "-");
+  const dateSpecificActivitiesCollectionRef = firestore.collection(
+    `users/${user.uid}/dates/${currentDateString}/date-specific-activities`
+  );
+  const { docs: dateSpecificActivitiesList } = useFirestore(
+    `users/${user.uid}/dates/${currentDateString}/date-specific-activities`
+  );
+
+  const [isRecordNowBtnLoading, setIsRecordNowBtnLoading] = useState(false);
+
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const menuOpen = Boolean(menuAnchorEl);
+  const handleMenuBtnClick = (event) => {
+    setMenuAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+  };
 
   const [isCreateNewActivityDialogOpen, setIsCreateNewActivityDialogOpen] =
     useState(false);
@@ -55,6 +86,230 @@ const ActivityManager = () => {
     // TODO: 1. success or failure alert or snackbar 2. seperate dialog with red button and text 3. only delete from activities list. store it somewhere. setTimeout before we delete it from dates list. give undo option during this span.
     // on clicking undo: 1. clear timeout so we don't delete activity from dates list 2. restore activity in "activities list" from backup
   };
+
+  const handleRecordNow = async (activity) => {
+    // activity received as arg will be doc from activitiesCollection
+    // TODO: make sure this fn runs only once within a sec
+    setIsRecordNowBtnLoading(true);
+
+    const newTimestamp = {
+      timestamp: moment().unix(),
+      timestampId: `t-${uuidv4()}`,
+    };
+
+    const dateSpecificActivity = dateSpecificActivitiesList.find(
+      (el) => el.activityId === activity.id
+    );
+    const isActivityAlreadyPerformedtoday = Boolean(dateSpecificActivity);
+
+    try {
+      if (isActivityAlreadyPerformedtoday) {
+        // date-specific-activities-collection
+        await dateSpecificActivitiesCollectionRef.doc(activity.id).set(
+          {
+            performedAt: [...dateSpecificActivity.performedAt, newTimestamp],
+          },
+          { merge: true }
+        );
+        // activities-collection
+        await activitiesCollectionRef.doc(activity.id).set(
+          {
+            performedAt: [...activity.performedAt, newTimestamp],
+          },
+          { merge: true }
+        );
+      } else {
+        // date-specific-activities-collection
+        await dateSpecificActivitiesCollectionRef.doc(activity.id).set({
+          activityId: activity.id,
+          performedAt: [newTimestamp],
+          activityRef: firestore
+            .collection(`users/${user.uid}/activities/`)
+            .doc(activity.id),
+        });
+        // activities-collection
+        await activitiesCollectionRef.doc(activity.id).set(
+          {
+            performedAt: [...activity.performedAt, newTimestamp],
+          },
+          { merge: true }
+        );
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsRecordNowBtnLoading(false);
+    }
+  };
+
+  const activityTableRows = [];
+  const activityCards = [];
+
+  activitiesList?.forEach((activity) => {
+    const moreActionsMenuBtn = (
+      <Tooltip
+        disableInteractive
+        TransitionComponent={Zoom}
+        title={"More actions"}
+        sx={{ ml: theme.spacing(1) }}
+      >
+        <IconButton onClick={handleMenuBtnClick}>
+          <MoreVertRoundedIcon />
+        </IconButton>
+      </Tooltip>
+    );
+
+    const moreActionsMenu = (
+      <Menu
+        id="basic-menu"
+        anchorEl={menuAnchorEl}
+        open={menuOpen}
+        onClose={handleMenuClose}
+        MenuListProps={{
+          "aria-labelledby": "basic-button",
+        }}
+        //
+        elevation={4}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        sx={{
+          "& .MuiPaper-root": {
+            minWidth: 180,
+          },
+        }}
+        onClick={handleMenuClose}
+      >
+        <MenuList dense>
+          <MenuItem>
+            <ListItemIcon>
+              <EditRoundedIcon />
+            </ListItemIcon>
+            Edit
+          </MenuItem>
+          <MenuItem onClick={() => deleteActivity(activity.id)}>
+            <ListItemIcon>
+              <DeleteForeverRoundedIcon
+                sx={{ color: theme.palette.error.main }}
+              />
+            </ListItemIcon>
+            <Typography sx={{ color: theme.palette.error.main }}>
+              Delete
+            </Typography>
+          </MenuItem>
+          <Divider />
+        </MenuList>
+      </Menu>
+    );
+
+    activityTableRows.push(
+      <TableRow key={activity.id}>
+        <TableCell>
+          <Box
+            sx={{
+              // border: "solid 2px blue",
+              display: "flex",
+              alignItems: "center",
+              gap: theme.spacing(1),
+            }}
+          >
+            <LabelRoundedIcon color="primary" />
+            <Typography component="span">{activity.name}</Typography>
+          </Box>
+        </TableCell>
+        <TableCell align="right">
+          <Typography variant="caption">
+            {activity.performedAt.length === 0 ? (
+              "never"
+            ) : (
+              <Stopwatch
+                date={activity.performedAt.at(-1)?.timestamp}
+                suffix=" ago"
+              />
+            )}
+          </Typography>
+        </TableCell>
+        <TableCell align="right">
+          <Typography variant="caption">
+            <Stopwatch date={activity.createdAt} />
+          </Typography>
+        </TableCell>
+        <TableCell align="right" sx={{ width: 170 }}>
+          <LoadingButton
+            loading={isRecordNowBtnLoading}
+            variant="contained"
+            sx={{ boxShadow: "none", textTransform: "none" }}
+            size="small"
+            onClick={() => handleRecordNow(activity)}
+          >
+            Record now
+          </LoadingButton>
+          {moreActionsMenuBtn}
+          {/* not adding menu itself on cards seperately coz not needed, this menu itself anchors on card's moreActionsMenuBtn */}
+          {moreActionsMenu}
+        </TableCell>
+      </TableRow>
+    );
+
+    // for smaller screens
+    activityCards.push(
+      <Card variant="outlined" key={activity.id}>
+        <CardContent
+          sx={{ display: "flex", justifyContent: "space-between", pr: 0 }}
+        >
+          <div>
+            <Typography variant="h6" sx={{ mb: theme.spacing(1) }}>
+              {activity.name}
+            </Typography>
+            <Typography
+              variant="caption"
+              component="div"
+              color="text.secondary"
+            >
+              last performed{" "}
+              {activity.performedAt.length === 0 ? (
+                "never"
+              ) : (
+                <Stopwatch
+                  date={activity.performedAt.at(-1)?.timestamp}
+                  suffix=" ago"
+                />
+              )}
+            </Typography>
+            <Typography
+              variant="caption"
+              component="div"
+              color="text.secondary"
+              sx={{ display: "flex", alignItems: "center" }}
+            >
+              tracking since <Stopwatch date={activity.createdAt} />
+            </Typography>
+          </div>
+          <div style={{ display: "flex", alignItems: "start" }}>
+            {moreActionsMenuBtn}
+          </div>
+        </CardContent>
+
+        <CardActions>
+          <LoadingButton
+            loading={isRecordNowBtnLoading}
+            variant="contained"
+            // size="small"
+            fullWidth
+            sx={{ boxShadow: "none", textTransform: "none" }}
+            onClick={() => handleRecordNow(activity)}
+          >
+            Record now
+          </LoadingButton>
+        </CardActions>
+      </Card>
+    );
+  });
 
   return (
     <Container>
@@ -94,100 +349,7 @@ const ActivityManager = () => {
               </TableRow>
             </TableHead>
 
-            <TableBody>
-              {activitiesList?.map((activity) => {
-                return (
-                  <TableRow key={activity.id}>
-                    <TableCell>
-                      <Box
-                        sx={{
-                          // border: "solid 2px blue",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: theme.spacing(1),
-                        }}
-                      >
-                        <LabelRoundedIcon color="primary" />
-                        <Typography component="span">
-                          {activity.name}
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell align="right">
-                      <Typography variant="caption">
-                        {activity.performedAt.length === 0 ? (
-                          "never"
-                        ) : (
-                          <Stopwatch
-                            date={activity.performedAt.at(-1)?.timestamp}
-                            suffix=" ago"
-                          />
-                        )}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="right">
-                      <Typography variant="caption">
-                        <Stopwatch date={activity.createdAt} />
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="right">
-                      <Tooltip
-                        disableInteractive
-                        TransitionComponent={Zoom}
-                        title={"Delete Activity"}
-                      >
-                        <IconButton onClick={() => deleteActivity(activity.id)}>
-                          <RemoveCircleOutlineRoundedIcon
-                            sx={{ color: theme.palette.error.main }}
-                          />
-                        </IconButton>
-                      </Tooltip>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-
-              <TableRow>
-                <TableCell>
-                  <Box
-                    sx={{
-                      border: "solid 2px blue",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: theme.spacing(1),
-                    }}
-                  >
-                    <LabelRoundedIcon color="primary" />
-                    <Typography component="span">
-                      hap hap hap hap hap hap hap hap hap hap hap hap hap hap
-                      hap hap
-                    </Typography>
-                  </Box>
-                </TableCell>
-                <TableCell align="right">
-                  <Typography variant="caption">
-                    {" "}
-                    99d 99h 99m 33s ago
-                  </Typography>
-                </TableCell>
-                <TableCell align="right">
-                  <Typography variant="caption">99d 99h 99m 33s</Typography>
-                </TableCell>
-                <TableCell align="right">
-                  <Tooltip
-                    disableInteractive
-                    TransitionComponent={Zoom}
-                    title={"Delete Activity"}
-                  >
-                    <IconButton>
-                      <RemoveCircleOutlineRoundedIcon
-                        sx={{ color: theme.palette.error.main }}
-                      />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            </TableBody>
+            <TableBody>{activityTableRows}</TableBody>
           </Table>
         </TableContainer>
       )}
@@ -204,96 +366,7 @@ const ActivityManager = () => {
             gap: theme.spacing(1.5),
           }}
         >
-          {activitiesList?.map((activity) => {
-            return (
-              <Card variant="outlined" key={activity.id}>
-                <CardContent
-                  sx={{ display: "flex", justifyContent: "space-between" }}
-                >
-                  <div>
-                    <Typography variant="h6" sx={{ mb: theme.spacing(1) }}>
-                      {activity.name}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      component="div"
-                      color="text.secondary"
-                    >
-                      last performed{" "}
-                      {activity.performedAt.length === 0 ? (
-                        "never"
-                      ) : (
-                        <Stopwatch
-                          date={activity.performedAt.at(-1)?.timestamp}
-                          suffix=" ago"
-                        />
-                      )}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      component="div"
-                      color="text.secondary"
-                      sx={{ display: "flex", alignItems: "center" }}
-                    >
-                      tracking since <Stopwatch date={activity.createdAt} />
-                    </Typography>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <Tooltip
-                      disableInteractive
-                      TransitionComponent={Zoom}
-                      title={"Delete Activity"}
-                    >
-                      <IconButton onClick={() => deleteActivity(activity.id)}>
-                        <RemoveCircleOutlineRoundedIcon
-                          sx={{ color: theme.palette.error.main }}
-                        />
-                      </IconButton>
-                    </Tooltip>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-
-          <Card variant="outlined">
-            <CardContent
-              sx={{ display: "flex", justifyContent: "space-between" }}
-            >
-              <div>
-                <Typography variant="h6" sx={{ mb: theme.spacing(1) }}>
-                  Hap hap
-                </Typography>
-                <Typography
-                  variant="caption"
-                  component="div"
-                  color="text.secondary"
-                >
-                  last performed 99h 99m 33s ago
-                </Typography>
-                <Typography
-                  variant="caption"
-                  component="div"
-                  color="text.secondary"
-                >
-                  tracking since 99d 99h 99m 99s
-                </Typography>
-              </div>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <Tooltip
-                  disableInteractive
-                  TransitionComponent={Zoom}
-                  title={"Delete Activity"}
-                >
-                  <IconButton>
-                    <RemoveCircleOutlineRoundedIcon
-                      sx={{ color: theme.palette.error.main }}
-                    />
-                  </IconButton>
-                </Tooltip>
-              </div>
-            </CardContent>
-          </Card>
+          {activityCards}
         </Box>
       )}
 
