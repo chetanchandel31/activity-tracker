@@ -4,6 +4,7 @@ import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import LabelRoundedIcon from "@mui/icons-material/LabelRounded";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import LoadingButton from "@mui/lab/LoadingButton";
+import { Alert, AlertTitle, Button, Slide, useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
@@ -29,6 +30,7 @@ import Typography from "@mui/material/Typography";
 import Zoom from "@mui/material/Zoom";
 import moment from "moment";
 import { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { firestore } from "../../firebase/firebase";
 import useAuthListener from "../../hooks/useAuthListener";
@@ -36,13 +38,18 @@ import useFirestore from "../../hooks/useFirestore";
 import Stopwatch from "../Stopwatch";
 import CreateNewActivityDialog from "./CreateNewActivityDialog";
 
-const ActivityManager = () => {
+const ActivityManager = ({ handleOpenSnackbar, handleCloseSnackbar }) => {
   //todo: search and sort, maybe filters and labels?
   //todo: show exact date on hover
   // todo: unique activity name
   // tracking since: "shows exact time when activity was registered with this app"
   // todo: loading state and empty state
+  const theme = useTheme();
   const [user] = useAuthListener();
+  const history = useHistory();
+
+  const isSmDown = useMediaQuery(theme.breakpoints.down("sm"));
+
   const { docs: activitiesList } = useFirestore(`users/${user.uid}/activities`);
   const areActivitiesLoading = activitiesList === null;
 
@@ -75,8 +82,6 @@ const ActivityManager = () => {
   const [isCreateNewActivityDialogOpen, setIsCreateNewActivityDialogOpen] =
     useState(false);
 
-  const theme = useTheme();
-
   const deleteActivity = async (docId) => {
     try {
       await activitiesCollectionRef.doc(docId).delete();
@@ -85,6 +90,40 @@ const ActivityManager = () => {
     }
     // TODO: 1. success or failure alert or snackbar 2. seperate dialog with red button and text 3. only delete from activities list. store it somewhere. setTimeout before we delete it from dates list. give undo option during this span.
     // on clicking undo: 1. clear timeout so we don't delete activity from dates list 2. restore activity in "activities list" from backup
+  };
+
+  const showSuccessMessage = (activity) => {
+    // TODO: check key and snackbar close transition
+    handleCloseSnackbar();
+
+    handleOpenSnackbar({
+      autoHideDuration: 4000,
+      children: (
+        <Alert
+          severity="success"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          Added <strong>{activity.name}</strong> to{" "}
+          <strong>{currentDateString}</strong>{" "}
+          <Button
+            color="success"
+            onClick={() => {
+              history.push("./date-manager");
+              handleCloseSnackbar();
+            }}
+          >
+            Check
+          </Button>
+        </Alert>
+      ),
+      TransitionComponent: (props) => <Slide {...props} direction="left" />,
+      ...(isSmDown
+        ? { anchorOrigin: { vertical: "top", horizontal: "center" } }
+        : {}),
+    });
   };
 
   const handleRecordNow = async (activity) => {
@@ -135,6 +174,8 @@ const ActivityManager = () => {
           { merge: true }
         );
       }
+
+      showSuccessMessage(activity);
     } catch (err) {
       console.log(err);
     } finally {
