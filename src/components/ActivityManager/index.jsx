@@ -158,7 +158,10 @@ const ActivityManager = () => {
                     }}
                   >
                     <LabelRoundedIcon color="primary" />
-                    <Typography component="span">hap hap hap hap</Typography>
+                    <Typography component="span">
+                      hap hap hap hap hap hap hap hap hap hap hap hap hap hap
+                      hap hap
+                    </Typography>
                   </Box>
                 </TableCell>
                 <TableCell align="right">
@@ -216,7 +219,15 @@ const ActivityManager = () => {
                       component="div"
                       color="text.secondary"
                     >
-                      last performed 99h 99m 33s ago
+                      last performed{" "}
+                      {activity.performedAt.length === 0 ? (
+                        "never"
+                      ) : (
+                        <Stopwatch
+                          date={activity.performedAt.at(-1)?.timestamp}
+                          suffix=" ago"
+                        />
+                      )}
                     </Typography>
                     <Typography
                       variant="caption"
