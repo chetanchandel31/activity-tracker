@@ -4,8 +4,9 @@ import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import LabelRoundedIcon from "@mui/icons-material/LabelRounded";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { Alert, Button, Slide, useMediaQuery } from "@mui/material";
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
@@ -18,6 +19,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
+import Slide from "@mui/material/Slide";
 import { useTheme } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -27,6 +29,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import Zoom from "@mui/material/Zoom";
 import moment from "moment";
 import { useState } from "react";
@@ -93,9 +96,6 @@ const ActivityManager = ({ handleOpenSnackbar, handleCloseSnackbar }) => {
   };
 
   const showSuccessMessage = (activity) => {
-    // TODO: check key and snackbar close transition
-    handleCloseSnackbar();
-
     handleOpenSnackbar({
       autoHideDuration: 4000,
       children: (
@@ -123,6 +123,7 @@ const ActivityManager = ({ handleOpenSnackbar, handleCloseSnackbar }) => {
       ...(isSmDown
         ? { anchorOrigin: { vertical: "top", horizontal: "center" } }
         : {}),
+      key: uuidv4(),
     });
   };
 

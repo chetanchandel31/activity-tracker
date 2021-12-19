@@ -13,15 +13,10 @@ import Header from "./layout/Header";
 function App() {
   // TODO: navigator.online to show some screen when user is offline
   const [user] = useAuthListener();
-  console.log(user);
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleCloseSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
     setOpenSnackbar(false);
   };
 
