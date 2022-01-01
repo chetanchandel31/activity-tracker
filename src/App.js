@@ -18,6 +18,8 @@ function App() {
 
   const handleCloseSnackbar = (event, reason) => {
     setOpenSnackbar(false);
+
+    // TODO: Add reset props logic here
   };
 
   const [snackbarProps, setSnackbarProps] = useState({

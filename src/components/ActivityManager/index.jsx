@@ -38,15 +38,16 @@ import { v4 as uuidv4 } from "uuid";
 import { firestore } from "../../firebase/firebase";
 import useAuthListener from "../../hooks/useAuthListener";
 import useFirestore from "../../hooks/useFirestore";
+import { getDateStringFromMoment } from "../../utils";
 import Stopwatch from "../Stopwatch";
 import CreateNewActivityDialog from "./CreateNewActivityDialog";
 
 const ActivityManager = ({ handleOpenSnackbar, handleCloseSnackbar }) => {
-  //todo: search and sort, maybe filters and labels?
-  //todo: show exact date on hover
-  // todo: unique activity name
+  //TODO: search and sort, maybe filters and labels?
+  //TODO: show exact date on hover
+  // TODO: unique activity name
   // tracking since: "shows exact time when activity was registered with this app"
-  // todo: loading state and empty state
+  // TODO: loading state and empty state
   const theme = useTheme();
   const [user] = useAuthListener();
   const history = useHistory();
@@ -60,10 +61,8 @@ const ActivityManager = ({ handleOpenSnackbar, handleCloseSnackbar }) => {
     `users/${user.uid}/activities`
   );
 
-  const currentDateString = moment()
-    .toDate()
-    .toLocaleDateString()
-    .replaceAll("/", "-");
+  const currentDateString = getDateStringFromMoment(moment());
+
   const dateSpecificActivitiesCollectionRef = firestore.collection(
     `users/${user.uid}/dates/${currentDateString}/date-specific-activities`
   );
@@ -412,8 +411,8 @@ const ActivityManager = ({ handleOpenSnackbar, handleCloseSnackbar }) => {
         </Box>
       )}
 
-      {/* todo: virtualised list, transition and activity name character limit */}
-      {/* todo: extra padding after last item to prevent fab overlapping */}
+      {/* TODO: virtualised list, transition and activity name character limit */}
+      {/* TODO: extra padding after last item to prevent fab overlapping */}
       <Box
         sx={{
           position: "fixed",

@@ -17,22 +17,20 @@ import { v4 as uuidv4 } from "uuid";
 import { firestore } from "../../firebase/firebase";
 import useAuthListener from "../../hooks/useAuthListener";
 import useFirestore from "../../hooks/useFirestore";
+import { getDateStringFromMoment } from "../../utils";
 import DateSpecificActivitiesList from "./DateSpeceficActivitiesList";
 
 const DateManager = () => {
-  //todo: tooltip for add button
-  //todo: can add debounce for counters in frequency
-  // todo: prevent user from adding activities to future dates
+  //TODO: tooltip for add button
+  //TODO: can add debounce for counters in frequency
+  // TODO: prevent user from adding activities to future dates
   // TODO: create new activity right from here, mui autocomplete > createable. use same dialog component
-  // seperate out helper functions? currently can't copy paste/reuse
+  // TODO: seperate out helper functions? currently can't copy paste/reuse
   const theme = useTheme();
 
   const [selectedDate, setSelectedDate] = useState(moment());
   const [selectedActivity, setSelectedActivity] = useState("");
-  const selectedDateString = selectedDate
-    .toDate()
-    .toLocaleDateString()
-    .replaceAll("/", "-");
+  const selectedDateString = getDateStringFromMoment(selectedDate);
 
   const [user] = useAuthListener();
   const { docs: activitiesList } = useFirestore(`users/${user.uid}/activities`);
@@ -76,7 +74,8 @@ const DateManager = () => {
       selectedDate.toDate().toLocaleDateString() ===
       moment().toDate().toLocaleDateString();
 
-    const selectedDateString = selectedDate.toDate().toLocaleDateString(); //"22/2/2222"
+    const selectedDateString = getDateStringFromMoment(selectedDate); //"22/2/2222"
+    console.log(selectedDateString, "selected date string");
 
     if (isSelectedDateSameAsCurrentDate)
       return { timestamp: moment().unix(), timestampId: `t-${uuidv4()}` };
@@ -104,16 +103,12 @@ const DateManager = () => {
   console.log(
     dateSpecificActivitiesList,
     "dateSpecificActivitiesList",
-    `users/${user.uid}/dates/${selectedDate
-      .toDate()
-      .toLocaleDateString()
-      .replaceAll("/", "-")}/date-specific-activities`
+    `users/${user.uid}/dates/${getDateStringFromMoment(
+      selectedDate
+    )}/date-specific-activities`
   );
 
-  console.log(
-    selectedDate.toDate().toLocaleDateString().replaceAll("/", "-"),
-    "selected date"
-  );
+  console.log(getDateStringFromMoment(selectedDate), "selected date");
 
   //whenever frequency gets updated in any way, two places have to be updated:
   // 1. performedAt in "activities" collection 2. performedAt in "date-specific-activities" collection
@@ -188,7 +183,7 @@ const DateManager = () => {
     const activity = activitiesList?.find((el) => el.id === activityId);
     const activitiesCollectionPerformedAtArr = activity.performedAt;
 
-    // todo: update lastUpdatedAt
+    // TODO: update lastUpdatedAt
     if (updateType === "decrease") {
       // date-specific-activities-collection
       dateSpecificActivitiesCollectionRef.doc(activityId).set(
@@ -256,7 +251,7 @@ const DateManager = () => {
     dateSpecificActivitiesList === null;
 
   const defaultProps = {
-    //todo: check and fix warning
+    //TODO: check and fix warning
     options: activitiesList || [],
     getOptionLabel: (option) => option.name || "",
   };
