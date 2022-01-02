@@ -19,3 +19,11 @@ export interface DateSpeceficActivity {
   id: string;
   performedAt: Timestamp[];
 }
+
+export interface ActivitiesList {
+  docs: Activity[] | null;
+}
+
+export interface DateSpeceficActivitiesList {
+  docs: DateSpeceficActivity[] | null;
+}

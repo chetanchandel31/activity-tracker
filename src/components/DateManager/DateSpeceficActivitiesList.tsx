@@ -14,18 +14,36 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
+import { Activity, DateSpeceficActivity, Timestamp } from "../../types";
 
-const DateSpecificActivitiesList = ({
-  isDateSpecificActivitiesListLoading,
-  dateSpecificActivitiesList,
-  updateFrequency,
-  activitiesList,
-  deleteActivityFromDate,
-}) => {
+interface DateSpecificActivitiesListProps {
+  isDateSpecificActivitiesListLoading: boolean;
+  dateSpecificActivitiesList: DateSpeceficActivity[] | null;
+  updateFrequency: (
+    activityId: string,
+    updateType: "increase" | "decrease",
+    dateSpecificActivitiesPerformedAtArr: Timestamp[]
+  ) => void;
+  activitiesList: Activity[] | null;
+  deleteActivityFromDate: (
+    activityId: string,
+    dateSpecificActivitiesPerformedAtArr: Timestamp[]
+  ) => void;
+}
+
+const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
+  const {
+    isDateSpecificActivitiesListLoading,
+    dateSpecificActivitiesList,
+    updateFrequency,
+    activitiesList,
+    deleteActivityFromDate,
+  } = props;
+
   const theme = useTheme();
 
-  let tableRows = [];
-  let cards = []; // same thing but for smaller screens
+  let tableRows: JSX.Element[] = [];
+  let cards: JSX.Element[] = []; // same thing but for smaller screens
 
   dateSpecificActivitiesList?.forEach(({ activityId, performedAt }) => {
     const activity = activitiesList?.find((el) => el.id === activityId);
@@ -170,6 +188,9 @@ const DateSpecificActivitiesList = ({
     );
   });
 
+  const isDateSpecificActivitiesListNonEmpty =
+    dateSpecificActivitiesList && dateSpecificActivitiesList?.length > 0;
+
   return (
     <>
       {isDateSpecificActivitiesListLoading && (
@@ -178,7 +199,7 @@ const DateSpecificActivitiesList = ({
         </div>
       )}
 
-      {dateSpecificActivitiesList?.length > 0 && (
+      {isDateSpecificActivitiesListNonEmpty && (
         <Container maxWidth="md">
           <TableContainer sx={{ display: { xs: "none", sm: "block" } }}>
             <Table aria-label="simple table">
@@ -206,7 +227,7 @@ const DateSpecificActivitiesList = ({
 
       {dateSpecificActivitiesList?.length === 0 && <div>empty state</div>}
 
-      {dateSpecificActivitiesList?.length > 0 && (
+      {isDateSpecificActivitiesListNonEmpty && (
         <Box
           sx={{
             // border: "solid 2px black",

@@ -26,7 +26,11 @@ import { getDateStringFromMoment } from "../../utils";
 import CreateNewActivityDialog from "./CreateNewActivityDialog";
 import SingleActivity from "./SingleActivity";
 import { SnackbarProps } from "@mui/material";
-import { Activity, DateSpeceficActivity } from "../../types";
+import {
+  ActivitiesList,
+  Activity,
+  DateSpeceficActivitiesList,
+} from "../../types";
 
 interface ActivityManagerProps {
   handleOpenSnackbar: (snackbarProps: SnackbarProps) => void;
@@ -34,14 +38,6 @@ interface ActivityManagerProps {
     event?: React.SyntheticEvent | Event,
     reason?: string | undefined
   ) => void;
-}
-
-interface ActivitiesList {
-  docs: Activity[] | null;
-}
-
-interface DateSpeceficActivitiesList {
-  docs: DateSpeceficActivity[] | null;
 }
 
 const ActivityManager = (props: ActivityManagerProps) => {

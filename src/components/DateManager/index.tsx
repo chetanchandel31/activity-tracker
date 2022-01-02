@@ -17,6 +17,11 @@ import { v4 as uuidv4 } from "uuid";
 import { firestore } from "../../firebase/firebase";
 import useAuthListener from "../../hooks/useAuthListener";
 import useFirestore from "../../hooks/useFirestore";
+import {
+  ActivitiesList,
+  DateSpeceficActivitiesList,
+  Timestamp,
+} from "../../types";
 import { getDateStringFromMoment } from "../../utils";
 import DateSpecificActivitiesList from "./DateSpeceficActivitiesList";
 
@@ -33,7 +38,9 @@ const DateManager = () => {
   const selectedDateString = getDateStringFromMoment(selectedDate);
 
   const [user] = useAuthListener();
-  const { docs: activitiesList } = useFirestore(`users/${user.uid}/activities`);
+  const { docs: activitiesList }: ActivitiesList = useFirestore(
+    `users/${user.uid}/activities`
+  );
   const activitiesCollectionRef = firestore.collection(
     `users/${user.uid}/activities`
   );
@@ -53,13 +60,14 @@ const DateManager = () => {
   //   "selectedDateActivitiesList"
   // );
 
-  const { docs: dateSpecificActivitiesList } = useFirestore(
-    `users/${user.uid}/dates/${selectedDateString}/date-specific-activities`
-  );
+  const { docs: dateSpecificActivitiesList }: DateSpeceficActivitiesList =
+    useFirestore(
+      `users/${user.uid}/dates/${selectedDateString}/date-specific-activities`
+    );
 
   useEffect(() => {
     dateSpecificActivitiesList?.forEach((el) => {
-      const isActivityFoundInActivitiesCollection = activitiesList.find(
+      const isActivityFoundInActivitiesCollection = activitiesList?.find(
         (activity) => activity.id === el.activityId
       );
 
@@ -86,13 +94,13 @@ const DateManager = () => {
       };
   };
 
-  const getSortedTimestampArr = (timestampArr) => {
+  const getSortedTimestampArr = (timestampArr: Timestamp[]) => {
     return timestampArr.sort((a, b) => a.timestamp - b.timestamp);
   };
 
   const getFilteredTimestampsArr = (
-    timestampsArr,
-    timestampsToBeFilteredArr
+    timestampsArr: Timestamp[],
+    timestampsToBeFilteredArr: Timestamp[]
   ) => {
     return timestampsArr.filter(
       (el) =>
@@ -113,9 +121,10 @@ const DateManager = () => {
   //whenever frequency gets updated in any way, two places have to be updated:
   // 1. performedAt in "activities" collection 2. performedAt in "date-specific-activities" collection
   const addActivityToDate = () => {
-    const activity = activitiesList.find(
+    const activity = activitiesList?.find(
       (activity) => activity.name === selectedActivity
     );
+    if (!activity) return;
     const newTimestamp = getAppropriateTimestamp();
 
     // activities-collection
@@ -143,11 +152,12 @@ const DateManager = () => {
   };
 
   const deleteActivityFromDate = (
-    activityId,
-    dateSpecificActivitiesPerformedAtArr
+    activityId: string,
+    dateSpecificActivitiesPerformedAtArr: Timestamp[]
   ) => {
     // activities-collection
     const activity = activitiesList?.find((el) => el.id === activityId);
+    if (!activity) return;
     const activitiesCollectionPerformedAtArr = activity.performedAt;
 
     activitiesCollectionRef.doc(activityId).set(
@@ -168,10 +178,13 @@ const DateManager = () => {
   };
 
   const updateFrequency = (
-    activityId,
-    updateType,
-    dateSpecificActivitiesPerformedAtArr
+    activityId: string,
+    updateType: "increase" | "decrease",
+    dateSpecificActivitiesPerformedAtArr: Timestamp[]
   ) => {
+    let x = dateSpecificActivitiesPerformedAtArr.at(-1);
+    if (x === undefined) return;
+
     if (
       updateType === "decrease" &&
       dateSpecificActivitiesPerformedAtArr?.length === 1
@@ -181,6 +194,7 @@ const DateManager = () => {
     }
 
     const activity = activitiesList?.find((el) => el.id === activityId);
+    if (!activity) return;
     const activitiesCollectionPerformedAtArr = activity.performedAt;
 
     // TODO: update lastUpdatedAt
@@ -197,7 +211,7 @@ const DateManager = () => {
         {
           performedAt: getFilteredTimestampsArr(
             activitiesCollectionPerformedAtArr,
-            [dateSpecificActivitiesPerformedAtArr.at(-1)]
+            [dateSpecificActivitiesPerformedAtArr.at(-1) as Timestamp]
           ),
         },
         { merge: true }
@@ -236,7 +250,7 @@ const DateManager = () => {
       );
       isSelectedActivityAlreadyAdded =
         dateSpecificActivitiesList?.findIndex(
-          (el) => el.activityId === activity.id
+          (el) => el.activityId === activity?.id
         ) !== -1;
     }
 
@@ -253,7 +267,7 @@ const DateManager = () => {
   const defaultProps = {
     //TODO: check and fix warning
     options: activitiesList || [],
-    getOptionLabel: (option) => option.name || "",
+    getOptionLabel: (option: any) => option.name || "", // TODO: fix type
   };
 
   return (
@@ -281,7 +295,9 @@ const DateManager = () => {
           <DatePicker
             label="Select Date"
             value={selectedDate}
-            onChange={(value) => setSelectedDate(value)}
+            onChange={(value) => {
+              if (value !== null) setSelectedDate(value);
+            }}
             disableFuture
             renderInput={(params) => (
               <TextField
