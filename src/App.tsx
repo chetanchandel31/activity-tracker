@@ -9,6 +9,7 @@ import DateManager from "./components/DateManager";
 import ProtectedRoute from "./components/ProtectedRoute";
 import useAuthListener from "./hooks/useAuthListener";
 import Header from "./layout/Header";
+import { SnackbarProps } from "@mui/material";
 
 function App() {
   // TODO: navigator.online to show some screen when user is offline
@@ -16,19 +17,22 @@ function App() {
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
-  const handleCloseSnackbar = (event, reason) => {
+  const handleCloseSnackbar = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
     setOpenSnackbar(false);
 
     // TODO: Add reset props logic here
   };
 
-  const [snackbarProps, setSnackbarProps] = useState({
+  const [snackbarProps, setSnackbarProps] = useState<SnackbarProps>({
     autoHideDuration: 6000,
     onClose: handleCloseSnackbar,
     message: "hi from snackbar",
   });
 
-  const handleOpenSnackbar = (snackbarProps) => {
+  const handleOpenSnackbar = (snackbarProps: SnackbarProps) => {
     setSnackbarProps((prev) => ({ ...prev, ...snackbarProps }));
     setOpenSnackbar(true);
   };
@@ -70,7 +74,7 @@ function App() {
         </Switch>
       </Router>
 
-      <Snackbar open={openSnackbar} {...snackbarProps} />
+      <Snackbar {...snackbarProps} open={openSnackbar} />
     </div>
   );
 }

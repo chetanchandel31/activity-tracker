@@ -3,19 +3,25 @@ import { useTheme } from "@mui/material/styles";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 
-const Stopwatch = ({ date, prefix = "", suffix = "" }) => {
+interface Props {
+  date: number | undefined;
+  prefix?: string;
+  suffix?: string;
+}
+
+const Stopwatch = ({ date, prefix = "", suffix = "" }: Props) => {
   const theme = useTheme();
 
-  const [days, setDays] = useState(null);
-  const [hours, setHours] = useState(null);
-  const [minutes, setMinutes] = useState(null);
-  const [seconds, setSeconds] = useState(null);
+  const [days, setDays] = useState<null | number>(null);
+  const [hours, setHours] = useState<null | number>(null);
+  const [minutes, setMinutes] = useState<null | number>(null);
+  const [seconds, setSeconds] = useState<null | number>(null);
 
-  const timeout = useRef();
+  const timeout = useRef<NodeJS.Timeout | null>(null);
 
   // eslint-disable-next-line
   useEffect(() => {
-    if (moment().diff(moment.unix(date)) >= 0) {
+    if (date && moment().diff(moment.unix(date)) >= 0) {
       timeout.current = setTimeout(() => {
         setDays(() => moment.duration(moment().diff(moment.unix(date))).days());
         setHours(() =>
@@ -40,13 +46,16 @@ const Stopwatch = ({ date, prefix = "", suffix = "" }) => {
   // avoiding memory leak
   useEffect(() => {
     return () => {
-      clearTimeout(timeout.current);
+      clearTimeout(timeout.current as NodeJS.Timeout);
     };
   }, []);
 
+  const isLoaded =
+    seconds !== null && hours !== null && minutes !== null && days !== null;
+
   return (
     <>
-      {date && moment().diff(moment.unix(date)) >= 0 && seconds !== null ? (
+      {date && moment().diff(moment.unix(date)) >= 0 && isLoaded ? (
         <>
           {`${prefix}`}
           {days > 0 && `${days}d :`} {hours < 10 ? ` 0${hours}` : ` ${hours}`}h

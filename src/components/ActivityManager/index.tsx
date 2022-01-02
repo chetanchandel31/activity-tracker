@@ -1,24 +1,10 @@
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
-import EditRoundedIcon from "@mui/icons-material/EditRounded";
-import LabelRoundedIcon from "@mui/icons-material/LabelRounded";
-import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
-import LoadingButton from "@mui/lab/LoadingButton";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
 import CircularProgress from "@mui/material/CircularProgress";
 import Container from "@mui/material/Container";
-import Divider from "@mui/material/Divider";
 import Fab from "@mui/material/Fab";
-import IconButton from "@mui/material/IconButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import MenuList from "@mui/material/MenuList";
 import Slide from "@mui/material/Slide";
 import { useTheme } from "@mui/material/styles";
 import Table from "@mui/material/Table";
@@ -27,10 +13,8 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import Zoom from "@mui/material/Zoom";
 import moment from "moment";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -39,23 +23,48 @@ import { firestore } from "../../firebase/firebase";
 import useAuthListener from "../../hooks/useAuthListener";
 import useFirestore from "../../hooks/useFirestore";
 import { getDateStringFromMoment } from "../../utils";
-import Stopwatch from "../Stopwatch";
 import CreateNewActivityDialog from "./CreateNewActivityDialog";
+import SingleActivity from "./SingleActivity";
+import { SnackbarProps } from "@mui/material";
+import { Activity, DateSpeceficActivity } from "../../types";
 
-const ActivityManager = ({ handleOpenSnackbar, handleCloseSnackbar }) => {
+interface ActivityManagerProps {
+  handleOpenSnackbar: (snackbarProps: SnackbarProps) => void;
+  handleCloseSnackbar: (
+    event?: React.SyntheticEvent | Event,
+    reason?: string | undefined
+  ) => void;
+}
+
+interface ActivitiesList {
+  docs: Activity[] | null;
+}
+
+interface DateSpeceficActivitiesList {
+  docs: DateSpeceficActivity[] | null;
+}
+
+const ActivityManager = (props: ActivityManagerProps) => {
   //TODO: search and sort, maybe filters and labels?
   //TODO: show exact date on hover
   // TODO: unique activity name
   // tracking since: "shows exact time when activity was registered with this app"
   // TODO: loading state and empty state
+  const { handleOpenSnackbar, handleCloseSnackbar } = props;
+
   const theme = useTheme();
   const [user] = useAuthListener();
   const history = useHistory();
 
   const isSmDown = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const { docs: activitiesList } = useFirestore(`users/${user.uid}/activities`);
+  const { docs: activitiesList }: ActivitiesList = useFirestore(
+    `users/${user.uid}/activities`
+  );
+
   const areActivitiesLoading = activitiesList === null;
+
+  console.log(activitiesList);
 
   const activitiesCollectionRef = firestore.collection(
     `users/${user.uid}/activities`
@@ -66,27 +75,27 @@ const ActivityManager = ({ handleOpenSnackbar, handleCloseSnackbar }) => {
   const dateSpecificActivitiesCollectionRef = firestore.collection(
     `users/${user.uid}/dates/${currentDateString}/date-specific-activities`
   );
-  const { docs: dateSpecificActivitiesList } = useFirestore(
-    `users/${user.uid}/dates/${currentDateString}/date-specific-activities`
-  );
+
+  const { docs: dateSpecificActivitiesList }: DateSpeceficActivitiesList =
+    useFirestore(
+      `users/${user.uid}/dates/${currentDateString}/date-specific-activities`
+    );
 
   const [isRecordNowBtnLoading, setIsRecordNowBtnLoading] = useState(false);
-
-  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
-  const menuOpen = Boolean(menuAnchorEl);
-  const handleMenuBtnClick = (event) => {
-    setMenuAnchorEl(event.currentTarget);
-  };
-  const handleMenuClose = () => {
-    setMenuAnchorEl(null);
-  };
 
   const [isCreateNewActivityDialogOpen, setIsCreateNewActivityDialogOpen] =
     useState(false);
 
-  const deleteActivity = async (docId) => {
+  const deleteActivity = async (docId: string) => {
+    if (!activitiesList) return;
+
     try {
-      await activitiesCollectionRef.doc(docId).delete();
+      if (
+        window.confirm(
+          `delete ${activitiesList.find((el) => el.id === docId)?.name} ?`
+        )
+      )
+        await activitiesCollectionRef.doc(docId).delete();
     } catch (err) {
       console.log(err);
     }
@@ -94,7 +103,7 @@ const ActivityManager = ({ handleOpenSnackbar, handleCloseSnackbar }) => {
     // on clicking undo: 1. clear timeout so we don't delete activity from dates list 2. restore activity in "activities list" from backup
   };
 
-  const showSuccessMessage = (activity) => {
+  const showSuccessMessage = (activity: Activity) => {
     handleOpenSnackbar({
       autoHideDuration: 4000,
       children: (
@@ -126,9 +135,10 @@ const ActivityManager = ({ handleOpenSnackbar, handleCloseSnackbar }) => {
     });
   };
 
-  const handleRecordNow = async (activity) => {
+  const handleRecordNow = async (activity: Activity) => {
     // activity received as arg will be doc from activitiesCollection
     // TODO: make sure this fn runs only once within a sec
+    if (dateSpecificActivitiesList === null) return;
     setIsRecordNowBtnLoading(true);
 
     const newTimestamp = {
@@ -139,7 +149,7 @@ const ActivityManager = ({ handleOpenSnackbar, handleCloseSnackbar }) => {
     const dateSpecificActivity = dateSpecificActivitiesList.find(
       (el) => el.activityId === activity.id
     );
-    const isActivityAlreadyPerformedtoday = Boolean(dateSpecificActivity);
+    const isActivityAlreadyPerformedtoday = dateSpecificActivity !== undefined;
 
     try {
       if (isActivityAlreadyPerformedtoday) {
@@ -183,174 +193,36 @@ const ActivityManager = ({ handleOpenSnackbar, handleCloseSnackbar }) => {
     }
   };
 
-  const activityTableRows = [];
-  const activityCards = [];
+  const activityTableRows: JSX.Element[] = [];
+  const activityCards: JSX.Element[] = [];
 
   activitiesList?.forEach((activity) => {
-    const moreActionsMenuBtn = (
-      <Tooltip
-        disableInteractive
-        TransitionComponent={Zoom}
-        title={"More actions"}
-        sx={{ ml: theme.spacing(1) }}
-      >
-        <IconButton onClick={handleMenuBtnClick}>
-          <MoreVertRoundedIcon />
-        </IconButton>
-      </Tooltip>
-    );
-
-    const moreActionsMenu = (
-      <Menu
-        id="basic-menu"
-        anchorEl={menuAnchorEl}
-        open={menuOpen}
-        onClose={handleMenuClose}
-        MenuListProps={{
-          "aria-labelledby": "basic-button",
-        }}
-        //
-        elevation={4}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        sx={{
-          "& .MuiPaper-root": {
-            minWidth: 180,
-          },
-        }}
-        onClick={handleMenuClose}
-      >
-        <MenuList dense>
-          <MenuItem>
-            <ListItemIcon>
-              <EditRoundedIcon />
-            </ListItemIcon>
-            Edit
-          </MenuItem>
-          <MenuItem onClick={() => deleteActivity(activity.id)}>
-            <ListItemIcon>
-              <DeleteForeverRoundedIcon
-                sx={{ color: theme.palette.error.main }}
-              />
-            </ListItemIcon>
-            <Typography sx={{ color: theme.palette.error.main }}>
-              Delete
-            </Typography>
-          </MenuItem>
-          <Divider />
-        </MenuList>
-      </Menu>
-    );
-
+    // TODO: see if props can be pushed down
     activityTableRows.push(
-      <TableRow key={activity.id}>
-        <TableCell>
-          <Box
-            sx={{
-              // border: "solid 2px blue",
-              display: "flex",
-              alignItems: "center",
-              gap: theme.spacing(1),
-            }}
-          >
-            <LabelRoundedIcon color="primary" />
-            <Typography component="span">{activity.name}</Typography>
-          </Box>
-        </TableCell>
-        <TableCell align="right">
-          <Typography variant="caption">
-            {activity.performedAt.length === 0 ? (
-              "never"
-            ) : (
-              <Stopwatch
-                date={activity.performedAt.at(-1)?.timestamp}
-                suffix=" ago"
-              />
-            )}
-          </Typography>
-        </TableCell>
-        <TableCell align="right">
-          <Typography variant="caption">
-            <Stopwatch date={activity.createdAt} />
-          </Typography>
-        </TableCell>
-        <TableCell align="right" sx={{ width: 170 }}>
-          <LoadingButton
-            loading={isRecordNowBtnLoading}
-            variant="contained"
-            sx={{ boxShadow: "none", textTransform: "none" }}
-            size="small"
-            onClick={() => handleRecordNow(activity)}
-          >
-            Record now
-          </LoadingButton>
-          {moreActionsMenuBtn}
-          {/* not adding menu itself on cards seperately coz not needed, this menu itself anchors on card's moreActionsMenuBtn */}
-          {moreActionsMenu}
-        </TableCell>
-      </TableRow>
+      <SingleActivity
+        view="tableRow"
+        activity={activity}
+        deleteActivity={deleteActivity}
+        handleRecordNow={handleRecordNow}
+        isRecordNowBtnLoading={isRecordNowBtnLoading}
+        key={activity.id}
+      />
     );
 
     // for smaller screens
     activityCards.push(
-      <Card variant="outlined" key={activity.id}>
-        <CardContent
-          sx={{ display: "flex", justifyContent: "space-between", pr: 0 }}
-        >
-          <div>
-            <Typography variant="h6" sx={{ mb: theme.spacing(1) }}>
-              {activity.name}
-            </Typography>
-            <Typography
-              variant="caption"
-              component="div"
-              color="text.secondary"
-            >
-              last performed{" "}
-              {activity.performedAt.length === 0 ? (
-                "never"
-              ) : (
-                <Stopwatch
-                  date={activity.performedAt.at(-1)?.timestamp}
-                  suffix=" ago"
-                />
-              )}
-            </Typography>
-            <Typography
-              variant="caption"
-              component="div"
-              color="text.secondary"
-              sx={{ display: "flex", alignItems: "center" }}
-            >
-              tracking since <Stopwatch date={activity.createdAt} />
-            </Typography>
-          </div>
-          <div style={{ display: "flex", alignItems: "start" }}>
-            {moreActionsMenuBtn}
-          </div>
-        </CardContent>
-
-        <CardActions>
-          <LoadingButton
-            loading={isRecordNowBtnLoading}
-            variant="contained"
-            // size="small"
-            fullWidth
-            sx={{ boxShadow: "none", textTransform: "none" }}
-            onClick={() => handleRecordNow(activity)}
-          >
-            Record now
-          </LoadingButton>
-        </CardActions>
-      </Card>
+      <SingleActivity
+        view="card"
+        activity={activity}
+        deleteActivity={deleteActivity}
+        handleRecordNow={handleRecordNow}
+        isRecordNowBtnLoading={isRecordNowBtnLoading}
+        key={activity.id}
+      />
     );
   });
+
+  const isActivitiesListNonEmpty = activitiesList && activitiesList.length > 0;
 
   return (
     <Container>
@@ -366,7 +238,7 @@ const ActivityManager = ({ handleOpenSnackbar, handleCloseSnackbar }) => {
       )}
 
       {/* 2. actual list */}
-      {activitiesList?.length > 0 && (
+      {isActivitiesListNonEmpty && (
         <TableContainer sx={{ display: { xs: "none", sm: "block" } }}>
           <Table>
             <TableHead>
@@ -398,7 +270,7 @@ const ActivityManager = ({ handleOpenSnackbar, handleCloseSnackbar }) => {
       {/* 3. empty state */}
       {activitiesList?.length === 0 && <div>empty state</div>}
 
-      {activitiesList?.length > 0 && (
+      {isActivitiesListNonEmpty && (
         <Box
           sx={{
             // border: "solid 2px black"
