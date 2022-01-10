@@ -24,7 +24,7 @@ import useAuthListener from "../../hooks/useAuthListener";
 import useFirestore from "../../hooks/useFirestore";
 import { getDateStringFromMoment } from "../../utils";
 import CreateNewActivityDialog from "./CreateNewActivityDialog";
-import SingleActivity from "./SingleActivity";
+import SingleActivity from "./SingleActivity/SingleActivity";
 import { SnackbarProps } from "@mui/material";
 import {
   ActivitiesList,
@@ -221,7 +221,7 @@ const ActivityManager = (props: ActivityManagerProps) => {
   const isActivitiesListNonEmpty = activitiesList && activitiesList.length > 0;
 
   return (
-    <Container>
+    <Container sx={{ pb: theme.spacing(8.5) }}>
       <Typography sx={{ mb: theme.spacing(3) }}>
         Here is the list of activities you are currently tracking
       </Typography>

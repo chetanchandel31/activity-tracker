@@ -1,7 +1,7 @@
 import { Moment } from "moment";
 
 /**
- * avoid inconsistenct date string issue while using from moment().toDate().toLocaleDateString()
+ * substitute for moment().toDate().toLocaleDateString() to prevent inconsistent date string issue
  *
  * @param momentObj - object returned from moment's top level api
  * @returns a date string in such format: mm-dd-yyyy

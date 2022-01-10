@@ -1,6 +1,5 @@
 import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
-import LabelRoundedIcon from "@mui/icons-material/LabelRounded";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Box from "@mui/material/Box";
@@ -20,8 +19,11 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import Zoom from "@mui/material/Zoom";
 import React, { useState } from "react";
-import { Activity } from "../../types";
-import Stopwatch from "../Stopwatch";
+import { Activity } from "../../../types";
+import Stopwatch from "../../Stopwatch";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import CollapsiblePart from "./CollapsiblePart";
 
 interface SingleActivityProps {
   view: "card" | "tableRow";
@@ -39,6 +41,8 @@ const SingleActivity = (props: SingleActivityProps) => {
     handleRecordNow,
     view,
   } = props;
+
+  console.log(activity, "activity");
 
   const theme = useTheme();
 
@@ -64,53 +68,76 @@ const SingleActivity = (props: SingleActivityProps) => {
     </Tooltip>
   );
 
+  const [openCollapsiblePart, setOpenCollapsiblePart] = useState(false); // TODO: better naming
+
   return (
     <>
       {view === "tableRow" && (
-        <TableRow>
-          <TableCell>
-            <Box
-              sx={{
-                // border: "solid 2px blue",
-                display: "flex",
-                alignItems: "center",
-                gap: theme.spacing(1),
-              }}
-            >
-              <LabelRoundedIcon color="primary" />
-              <Typography component="span">{activity.name}</Typography>
-            </Box>
-          </TableCell>
-          <TableCell align="right">
-            <Typography variant="caption">
-              {activity.performedAt.length === 0 ? (
-                "never"
-              ) : (
-                <Stopwatch
-                  date={activity.performedAt.at(-1)?.timestamp}
-                  suffix=" ago"
-                />
-              )}
-            </Typography>
-          </TableCell>
-          <TableCell align="right">
-            <Typography variant="caption">
-              <Stopwatch date={activity.createdAt} />
-            </Typography>
-          </TableCell>
-          <TableCell align="right" sx={{ width: 170 }}>
-            <LoadingButton
-              loading={isRecordNowBtnLoading}
-              variant="contained"
-              sx={{ boxShadow: "none", textTransform: "none" }}
-              size="small"
-              onClick={() => handleRecordNow(activity)}
-            >
-              Record now
-            </LoadingButton>
-            {moreActionsMenuBtn}
-          </TableCell>
-        </TableRow>
+        <>
+          <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+            <TableCell>
+              <Box
+                sx={{
+                  // border: "solid 2px blue",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: theme.spacing(1),
+                }}
+              >
+                <IconButton
+                  size="small"
+                  sx={{ ml: 0 }}
+                  onClick={() => setOpenCollapsiblePart((prev) => !prev)}
+                >
+                  {openCollapsiblePart ? (
+                    <KeyboardArrowUpIcon />
+                  ) : (
+                    <KeyboardArrowDownIcon />
+                  )}
+                </IconButton>
+                <Typography component="span">{activity.name}</Typography>
+              </Box>
+            </TableCell>
+            <TableCell align="right">
+              <Typography variant="caption">
+                {activity.performedAt.length === 0 ? (
+                  "never"
+                ) : (
+                  <Stopwatch
+                    date={activity.performedAt.at(-1)?.timestamp}
+                    suffix=" ago"
+                  />
+                )}
+              </Typography>
+            </TableCell>
+            <TableCell align="right">
+              <Typography variant="caption">
+                <Stopwatch date={activity.createdAt} />
+              </Typography>
+            </TableCell>
+            <TableCell align="right" sx={{ width: 170 }}>
+              <LoadingButton
+                loading={isRecordNowBtnLoading}
+                variant="contained"
+                sx={{ boxShadow: "none", textTransform: "none" }}
+                size="small"
+                onClick={() => handleRecordNow(activity)}
+              >
+                Record now
+              </LoadingButton>
+              {moreActionsMenuBtn}
+            </TableCell>
+          </TableRow>
+
+          <TableRow>
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+              <CollapsiblePart
+                openCollapsiblePart={openCollapsiblePart}
+                timestampsArr={activity.performedAt}
+              />
+            </TableCell>
+          </TableRow>
+        </>
       )}
 
       {view === "card" && (
@@ -146,10 +173,37 @@ const SingleActivity = (props: SingleActivityProps) => {
                 tracking since <Stopwatch date={activity.createdAt} />
               </Typography>
             </div>
-            <div style={{ display: "flex", alignItems: "start" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
+            >
               {moreActionsMenuBtn}
+
+              <IconButton
+                size="small"
+                sx={{
+                  ml: 0,
+                  height: "30px",
+                  width: "30px",
+                }}
+                onClick={() => setOpenCollapsiblePart((prev) => !prev)}
+              >
+                {openCollapsiblePart ? (
+                  <KeyboardArrowUpIcon />
+                ) : (
+                  <KeyboardArrowDownIcon />
+                )}
+              </IconButton>
             </div>
           </CardContent>
+
+          <CollapsiblePart
+            openCollapsiblePart={openCollapsiblePart}
+            timestampsArr={activity.performedAt}
+          />
 
           <CardActions>
             <LoadingButton
