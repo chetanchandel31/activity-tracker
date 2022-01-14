@@ -1,4 +1,5 @@
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import { SnackbarProps } from "@mui/material";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -17,20 +18,20 @@ import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import moment from "moment";
 import { useState } from "react";
+import { Helmet } from "react-helmet";
 import { useHistory } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { firestore } from "../../firebase/firebase";
 import useAuthListener from "../../hooks/useAuthListener";
 import useFirestore from "../../hooks/useFirestore";
-import { getDateStringFromMoment } from "../../utils";
-import CreateNewActivityDialog from "./CreateNewActivityDialog";
-import SingleActivity from "./SingleActivity/SingleActivity";
-import { SnackbarProps } from "@mui/material";
 import {
   ActivitiesList,
   Activity,
   DateSpeceficActivitiesList,
 } from "../../types";
+import { getDateStringFromMoment } from "../../utils";
+import CreateNewActivityDialog from "./CreateNewActivityDialog";
+import SingleActivity from "./SingleActivity/SingleActivity";
 
 interface ActivityManagerProps {
   handleOpenSnackbar: (snackbarProps: SnackbarProps) => void;
@@ -221,97 +222,103 @@ const ActivityManager = (props: ActivityManagerProps) => {
   const isActivitiesListNonEmpty = activitiesList && activitiesList.length > 0;
 
   return (
-    <Container sx={{ pb: theme.spacing(8.5) }}>
-      <Typography sx={{ mb: theme.spacing(3) }}>
-        Here is the list of activities you are currently tracking
-      </Typography>
+    <>
+      <Helmet>
+        <title>Activity Manager</title>
+      </Helmet>
 
-      {/* 1. loading state */}
-      {areActivitiesLoading && (
-        <div style={{ textAlign: "center" }}>
-          <CircularProgress sx={{ mt: theme.spacing(5) }} />
-        </div>
-      )}
+      <Container sx={{ pb: theme.spacing(8.5) }}>
+        <Typography sx={{ mb: theme.spacing(3) }}>
+          Here is the list of activities you are currently tracking
+        </Typography>
 
-      {/* 2. actual list */}
-      {isActivitiesListNonEmpty && (
-        <TableContainer sx={{ display: { xs: "none", sm: "block" } }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell width="421">
-                  <Typography sx={{ pl: theme.spacing(4) }}>
-                    <strong>Activity</strong>
-                  </Typography>
-                </TableCell>
-                <TableCell align="right">
-                  <Typography>
-                    <strong>Last performed</strong>
-                  </Typography>
-                </TableCell>
-                <TableCell align="right">
-                  <Typography>
-                    <strong>Tracking since</strong>
-                  </Typography>
-                </TableCell>
-                <TableCell></TableCell>
-              </TableRow>
-            </TableHead>
+        {/* 1. loading state */}
+        {areActivitiesLoading && (
+          <div style={{ textAlign: "center" }}>
+            <CircularProgress sx={{ mt: theme.spacing(5) }} />
+          </div>
+        )}
 
-            <TableBody>{activityTableRows}</TableBody>
-          </Table>
-        </TableContainer>
-      )}
+        {/* 2. actual list */}
+        {isActivitiesListNonEmpty && (
+          <TableContainer sx={{ display: { xs: "none", sm: "block" } }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell width="421">
+                    <Typography sx={{ pl: theme.spacing(4) }}>
+                      <strong>Activity</strong>
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography>
+                      <strong>Last performed</strong>
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography>
+                      <strong>Tracking since</strong>
+                    </Typography>
+                  </TableCell>
+                  <TableCell></TableCell>
+                </TableRow>
+              </TableHead>
 
-      {/* 3. empty state */}
-      {activitiesList?.length === 0 && <div>empty state</div>}
+              <TableBody>{activityTableRows}</TableBody>
+            </Table>
+          </TableContainer>
+        )}
 
-      {isActivitiesListNonEmpty && (
+        {/* 3. empty state */}
+        {activitiesList?.length === 0 && <div>empty state</div>}
+
+        {isActivitiesListNonEmpty && (
+          <Box
+            sx={{
+              // border: "solid 2px black"
+              display: { xs: "flex", sm: "none" },
+              flexDirection: "column",
+              gap: theme.spacing(1.5),
+            }}
+          >
+            {activityCards}
+          </Box>
+        )}
+
+        {/* TODO: virtualised list, transition and activity name character limit */}
+        {/* TODO: extra padding after last item to prevent fab overlapping */}
         <Box
           sx={{
-            // border: "solid 2px black"
-            display: { xs: "flex", sm: "none" },
-            flexDirection: "column",
-            gap: theme.spacing(1.5),
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            right: 0,
           }}
         >
-          {activityCards}
+          <Container sx={{ position: "relative" }}>
+            <Fab
+              color="primary"
+              aria-label="add"
+              sx={{
+                position: "absolute",
+                bottom: 16,
+                right: 16,
+                //   transition: "min-width 2s",
+                //   width: "135px",
+              }}
+              onClick={() => setIsCreateNewActivityDialogOpen(true)}
+            >
+              <AddRoundedIcon />
+            </Fab>
+          </Container>
         </Box>
-      )}
 
-      {/* TODO: virtualised list, transition and activity name character limit */}
-      {/* TODO: extra padding after last item to prevent fab overlapping */}
-      <Box
-        sx={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-        }}
-      >
-        <Container sx={{ position: "relative" }}>
-          <Fab
-            color="primary"
-            aria-label="add"
-            sx={{
-              position: "absolute",
-              bottom: 16,
-              right: 16,
-              //   transition: "min-width 2s",
-              //   width: "135px",
-            }}
-            onClick={() => setIsCreateNewActivityDialogOpen(true)}
-          >
-            <AddRoundedIcon />
-          </Fab>
-        </Container>
-      </Box>
-
-      <CreateNewActivityDialog
-        open={isCreateNewActivityDialogOpen}
-        handleClose={() => setIsCreateNewActivityDialogOpen(false)}
-      />
-    </Container>
+        <CreateNewActivityDialog
+          open={isCreateNewActivityDialogOpen}
+          handleClose={() => setIsCreateNewActivityDialogOpen(false)}
+        />
+      </Container>
+    </>
   );
 };
 

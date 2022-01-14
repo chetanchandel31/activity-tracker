@@ -15,6 +15,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import moment from "moment";
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 import { useHistory, useParams } from "react-router-dom";
 // import useFirestoreDoc from "../../hooks/useFirestoreDoc";
 import { v4 as uuidv4 } from "uuid";
@@ -264,130 +265,142 @@ const DateManager = () => {
   };
 
   return (
-    <Container>
-      <Box
-        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
-      >
-        <IconButton size="small" onClick={handleVisitPrevDate}>
-          <NavigateBeforeRoundedIcon />
-        </IconButton>
-        <Typography
-          variant="h4"
+    <>
+      <Helmet>
+        <title>Date Manager</title>
+      </Helmet>
+
+      <Container>
+        <Box
           sx={{
-            textAlign: "center",
-            ...(!isDateValid ? { color: theme.palette.error.main } : {}),
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          {selectedDate?.toDate()?.toDateString() || "Invalid Date"}
-        </Typography>
-        <IconButton
-          size="small"
-          onClick={handleVisitNextDate}
-          disabled={isSelectedDateSameAsCurrentDate}
-        >
-          <NavigateNextRoundedIcon />
-        </IconButton>
-      </Box>
-
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
-          justifyContent: "space-between",
-          mt: theme.spacing(4),
-          alignItems: "flex-start",
-          gap: theme.spacing(2),
-        }}
-      >
-        <LocalizationProvider dateAdapter={DateAdapter}>
-          <DatePicker
-            label="Select Date"
-            value={selectedDate}
-            onChange={(value) => {
-              if (value !== null)
-                history.push(`/date-manager/${getDateStringFromMoment(value)}`);
+          <IconButton size="small" onClick={handleVisitPrevDate}>
+            <NavigateBeforeRoundedIcon />
+          </IconButton>
+          <Typography
+            variant="h4"
+            sx={{
+              textAlign: "center",
+              ...(!isDateValid ? { color: theme.palette.error.main } : {}),
             }}
-            disableFuture
-            renderInput={(params) => (
-              <TextField
-                size="small"
-                {...params}
-                error={
-                  selectedDate?.toDate()?.toDateString() === "Invalid Date" ||
-                  !selectedDate
-                }
-                // helperText={params?.inputProps?.placeholder}
-                sx={{ width: { xs: "100%", sm: 150 } }}
-              />
-            )}
-          />
-          {/* <TextField size="small" error={false} /> */}
-        </LocalizationProvider>
+          >
+            {selectedDate?.toDate()?.toDateString() || "Invalid Date"}
+          </Typography>
+          <IconButton
+            size="small"
+            onClick={handleVisitNextDate}
+            disabled={isSelectedDateSameAsCurrentDate}
+          >
+            <NavigateNextRoundedIcon />
+          </IconButton>
+        </Box>
 
         <Box
           sx={{
             display: "flex",
-            width: { xs: "100%", sm: "auto" },
+            flexDirection: { xs: "column", sm: "row" },
+            justifyContent: "space-between",
+            mt: theme.spacing(4),
+            alignItems: "flex-start",
+            gap: theme.spacing(2),
           }}
         >
-          <Autocomplete
-            {...defaultProps}
-            // value={selectedActivity}
-            onInputChange={(event, newInputValue) => {
-              setSelectedActivity(newInputValue);
-            }}
-            id="disable-close-on-select"
-            size="small"
-            sx={{
-              minWidth: 145,
-              flexGrow: { xs: 1, sm: 0 },
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Select Activity"
-                // helperText="ok"
-                // color="warning"
-                sx={{
-                  "& .MuiInputBase-root": {
-                    borderRadius: "4px 0 0 4px",
-                  },
-                }}
-              />
-            )}
-          />
+          <LocalizationProvider dateAdapter={DateAdapter}>
+            <DatePicker
+              label="Select Date"
+              value={selectedDate}
+              onChange={(value) => {
+                if (value !== null)
+                  history.push(
+                    `/date-manager/${getDateStringFromMoment(value)}`
+                  );
+              }}
+              disableFuture
+              renderInput={(params) => (
+                <TextField
+                  size="small"
+                  {...params}
+                  error={
+                    selectedDate?.toDate()?.toDateString() === "Invalid Date" ||
+                    !selectedDate
+                  }
+                  // helperText={params?.inputProps?.placeholder}
+                  sx={{ width: { xs: "100%", sm: 150 } }}
+                />
+              )}
+            />
+            {/* <TextField size="small" error={false} /> */}
+          </LocalizationProvider>
 
-          <Button
-            variant="contained"
-            size="small"
+          <Box
             sx={{
-              boxShadow: "none",
-              textTransform: "none",
-              height: "40px",
-              minWidth: "40px",
-              maxWidth: "40px",
-              borderRadius: "0 4px 4px 0",
+              display: "flex",
+              width: { xs: "100%", sm: "auto" },
             }}
-            disabled={isAddActivityBtnDisabled()}
-            onClick={addActivityToDate}
           >
-            <AddRoundedIcon />
-          </Button>
+            <Autocomplete
+              {...defaultProps}
+              // value={selectedActivity}
+              onInputChange={(event, newInputValue) => {
+                setSelectedActivity(newInputValue);
+              }}
+              id="disable-close-on-select"
+              size="small"
+              sx={{
+                minWidth: 145,
+                flexGrow: { xs: 1, sm: 0 },
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Select Activity"
+                  // helperText="ok"
+                  // color="warning"
+                  sx={{
+                    "& .MuiInputBase-root": {
+                      borderRadius: "4px 0 0 4px",
+                    },
+                  }}
+                />
+              )}
+            />
+
+            <Button
+              variant="contained"
+              size="small"
+              sx={{
+                boxShadow: "none",
+                textTransform: "none",
+                height: "40px",
+                minWidth: "40px",
+                maxWidth: "40px",
+                borderRadius: "0 4px 4px 0",
+              }}
+              disabled={isAddActivityBtnDisabled()}
+              onClick={addActivityToDate}
+            >
+              <AddRoundedIcon />
+            </Button>
+          </Box>
         </Box>
-      </Box>
 
-      <Divider sx={{ m: theme.spacing(3, 0) }} />
+        <Divider sx={{ m: theme.spacing(3, 0) }} />
 
-      <DateSpecificActivitiesList
-        isDateSpecificActivitiesListLoading={
-          isDateSpecificActivitiesListLoading
-        }
-        dateSpecificActivitiesList={dateSpecificActivitiesList}
-        updateFrequency={updateFrequency}
-        deleteActivityFromDate={deleteActivityFromDate}
-        activitiesList={activitiesList}
-      />
-    </Container>
+        <DateSpecificActivitiesList
+          isDateSpecificActivitiesListLoading={
+            isDateSpecificActivitiesListLoading
+          }
+          dateSpecificActivitiesList={dateSpecificActivitiesList}
+          updateFrequency={updateFrequency}
+          deleteActivityFromDate={deleteActivityFromDate}
+          activitiesList={activitiesList}
+        />
+      </Container>
+    </>
   );
 };
 
