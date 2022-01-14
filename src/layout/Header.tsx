@@ -17,17 +17,21 @@ import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import Zoom from "@mui/material/Zoom";
-import { useState } from "react";
+import moment from "moment";
+import React, { useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { auth } from "../firebase/firebase";
+import { getDateStringFromMoment } from "../utils";
 
 const Header = () => {
   const theme = useTheme();
 
   // popover start
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const handleUserAvatarClick = (event) => {
+  const handleUserAvatarClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -49,13 +53,13 @@ const Header = () => {
     },
     {
       name: "Date Manager",
-      pathName: "/date-manager",
+      pathName: `/date-manager`,
     },
     {
       name: "Charts",
       pathName: "/charts",
     },
-  ];
+  ] as const;
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -64,10 +68,19 @@ const Header = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  const navigateTo = (path) => history.push(`${path}`);
-  const isSelected = (path) => path === pathname;
+  const paths = navItems.map((el) => el.pathName);
+  type Path = typeof paths[number];
 
-  const renderIcon = (navItem, isSelected) => {
+  const navigateTo = (path: Path) => {
+    if (path === "/date-manager")
+      history.push(`/date-manager/${getDateStringFromMoment(moment())}`);
+    else history.push(`${path}`);
+  };
+  const isSelected = (path: Path) => pathname.includes(path);
+
+  type NavItem = typeof navItems[number];
+
+  const renderIcon = (navItem: NavItem, isSelected: boolean) => {
     let icon;
     const color = isSelected
       ? theme.palette.primary.main
@@ -176,7 +189,12 @@ const Header = () => {
               ml: { sm: theme.spacing(7) },
             }}
           >
-            {navItems.find((el) => el.pathName === pathname)?.name}
+            {
+              navItems.find((el) => {
+                console.log(el.pathName, pathname);
+                return pathname.includes(el.pathName);
+              })?.name
+            }
           </Typography>
 
           <Box sx={{ display: { xs: "none", sm: "block" } }}>

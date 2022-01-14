@@ -54,7 +54,7 @@ function App() {
             />
           </ProtectedRoute>
           <ProtectedRoute
-            path="/date-manager"
+            path="/date-manager/:date"
             condition={user}
             redirectPath="/login"
           >

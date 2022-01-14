@@ -1,4 +1,6 @@
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import NavigateBeforeRoundedIcon from "@mui/icons-material/NavigateBeforeRounded";
+import NavigateNextRoundedIcon from "@mui/icons-material/NavigateNextRounded";
 import DateAdapter from "@mui/lab/AdapterMoment";
 import DatePicker from "@mui/lab/DatePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
@@ -7,11 +9,13 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
 import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import moment from "moment";
 import { useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
 // import useFirestoreDoc from "../../hooks/useFirestoreDoc";
 import { v4 as uuidv4 } from "uuid";
 import { firestore } from "../../firebase/firebase";
@@ -32,15 +36,13 @@ const DateManager = () => {
   // TODO: create new activity right from here, mui autocomplete > createable. use same dialog component
   // TODO: seperate out helper functions? currently can't copy paste/reuse
   const theme = useTheme();
-
-  const [selectedDate, setSelectedDate] = useState(moment());
-  const [selectedActivity, setSelectedActivity] = useState("");
-  const selectedDateString = getDateStringFromMoment(selectedDate);
-
   const [user] = useAuthListener();
-  const { docs: activitiesList }: ActivitiesList = useFirestore(
-    `users/${user.uid}/activities`
-  );
+  const history = useHistory();
+  const { date: selectedDateString } = useParams<{ date: string }>();
+
+  const selectedDate = moment(selectedDateString);
+  const [selectedActivity, setSelectedActivity] = useState("");
+
   const activitiesCollectionRef = firestore.collection(
     `users/${user.uid}/activities`
   );
@@ -48,18 +50,9 @@ const DateManager = () => {
     `users/${user.uid}/dates/${selectedDateString}/date-specific-activities`
   );
 
-  // const { doc: selectedDateActivitiesList } = useFirestoreDoc(
-  //   `users/${user.uid}/dates`,
-  //   selectedDate.toDate().toLocaleDateString().replaceAll("/", "-")
-  // );
-
-  // console.log(
-  //   selectedDateActivitiesList?.ref
-  //     ?.get()
-  //     .then((res) => console.log(res.data(), "res")),
-  //   "selectedDateActivitiesList"
-  // );
-
+  const { docs: activitiesList }: ActivitiesList = useFirestore(
+    `users/${user.uid}/activities`
+  );
   const { docs: dateSpecificActivitiesList }: DateSpeceficActivitiesList =
     useFirestore(
       `users/${user.uid}/dates/${selectedDateString}/date-specific-activities`
@@ -76,11 +69,12 @@ const DateManager = () => {
     });
   });
 
+  const isSelectedDateSameAsCurrentDate =
+    selectedDate.toDate().toLocaleDateString() ===
+    moment().toDate().toLocaleDateString();
+
   const getAppropriateTimestamp = () => {
     // can't use now() as timestamp if activity is being added to a past date, hence all this
-    const isSelectedDateSameAsCurrentDate =
-      selectedDate.toDate().toLocaleDateString() ===
-      moment().toDate().toLocaleDateString();
 
     const selectedDateString = getDateStringFromMoment(selectedDate); //"22/2/2222"
     console.log(selectedDateString, "selected date string");
@@ -107,16 +101,6 @@ const DateManager = () => {
         !timestampsToBeFilteredArr.find((x) => x.timestampId === el.timestampId)
     );
   };
-
-  console.log(
-    dateSpecificActivitiesList,
-    "dateSpecificActivitiesList",
-    `users/${user.uid}/dates/${getDateStringFromMoment(
-      selectedDate
-    )}/date-specific-activities`
-  );
-
-  console.log(getDateStringFromMoment(selectedDate), "selected date");
 
   //whenever frequency gets updated in any way, two places have to be updated:
   // 1. performedAt in "activities" collection 2. performedAt in "date-specific-activities" collection
@@ -270,17 +254,41 @@ const DateManager = () => {
     getOptionLabel: (option: any) => option.name || "", // TODO: fix type
   };
 
+  const handleVisitPrevDate = () => {
+    const prevDate = selectedDate.subtract(1, "day");
+    history.push(`/date-manager/${getDateStringFromMoment(prevDate)}`);
+  };
+  const handleVisitNextDate = () => {
+    const nextDate = selectedDate.add(1, "day");
+    history.push(`/date-manager/${getDateStringFromMoment(nextDate)}`);
+  };
+
   return (
     <Container>
-      <Typography
-        variant="h4"
-        sx={{
-          textAlign: "center",
-          ...(!isDateValid ? { color: theme.palette.error.main } : {}),
-        }}
+      <Box
+        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
       >
-        {selectedDate?.toDate()?.toDateString() || "Invalid Date"}
-      </Typography>
+        <IconButton size="small" onClick={handleVisitPrevDate}>
+          <NavigateBeforeRoundedIcon />
+        </IconButton>
+        <Typography
+          variant="h4"
+          sx={{
+            textAlign: "center",
+            ...(!isDateValid ? { color: theme.palette.error.main } : {}),
+          }}
+        >
+          {selectedDate?.toDate()?.toDateString() || "Invalid Date"}
+        </Typography>
+        <IconButton
+          size="small"
+          onClick={handleVisitNextDate}
+          disabled={isSelectedDateSameAsCurrentDate}
+        >
+          <NavigateNextRoundedIcon />
+        </IconButton>
+      </Box>
+
       <Box
         sx={{
           display: "flex",
@@ -296,7 +304,8 @@ const DateManager = () => {
             label="Select Date"
             value={selectedDate}
             onChange={(value) => {
-              if (value !== null) setSelectedDate(value);
+              if (value !== null)
+                history.push(`/date-manager/${getDateStringFromMoment(value)}`);
             }}
             disableFuture
             renderInput={(params) => (
