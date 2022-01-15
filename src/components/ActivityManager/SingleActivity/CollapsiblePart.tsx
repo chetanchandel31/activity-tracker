@@ -11,7 +11,9 @@ import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import moment from "moment";
 import { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { Timestamp } from "../../../types";
+import { getDateStringFromMoment } from "../../../utils";
 
 interface CollapsiblePartProps {
   timestampsArr: Timestamp[];
@@ -20,6 +22,8 @@ interface CollapsiblePartProps {
 
 const CollapsiblePart = (props: CollapsiblePartProps) => {
   const { timestampsArr, openCollapsiblePart } = props;
+
+  const history = useHistory();
 
   const theme = useTheme();
   const isSmUp = useMediaQuery(theme.breakpoints.up("sm"));
@@ -53,8 +57,13 @@ const CollapsiblePart = (props: CollapsiblePartProps) => {
       activityHistoryItems.push(
         <ListItem disablePadding key={el.timestampId}>
           <ListItemButton
-            component="a"
-            href="#simple-list"
+            onClick={() =>
+              history.push(
+                `./date-manager/${getDateStringFromMoment(
+                  moment.unix(el.timestamp)
+                )}`
+              )
+            }
             sx={{
               padding: theme.spacing(0, 0, 0, 1),
               ml: theme.spacing(0),

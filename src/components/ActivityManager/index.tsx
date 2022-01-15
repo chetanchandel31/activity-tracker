@@ -61,8 +61,6 @@ const ActivityManager = (props: ActivityManagerProps) => {
 
   const areActivitiesLoading = activitiesList === null;
 
-  console.log(activitiesList);
-
   const activitiesCollectionRef = firestore.collection(
     `users/${user.uid}/activities`
   );
@@ -116,7 +114,9 @@ const ActivityManager = (props: ActivityManagerProps) => {
           <Button
             color="success"
             onClick={() => {
-              history.push("./date-manager");
+              history.push(
+                `./date-manager/${getDateStringFromMoment(moment())}`
+              );
               handleCloseSnackbar();
             }}
           >

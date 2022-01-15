@@ -27,10 +27,9 @@ import { getDateStringFromMoment } from "../utils";
 
 const Header = () => {
   const theme = useTheme();
-
   const trigger = useScrollTrigger({ threshold: 0, disableHysteresis: true });
 
-  // popover start
+  // profile popover
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleUserAvatarClick = (
@@ -44,10 +43,9 @@ const Header = () => {
   };
 
   const openProfilePopover = Boolean(anchorEl);
-  //popover end
 
+  // navigation
   const history = useHistory();
-
   const { pathname } = useLocation();
 
   const navItems = [
@@ -64,13 +62,6 @@ const Header = () => {
       pathName: "/charts",
     },
   ] as const;
-
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  const drawerWidth = 260;
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
 
   const paths = navItems.map((el) => el.pathName);
   type Path = typeof paths[number];
@@ -117,6 +108,14 @@ const Header = () => {
     }
 
     return icon;
+  };
+
+  // mobile drawer
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const drawerWidth = 260;
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
   };
 
   const drawer = (
