@@ -1,5 +1,7 @@
+import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
 import Box from "@mui/material/Box";
 import Collapse from "@mui/material/Collapse";
+import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -8,6 +10,7 @@ import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import moment from "moment";
+import { useState } from "react";
 import { Timestamp } from "../../../types";
 
 interface CollapsiblePartProps {
@@ -21,41 +24,49 @@ const CollapsiblePart = (props: CollapsiblePartProps) => {
   const theme = useTheme();
   const isSmUp = useMediaQuery(theme.breakpoints.up("sm"));
 
+  const [isEarliestFirst, setIsEarliestFirst] = useState(true);
+
+  // history list items
   const activityHistoryItems: JSX.Element[] = [];
 
-  timestampsArr.forEach((el, i, currentArr) => {
-    const doShowBottomMargin =
-      currentArr[i + 1] &&
-      moment
-        .unix(currentArr[i + 1].timestamp)
+  timestampsArr
+    .sort((a, b) => {
+      if (isEarliestFirst) return a.timestamp - b.timestamp;
+      else return b.timestamp - a.timestamp;
+    })
+    .forEach((el, i, currentArr) => {
+      const doShowBottomMargin =
+        currentArr[i + 1] &&
+        moment
+          .unix(currentArr[i + 1].timestamp)
+          .toDate()
+          .toDateString() !== moment.unix(el.timestamp).toDate().toDateString();
+
+      const readableTimestamp = `- ${moment
+        .unix(el.timestamp)
         .toDate()
-        .toDateString() !== moment.unix(el.timestamp).toDate().toDateString();
+        .toDateString()}, ${moment
+        .unix(el.timestamp)
+        .toDate()
+        .toLocaleTimeString()}`;
 
-    const readableTimestamp = `- ${moment
-      .unix(el.timestamp)
-      .toDate()
-      .toDateString()}, ${moment
-      .unix(el.timestamp)
-      .toDate()
-      .toLocaleTimeString()}`;
-
-    activityHistoryItems.push(
-      <ListItem disablePadding key={el.timestampId}>
-        <ListItemButton
-          component="a"
-          href="#simple-list"
-          sx={{
-            padding: theme.spacing(0, 0, 0, 1),
-            ml: theme.spacing(0),
-            ...(doShowBottomMargin ? { mb: theme.spacing(2) } : {}),
-            borderRadius: theme.spacing(1),
-          }}
-        >
-          <ListItemText secondary={readableTimestamp} />
-        </ListItemButton>
-      </ListItem>
-    );
-  });
+      activityHistoryItems.push(
+        <ListItem disablePadding key={el.timestampId}>
+          <ListItemButton
+            component="a"
+            href="#simple-list"
+            sx={{
+              padding: theme.spacing(0, 0, 0, 1),
+              ml: theme.spacing(0),
+              ...(doShowBottomMargin ? { mb: theme.spacing(2) } : {}),
+              borderRadius: theme.spacing(1),
+            }}
+          >
+            <ListItemText secondary={readableTimestamp} />
+          </ListItemButton>
+        </ListItem>
+      );
+    });
 
   return (
     <>
@@ -67,6 +78,23 @@ const CollapsiblePart = (props: CollapsiblePartProps) => {
             component="div"
           >
             History
+            <IconButton
+              size="small"
+              onClick={() => setIsEarliestFirst((prev) => !prev)}
+            >
+              <ArrowDownwardRoundedIcon
+                sx={{
+                  height: "15px",
+                  width: "15px",
+                  transform: isEarliestFirst
+                    ? "rotate(0deg)"
+                    : "rotate(180deg)",
+                  transition: theme.transitions.create("transform", {
+                    duration: theme.transitions.duration.complex,
+                  }),
+                }}
+              />
+            </IconButton>
           </Typography>
           <List
             disablePadding
@@ -78,7 +106,6 @@ const CollapsiblePart = (props: CollapsiblePartProps) => {
                     "&::-webkit-scrollbar": {
                       width: "5px",
                       height: "8px",
-                      // backgroundColor: "#2e3338",
                     },
                     "&::-webkit-scrollbar-thumb": {
                       background: theme.palette.text.disabled,

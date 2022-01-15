@@ -1,5 +1,6 @@
 import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Box from "@mui/material/Box";
@@ -21,8 +22,6 @@ import Zoom from "@mui/material/Zoom";
 import React, { useState } from "react";
 import { Activity } from "../../../types";
 import Stopwatch from "../../Stopwatch";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import CollapsiblePart from "./CollapsiblePart";
 
 interface SingleActivityProps {
@@ -42,10 +41,9 @@ const SingleActivity = (props: SingleActivityProps) => {
     view,
   } = props;
 
-  console.log(activity, "activity");
-
   const theme = useTheme();
 
+  // more-actions menu
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null);
   const menuOpen = Boolean(menuAnchorEl);
   const handleMenuBtnClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -68,6 +66,7 @@ const SingleActivity = (props: SingleActivityProps) => {
     </Tooltip>
   );
 
+  // expand icon
   const [openCollapsiblePart, setOpenCollapsiblePart] = useState(false); // TODO: better naming
 
   return (
@@ -78,7 +77,6 @@ const SingleActivity = (props: SingleActivityProps) => {
             <TableCell>
               <Box
                 sx={{
-                  // border: "solid 2px blue",
                   display: "flex",
                   alignItems: "center",
                   gap: theme.spacing(1),
@@ -89,11 +87,16 @@ const SingleActivity = (props: SingleActivityProps) => {
                   sx={{ ml: 0 }}
                   onClick={() => setOpenCollapsiblePart((prev) => !prev)}
                 >
-                  {openCollapsiblePart ? (
-                    <KeyboardArrowUpIcon />
-                  ) : (
-                    <KeyboardArrowDownIcon />
-                  )}
+                  <KeyboardArrowDownIcon
+                    sx={{
+                      transform: !openCollapsiblePart
+                        ? "rotate(0deg)"
+                        : "rotate(-180deg)",
+                      transition: theme.transitions.create("transform", {
+                        duration: theme.transitions.duration.complex,
+                      }),
+                    }}
+                  />
                 </IconButton>
                 <Typography component="span">{activity.name}</Typography>
               </Box>
@@ -191,11 +194,16 @@ const SingleActivity = (props: SingleActivityProps) => {
                 }}
                 onClick={() => setOpenCollapsiblePart((prev) => !prev)}
               >
-                {openCollapsiblePart ? (
-                  <KeyboardArrowUpIcon />
-                ) : (
-                  <KeyboardArrowDownIcon />
-                )}
+                <KeyboardArrowDownIcon
+                  sx={{
+                    transform: !openCollapsiblePart
+                      ? "rotate(0deg)"
+                      : "rotate(180deg)",
+                    transition: theme.transitions.create("transform", {
+                      duration: theme.transitions.duration.complex,
+                    }),
+                  }}
+                />
               </IconButton>
             </div>
           </CardContent>
