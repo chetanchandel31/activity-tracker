@@ -1,4 +1,11 @@
 import { Moment } from "moment";
+import {
+  ActivitiesList,
+  Activity,
+  DateSpeceficActivitiesList,
+  DateSpeceficActivity,
+} from "types";
+import { firestore } from "../firebase/firebase";
 
 /**
  * substitute for moment().toDate().toLocaleDateString() to prevent inconsistent date string issue
@@ -21,3 +28,53 @@ export const getDateStringFromMoment = (momentObj: Moment) => {
     })
     .join("-");
 };
+
+/**
+ * get list of dates between any 2 dates
+ *
+ * @param startDate - start date
+ * @param endDate - end date
+ * @returns list of dates between 2 dates
+ *
+ */
+export const getDaysBetween2Dates = (startDate: Moment, endDate: Moment) => {
+  const now = startDate.clone();
+  const dates = [];
+
+  while (now.isSameOrBefore(endDate)) {
+    dates.push(getDateStringFromMoment(now));
+    now.add(1, "days");
+  }
+  return dates;
+};
+
+/**
+ * get list of dates between any 2 dates
+ *
+ * @param collectionRef - firestore collection path. e.g. "users/uid/todos"
+ * @returns all firestore docs in that collection
+ *
+ */
+export const getAllFirestoreDocs = async (collection: string) => {
+  const docs: any = [];
+
+  await firestore
+    .collection(collection)
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        // console.log(doc.id, " => ", doc.data());
+        docs.push({ ...doc.data(), id: doc.id });
+      });
+    });
+
+  return docs;
+};
+
+type ActivityObj = Activity | DateSpeceficActivity;
+
+export const findActivityById = (list: ActivityObj[], id: string) =>
+  list.find((el) => el.id === id);
+
+export const findActivityByName = (list: Activity[] | null, name: string) =>
+  list?.find((el) => el.name === name);

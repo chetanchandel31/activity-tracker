@@ -19,9 +19,9 @@ import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import Zoom from "@mui/material/Zoom";
+import Stopwatch from "components/Stopwatch";
 import React, { useState } from "react";
-import { Activity } from "../../../types";
-import Stopwatch from "../../Stopwatch";
+import { Activity } from "types";
 import CollapsiblePart from "./CollapsiblePart";
 
 interface SingleActivityProps {
@@ -176,8 +176,8 @@ const SingleActivity = (props: SingleActivityProps) => {
                 tracking since <Stopwatch date={activity.createdAt} />
               </Typography>
             </div>
-            <div
-              style={{
+            <Box
+              sx={{
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
@@ -205,7 +205,7 @@ const SingleActivity = (props: SingleActivityProps) => {
                   }}
                 />
               </IconButton>
-            </div>
+            </Box>
           </CardContent>
 
           <CollapsiblePart
@@ -237,7 +237,6 @@ const SingleActivity = (props: SingleActivityProps) => {
         MenuListProps={{
           "aria-labelledby": "basic-button",
         }}
-        //
         elevation={4}
         anchorOrigin={{
           vertical: "bottom",

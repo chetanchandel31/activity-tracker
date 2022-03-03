@@ -17,7 +17,6 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useHistory, useParams } from "react-router-dom";
-// import useFirestoreDoc from "../../hooks/useFirestoreDoc";
 import { v4 as uuidv4 } from "uuid";
 import { firestore } from "../../firebase/firebase";
 import useAuthListener from "../../hooks/useAuthListener";
@@ -78,7 +77,6 @@ const DateManager = () => {
     // can't use now() as timestamp if activity is being added to a past date, hence all this
 
     const selectedDateString = getDateStringFromMoment(selectedDate); //"22/2/2222"
-    console.log(selectedDateString, "selected date string");
 
     if (isSelectedDateSameAsCurrentDate)
       return { timestamp: moment().unix(), timestampId: `t-${uuidv4()}` };

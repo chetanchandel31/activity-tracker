@@ -12,8 +12,8 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import moment from "moment";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { Timestamp } from "../../../types";
-import { getDateStringFromMoment } from "../../../utils";
+import { Timestamp } from "types";
+import { getDateStringFromMoment } from "utils";
 
 interface CollapsiblePartProps {
   timestampsArr: Timestamp[];
