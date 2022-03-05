@@ -27,3 +27,8 @@ export interface ActivitiesList {
 export interface DateSpeceficActivitiesList {
   docs: DateSpeceficActivity[] | null;
 }
+
+export interface GraphData {
+  xAxisData: string[];
+  yAxisData: number[];
+}
