@@ -4,12 +4,12 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
+import { firestore } from "firebase-config/firebase";
+import useAuthListener from "hooks/useAuthListener";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { firestore } from "../../firebase/firebase";
-import useAuthListener from "../../hooks/useAuthListener";
-import { useTheme } from "@mui/material/styles";
 
 const CreateNewActivityDialog = ({ open, handleClose }) => {
   const theme = useTheme();

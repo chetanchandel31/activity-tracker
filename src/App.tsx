@@ -18,8 +18,8 @@ function App() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleCloseSnackbar = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
+    _event?: React.SyntheticEvent | Event,
+    _reason?: string
   ) => {
     setOpenSnackbar(false);
 
@@ -45,7 +45,7 @@ function App() {
         <Switch>
           <ProtectedRoute
             path="/activity-manager"
-            condition={user}
+            condition={!!user}
             redirectPath="/login"
           >
             <ActivityManager
@@ -55,12 +55,16 @@ function App() {
           </ProtectedRoute>
           <ProtectedRoute
             path="/date-manager/:date"
-            condition={user}
+            condition={!!user}
             redirectPath="/login"
           >
             <DateManager />
           </ProtectedRoute>
-          <ProtectedRoute path="/charts" condition={user} redirectPath="/login">
+          <ProtectedRoute
+            path="/charts"
+            condition={!!user}
+            redirectPath="/login"
+          >
             <Charts />
           </ProtectedRoute>
           <ProtectedRoute

@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { firestore } from "../firebase/firebase";
 import firebase from "firebase";
+import { firestore } from "firebase-config/firebase";
+import { useEffect, useState } from "react";
 
 const useFirestore = (collection: string) => {
   // type Doc =

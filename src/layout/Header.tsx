@@ -19,11 +19,11 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 import Zoom from "@mui/material/Zoom";
+import { auth } from "firebase-config/firebase";
 import moment from "moment";
 import React, { useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-import { auth } from "../firebase/firebase";
-import { getDateStringFromMoment } from "../utils";
+import { getDateStringFromMoment } from "utils";
 
 const Header = () => {
   const theme = useTheme();

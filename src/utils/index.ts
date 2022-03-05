@@ -1,11 +1,6 @@
+import { firestore } from "firebase-config/firebase";
 import { Moment } from "moment";
-import {
-  ActivitiesList,
-  Activity,
-  DateSpeceficActivitiesList,
-  DateSpeceficActivity,
-} from "types";
-import { firestore } from "../firebase/firebase";
+import { Activity, DateSpeceficActivity } from "types";
 
 /**
  * substitute for moment().toDate().toLocaleDateString() to prevent inconsistent date string issue
@@ -49,9 +44,9 @@ export const getDaysBetween2Dates = (startDate: Moment, endDate: Moment) => {
 };
 
 /**
- * get list of dates between any 2 dates
+ * get firestore docs without subscribing to live changes in a firestore collection
  *
- * @param collectionRef - firestore collection path. e.g. "users/uid/todos"
+ * @param collection - firestore collection path. e.g. "users/uid/todos"
  * @returns all firestore docs in that collection
  *
  */
@@ -63,7 +58,6 @@ export const getAllFirestoreDocs = async (collection: string) => {
     .get()
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        // console.log(doc.id, " => ", doc.data());
         docs.push({ ...doc.data(), id: doc.id });
       });
     });

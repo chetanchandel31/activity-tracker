@@ -6,15 +6,9 @@ import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import useAuthListener from "hooks/useAuthListener";
 import useFirestore from "hooks/useFirestore";
-import moment from "moment";
 import { useState } from "react";
 import { Helmet } from "react-helmet";
-import { ActivitiesList, DateSpeceficActivity } from "types";
-import {
-  findActivityByName,
-  getAllFirestoreDocs,
-  getDaysBetween2Dates,
-} from "utils";
+import { ActivitiesList } from "types";
 
 const LAST_7_DAYS = "last 7 days";
 const THIS_WEEK = "this week";
@@ -29,7 +23,7 @@ const Charts = () => {
   };
 
   const { docs: activitiesList }: ActivitiesList = useFirestore(
-    `users/${user.uid}/activities`
+    `users/${user?.uid}/activities`
   );
 
   const defaultProps = {
@@ -37,27 +31,6 @@ const Charts = () => {
     options: activitiesList || [],
     getOptionLabel: (option: any) => option.name || "", // TODO: fix type
   };
-
-  const dates = getDaysBetween2Dates(moment().subtract(6, "days"), moment());
-
-  (async function (id) {
-    const mapDatesToActivities: { [date: string]: DateSpeceficActivity[] } = {};
-
-    for (let date of dates) {
-      const x: DateSpeceficActivity[] = await getAllFirestoreDocs(
-        `users/${user.uid}/dates/${date}/date-specific-activities`
-      );
-      console.log(x, "x");
-
-      mapDatesToActivities[date] = x.filter(
-        (activity) =>
-          activity.id ===
-          findActivityByName(activitiesList, selectedActivity)?.id
-      );
-    }
-
-    console.log(mapDatesToActivities, "yooo");
-  })();
 
   return (
     <>

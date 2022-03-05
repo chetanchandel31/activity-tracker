@@ -16,20 +16,16 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { firestore } from "firebase-config/firebase";
+import useAuthListener from "hooks/useAuthListener";
+import useFirestore from "hooks/useFirestore";
 import moment from "moment";
 import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { useHistory } from "react-router-dom";
+import { ActivitiesList, Activity, DateSpeceficActivitiesList } from "types";
+import { getDateStringFromMoment } from "utils";
 import { v4 as uuidv4 } from "uuid";
-import { firestore } from "../../firebase/firebase";
-import useAuthListener from "../../hooks/useAuthListener";
-import useFirestore from "../../hooks/useFirestore";
-import {
-  ActivitiesList,
-  Activity,
-  DateSpeceficActivitiesList,
-} from "../../types";
-import { getDateStringFromMoment } from "../../utils";
 import CreateNewActivityDialog from "./CreateNewActivityDialog";
 import SingleActivity from "./SingleActivity/SingleActivity";
 
@@ -56,24 +52,24 @@ const ActivityManager = (props: ActivityManagerProps) => {
   const isSmDown = useMediaQuery(theme.breakpoints.down("sm"));
 
   const { docs: activitiesList }: ActivitiesList = useFirestore(
-    `users/${user.uid}/activities`
+    `users/${user?.uid}/activities`
   );
 
   const areActivitiesLoading = activitiesList === null;
 
   const activitiesCollectionRef = firestore.collection(
-    `users/${user.uid}/activities`
+    `users/${user?.uid}/activities`
   );
 
   const currentDateString = getDateStringFromMoment(moment());
 
   const dateSpecificActivitiesCollectionRef = firestore.collection(
-    `users/${user.uid}/dates/${currentDateString}/date-specific-activities`
+    `users/${user?.uid}/dates/${currentDateString}/date-specific-activities`
   );
 
   const { docs: dateSpecificActivitiesList }: DateSpeceficActivitiesList =
     useFirestore(
-      `users/${user.uid}/dates/${currentDateString}/date-specific-activities`
+      `users/${user?.uid}/dates/${currentDateString}/date-specific-activities`
     );
 
   const [isRecordNowBtnLoading, setIsRecordNowBtnLoading] = useState(false);
@@ -170,7 +166,7 @@ const ActivityManager = (props: ActivityManagerProps) => {
           activityId: activity.id,
           performedAt: [newTimestamp],
           activityRef: firestore
-            .collection(`users/${user.uid}/activities/`)
+            .collection(`users/${user?.uid}/activities/`)
             .doc(activity.id),
         });
         // activities-collection

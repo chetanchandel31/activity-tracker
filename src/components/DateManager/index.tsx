@@ -13,20 +13,16 @@ import IconButton from "@mui/material/IconButton";
 import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { firestore } from "firebase-config/firebase";
+import useAuthListener from "hooks/useAuthListener";
+import useFirestore from "hooks/useFirestore";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useHistory, useParams } from "react-router-dom";
+import { ActivitiesList, DateSpeceficActivitiesList, Timestamp } from "types";
+import { getDateStringFromMoment } from "utils";
 import { v4 as uuidv4 } from "uuid";
-import { firestore } from "../../firebase/firebase";
-import useAuthListener from "../../hooks/useAuthListener";
-import useFirestore from "../../hooks/useFirestore";
-import {
-  ActivitiesList,
-  DateSpeceficActivitiesList,
-  Timestamp,
-} from "../../types";
-import { getDateStringFromMoment } from "../../utils";
 import DateSpecificActivitiesList from "./DateSpeceficActivitiesList";
 
 const DateManager = () => {
@@ -44,18 +40,18 @@ const DateManager = () => {
   const [selectedActivity, setSelectedActivity] = useState("");
 
   const activitiesCollectionRef = firestore.collection(
-    `users/${user.uid}/activities`
+    `users/${user?.uid}/activities`
   );
   const dateSpecificActivitiesCollectionRef = firestore.collection(
-    `users/${user.uid}/dates/${selectedDateString}/date-specific-activities`
+    `users/${user?.uid}/dates/${selectedDateString}/date-specific-activities`
   );
 
   const { docs: activitiesList }: ActivitiesList = useFirestore(
-    `users/${user.uid}/activities`
+    `users/${user?.uid}/activities`
   );
   const { docs: dateSpecificActivitiesList }: DateSpeceficActivitiesList =
     useFirestore(
-      `users/${user.uid}/dates/${selectedDateString}/date-specific-activities`
+      `users/${user?.uid}/dates/${selectedDateString}/date-specific-activities`
     );
 
   useEffect(() => {
@@ -128,7 +124,7 @@ const DateManager = () => {
         activityId: activity.id,
         performedAt: [newTimestamp],
         activityRef: firestore
-          .collection(`users/${user.uid}/activities/`)
+          .collection(`users/${user?.uid}/activities/`)
           .doc(activity.id),
       })
       .then(() => console.log("added activity to date"));

@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import firebase, { auth } from "../../firebase/firebase";
 import { useTheme } from "@mui/material/styles";
+import firebase, { auth } from "firebase-config/firebase";
 
 const Login = () => {
   const theme = useTheme();
