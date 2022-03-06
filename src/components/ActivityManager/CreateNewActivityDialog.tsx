@@ -11,15 +11,23 @@ import useAuthListener from "hooks/useAuthListener";
 import moment from "moment";
 import { useEffect, useState } from "react";
 
-const CreateNewActivityDialog = ({ open, handleClose }) => {
+interface CreateNewActivityDialogProps {
+  open: boolean;
+  handleClose: () => void;
+}
+
+const CreateNewActivityDialog = ({
+  open,
+  handleClose,
+}: CreateNewActivityDialogProps) => {
   const theme = useTheme();
 
   const [user] = useAuthListener();
   const activitiesCollectionRef = firestore.collection(
-    `users/${user.uid}/activities`
+    `users/${user?.uid}/activities`
   );
 
-  // TODO : add notes (optional). placeholder: any additional info you'd like to attach with this activity
+  // TODO: add notes (optional). placeholder: any additional info you'd like to attach with this activity
   const [newActivityName, setNewActivityName] = useState("");
 
   const [error, setError] = useState("");
