@@ -2,18 +2,20 @@ import firebase from "firebase";
 import { auth } from "firebase-config/firebase";
 import { useEffect, useState } from "react";
 
+const AUTHENTICATED_USER = "authenticated-user";
+
 function useAuthListener() {
   const [storedUser, setStoredUser] = useState<firebase.User | null>(
-    JSON.parse(localStorage.getItem("authenticated-user") as string)
+    JSON.parse(localStorage.getItem(AUTHENTICATED_USER) as string)
   );
 
   useEffect(() => {
     const listener = auth.onAuthStateChanged((user) => {
       if (user) {
-        localStorage.setItem("authenticated-user", JSON.stringify(user));
+        localStorage.setItem(AUTHENTICATED_USER, JSON.stringify(user));
         setStoredUser(user);
       } else {
-        localStorage.removeItem("authenticated-user");
+        localStorage.removeItem(AUTHENTICATED_USER);
         setStoredUser(null);
       }
     });

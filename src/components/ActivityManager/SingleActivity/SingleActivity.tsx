@@ -22,6 +22,7 @@ import Zoom from "@mui/material/Zoom";
 import Stopwatch from "components/Stopwatch";
 import React, { useState } from "react";
 import { Activity } from "types";
+import { getFormattedDateForTooltip } from "utils";
 import CollapsiblePart from "./CollapsiblePart";
 
 interface SingleActivityProps {
@@ -102,21 +103,35 @@ const SingleActivity = (props: SingleActivityProps) => {
               </Box>
             </TableCell>
             <TableCell align="right">
-              <Typography variant="caption">
-                {activity.performedAt.length === 0 ? (
-                  "never"
-                ) : (
-                  <Stopwatch
-                    date={activity.performedAt.at(-1)?.timestamp}
-                    suffix=" ago"
-                  />
+              <Tooltip
+                TransitionComponent={Zoom}
+                title={getFormattedDateForTooltip(
+                  activity.performedAt.at(-1)?.timestamp
                 )}
-              </Typography>
+                sx={{ ml: theme.spacing(1) }}
+              >
+                <Typography variant="caption">
+                  {activity.performedAt.length === 0 ? (
+                    "never"
+                  ) : (
+                    <Stopwatch
+                      date={activity.performedAt.at(-1)?.timestamp}
+                      suffix=" ago"
+                    />
+                  )}
+                </Typography>
+              </Tooltip>
             </TableCell>
             <TableCell align="right">
-              <Typography variant="caption">
-                <Stopwatch date={activity.createdAt} />
-              </Typography>
+              <Tooltip
+                TransitionComponent={Zoom}
+                title={getFormattedDateForTooltip(activity.createdAt)}
+                sx={{ ml: theme.spacing(1) }}
+              >
+                <Typography variant="caption">
+                  <Stopwatch date={activity.createdAt} />
+                </Typography>
+              </Tooltip>
             </TableCell>
             <TableCell align="right" sx={{ width: 170 }}>
               <LoadingButton

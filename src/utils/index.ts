@@ -1,5 +1,5 @@
 import { firestore } from "firebase-config/firebase";
-import { Moment } from "moment";
+import moment, { Moment } from "moment";
 import { Activity, DateSpeceficActivity } from "types";
 
 /**
@@ -72,3 +72,6 @@ export const findActivityById = (list: ActivityObj[], id: string) =>
 
 export const findActivityByName = (list: Activity[] | null, name: string) =>
   list?.find((el) => el.name === name);
+
+export const getFormattedDateForTooltip = (timestamp?: number) =>
+  timestamp ? moment.unix(timestamp).format("LLL") : "";

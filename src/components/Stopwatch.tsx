@@ -23,7 +23,9 @@ const Stopwatch = ({ date, prefix = "", suffix = "" }: Props) => {
   useEffect(() => {
     if (date && moment().diff(moment.unix(date)) >= 0) {
       timeout.current = setTimeout(() => {
-        setDays(() => moment.duration(moment().diff(moment.unix(date))).days());
+        setDays(() =>
+          Math.floor(moment.duration(moment().diff(moment.unix(date))).asDays())
+        );
         setHours(() =>
           moment.duration(moment().diff(moment.unix(date))).hours()
         );
