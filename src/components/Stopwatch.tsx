@@ -23,18 +23,14 @@ const Stopwatch = ({ date, prefix = "", suffix = "" }: Props) => {
   useEffect(() => {
     if (date && moment().diff(moment.unix(date)) >= 0) {
       timeout.current = setTimeout(() => {
-        setDays(() =>
-          Math.floor(moment.duration(moment().diff(moment.unix(date))).asDays())
+        const durationDifferenceFromPresentMoment = moment.duration(
+          moment().diff(moment.unix(date))
         );
-        setHours(() =>
-          moment.duration(moment().diff(moment.unix(date))).hours()
-        );
-        setMinutes(() =>
-          moment.duration(moment().diff(moment.unix(date))).minutes()
-        );
-        setSeconds(() =>
-          moment.duration(moment().diff(moment.unix(date))).seconds()
-        );
+
+        setDays(Math.floor(durationDifferenceFromPresentMoment.asDays()));
+        setHours(durationDifferenceFromPresentMoment.hours());
+        setMinutes(durationDifferenceFromPresentMoment.minutes());
+        setSeconds(durationDifferenceFromPresentMoment.seconds());
       }, 1000);
 
       return undefined;

@@ -10,15 +10,18 @@ import { firestore } from "firebase-config/firebase";
 import useAuthListener from "hooks/useAuthListener";
 import moment from "moment";
 import { useEffect, useState } from "react";
+import { Activity } from "types";
 
 interface CreateNewActivityDialogProps {
+  activitiesList: Activity[] | null;
   open: boolean;
   handleClose: () => void;
 }
 
 const CreateNewActivityDialog = ({
-  open,
+  activitiesList,
   handleClose,
+  open,
 }: CreateNewActivityDialogProps) => {
   const theme = useTheme();
 
@@ -32,12 +35,19 @@ const CreateNewActivityDialog = ({
 
   const [error, setError] = useState("");
 
+  const existingActivitiesNames = activitiesList?.map(
+    (activity) => activity.name
+  );
+
   useEffect(() => {
     if (!newActivityName) setError("Activity name can't be empty");
     else if (newActivityName.length > 45)
       setError("Activity name must consist less than 45 characters");
+    else if (existingActivitiesNames?.includes(newActivityName))
+      setError("An activity by this name already exists");
     // TODO: maybe change later
     else setError("");
+    // eslint-disable-next-line
   }, [newActivityName]);
 
   const handleCreateNewActivity = async () => {
@@ -55,7 +65,6 @@ const CreateNewActivityDialog = ({
     } catch (err) {
       console.log(err);
     }
-    // TODO: add check for duplicate activity name
     // TODO: success or failure alert or snackbar
   };
 

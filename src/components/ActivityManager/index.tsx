@@ -310,8 +310,9 @@ const ActivityManager = (props: ActivityManagerProps) => {
         </Box>
 
         <CreateNewActivityDialog
-          open={isCreateNewActivityDialogOpen}
+          activitiesList={activitiesList}
           handleClose={() => setIsCreateNewActivityDialogOpen(false)}
+          open={isCreateNewActivityDialogOpen}
         />
       </Container>
     </>
