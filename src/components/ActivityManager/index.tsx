@@ -1,5 +1,4 @@
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import { SnackbarProps } from "@mui/material";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -16,6 +15,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { useSnackbar } from "contexts/snackbar-context";
 import { firestore } from "firebase-config/firebase";
 import useAuthListener from "hooks/useAuthListener";
 import useFirestore from "hooks/useFirestore";
@@ -29,21 +29,13 @@ import { v4 as uuidv4 } from "uuid";
 import CreateNewActivityDialog from "./CreateNewActivityDialog";
 import SingleActivity from "./SingleActivity/SingleActivity";
 
-interface ActivityManagerProps {
-  handleOpenSnackbar: (snackbarProps: SnackbarProps) => void;
-  handleCloseSnackbar: (
-    event?: React.SyntheticEvent | Event,
-    reason?: string | undefined
-  ) => void;
-}
-
-const ActivityManager = (props: ActivityManagerProps) => {
+const ActivityManager = () => {
   //TODO: search and sort, maybe filters and labels?
   //TODO: show exact date on hover
   // TODO: unique activity name
   // tracking since: "shows exact time when activity was registered with this app"
   // TODO: loading state and empty state
-  const { handleOpenSnackbar, handleCloseSnackbar } = props;
+  const { handleOpenSnackbar, handleCloseSnackbar } = useSnackbar();
 
   const theme = useTheme();
   const [user] = useAuthListener();
