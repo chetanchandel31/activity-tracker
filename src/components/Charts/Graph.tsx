@@ -1,13 +1,14 @@
 import { Box } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import {
-  Chart as ChartJS,
   CategoryScale,
+  Chart as ChartJS,
+  Legend,
   LinearScale,
-  PointElement,
   LineElement,
+  PointElement,
   Title,
   Tooltip,
-  Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { GraphData } from "types";
@@ -27,6 +28,8 @@ interface GraphProps {
 }
 
 const Graph = ({ graphData }: GraphProps) => {
+  const theme = useTheme();
+
   const options = {
     responsive: true,
     plugins: {
@@ -38,6 +41,7 @@ const Graph = ({ graphData }: GraphProps) => {
         text: "Chart.js Line Chart",
       },
     },
+    maintainAspectRatio: false,
   };
 
   const labels = graphData.xAxisData;
@@ -47,20 +51,14 @@ const Graph = ({ graphData }: GraphProps) => {
       {
         label: "Dataset 1",
         data: graphData.yAxisData,
-        borderColor: "rgb(255, 99, 132)",
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
+        borderColor: theme.palette.success.main,
+        backgroundColor: theme.palette.success.dark,
       },
-      // {
-      //   label: "Dataset 2",
-      //   data: [78, 78, 22, 11, 75, 3, 56],
-      //   borderColor: "rgb(53, 162, 235)",
-      //   backgroundColor: "rgba(53, 162, 235, 0.5)",
-      // },
     ],
   };
 
   return (
-    <Box sx={{ border: "solid 1px black" }}>
+    <Box sx={{ height: "570px" }}>
       <Line options={options} data={data} />
     </Box>
   );

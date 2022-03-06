@@ -14,9 +14,11 @@ import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { ActivitiesList } from "types";
 import Graph from "./Graph";
-
-export const LAST_7_DAYS = "last 7 days";
-export const THIS_WEEK = "this week";
+import {
+  LAST_15_DAYS,
+  LAST_30_DAYS,
+  LAST_7_DAYS,
+} from "./helpers/getGraphDataLastNDays";
 
 // TODO: test scenario when 0 activities
 const Charts = () => {
@@ -82,7 +84,8 @@ const Charts = () => {
                   size="small"
                 >
                   <MenuItem value={LAST_7_DAYS}>{LAST_7_DAYS}</MenuItem>
-                  <MenuItem value={THIS_WEEK}>{THIS_WEEK}</MenuItem>
+                  <MenuItem value={LAST_15_DAYS}>{LAST_15_DAYS}</MenuItem>
+                  <MenuItem value={LAST_30_DAYS}>{LAST_30_DAYS}</MenuItem>
                 </TextField>
               </FormControl>
 

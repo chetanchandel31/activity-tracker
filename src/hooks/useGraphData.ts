@@ -1,7 +1,11 @@
-import { LAST_7_DAYS, THIS_WEEK } from "components/Charts";
-import { getGraphDataLast7Days } from "components/Charts/helpers/getGraphDataLast7Days";
+import {
+  getGraphDataLastNDays,
+  LAST_15_DAYS,
+  LAST_30_DAYS,
+  LAST_7_DAYS,
+} from "components/Charts/helpers/getGraphDataLastNDays";
 import { useEffect, useState } from "react";
-import { Activity } from "types";
+import { Activity, GraphData } from "types";
 import { findActivityByName } from "utils";
 import useAuthListener from "./useAuthListener";
 
@@ -19,10 +23,10 @@ const useGraphData = ({
 }: UseGraphDataArgs) => {
   const [user] = useAuthListener();
 
-  const [graphData, setGraphData] = useState<{
-    xAxisData: string[];
-    yAxisData: number[];
-  }>({ xAxisData: [], yAxisData: [] });
+  const [graphData, setGraphData] = useState<GraphData>({
+    xAxisData: [],
+    yAxisData: [],
+  });
   const [graphDataError, setGraphDataError] = useState("");
   const [isGraphDataLoading, setIsGraphDataloading] = useState(false);
 
@@ -43,14 +47,21 @@ const useGraphData = ({
     setIsGraphDataloading(true);
     try {
       if (selectedDuration === LAST_7_DAYS) {
-        const graphDataLast7Days = await getGraphDataLast7Days({
+        const graphDataLast7Days = await getGraphDataLastNDays({
           selectedActivityId,
           user,
         });
         setGraphData(graphDataLast7Days);
-      } else if (selectedDuration === THIS_WEEK) {
-        // TODO: new helper here when ready
-        const graphDataForCurrentWeek = await getGraphDataLast7Days({
+      } else if (selectedDuration === LAST_15_DAYS) {
+        const graphDataForCurrentWeek = await getGraphDataLastNDays({
+          n: 15,
+          selectedActivityId,
+          user,
+        });
+        setGraphData(graphDataForCurrentWeek);
+      } else if (selectedDuration === LAST_30_DAYS) {
+        const graphDataForCurrentWeek = await getGraphDataLastNDays({
+          n: 30,
           selectedActivityId,
           user,
         });
