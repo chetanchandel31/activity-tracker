@@ -6,6 +6,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
+import { useSnackbarContext } from "contexts/snackbar-context";
 import { firestore } from "firebase-config/firebase";
 import useAuthListener from "hooks/useAuthListener";
 import moment from "moment";
@@ -29,6 +30,8 @@ const CreateNewActivityDialog = ({
   const activitiesCollectionRef = firestore.collection(
     `users/${user?.uid}/activities`
   );
+
+  const { showAlert } = useSnackbarContext();
 
   // TODO: add notes (optional). placeholder: any additional info you'd like to attach with this activity
   const [newActivityName, setNewActivityName] = useState("");
@@ -60,9 +63,20 @@ const CreateNewActivityDialog = ({
         lastUpdatedAt: now,
       });
 
+      showAlert({
+        message: (
+          <>
+            Created new activity <strong>{newActivityName}</strong>
+          </>
+        ),
+      });
       setNewActivityName("");
       handleClose();
     } catch (err) {
+      showAlert({
+        message: "something went wrong 😭",
+        alertColor: "error",
+      });
       console.log(err);
     }
     // TODO: success or failure alert or snackbar

@@ -1,11 +1,9 @@
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Container from "@mui/material/Container";
 import Fab from "@mui/material/Fab";
-import Slide from "@mui/material/Slide";
 import { useTheme } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -14,7 +12,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import { useSnackbarContext } from "contexts/snackbar-context";
 import { firestore } from "firebase-config/firebase";
 import useAuthListener from "hooks/useAuthListener";
@@ -35,13 +32,11 @@ const ActivityManager = () => {
   // TODO: unique activity name
   // tracking since: "shows exact time when activity was registered with this app"
   // TODO: loading state and empty state
-  const { handleOpenSnackbar, handleCloseSnackbar } = useSnackbarContext();
+  const { handleCloseSnackbar, showAlert } = useSnackbarContext();
 
   const theme = useTheme();
   const [user] = useAuthListener();
   const history = useHistory();
-
-  const isSmDown = useMediaQuery(theme.breakpoints.down("sm"));
 
   const { docs: activitiesList }: ActivitiesList = useFirestore(
     `users/${user?.uid}/activities`
@@ -87,16 +82,9 @@ const ActivityManager = () => {
   };
 
   const showSuccessMessage = (activity: Activity) => {
-    handleOpenSnackbar({
-      autoHideDuration: 4000,
-      children: (
-        <Alert
-          severity="success"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
+    showAlert({
+      message: (
+        <>
           Added <strong>{activity.name}</strong> to{" "}
           <strong>{currentDateString}</strong>{" "}
           <Button
@@ -110,13 +98,8 @@ const ActivityManager = () => {
           >
             Check
           </Button>
-        </Alert>
+        </>
       ),
-      TransitionComponent: (props) => <Slide {...props} direction="left" />,
-      ...(isSmDown
-        ? { anchorOrigin: { vertical: "top", horizontal: "center" } }
-        : {}),
-      key: uuidv4(),
     });
   };
 
