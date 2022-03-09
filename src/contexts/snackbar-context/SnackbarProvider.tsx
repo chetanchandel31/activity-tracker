@@ -1,25 +1,6 @@
 import Snackbar, { SnackbarProps } from "@mui/material/Snackbar";
 import { ReactNode, useContext, useState } from "react";
-import { createContext } from "react";
-
-interface SnackbarContextInterface {
-  handleOpenSnackbar: (snackbarProps: SnackbarProps) => void;
-  handleCloseSnackbar: (
-    _event?: Event | React.SyntheticEvent<Element, Event> | undefined,
-    _reason?: string | undefined
-  ) => void;
-}
-
-const SnackbarContext = createContext<SnackbarContextInterface>({
-  handleCloseSnackbar: () =>
-    console.error(
-      "component probably isn't wrapped inside SnackbarContextProvider"
-    ),
-  handleOpenSnackbar: () =>
-    console.error(
-      "component probably isn't wrapped inside SnackbarContextProvider"
-    ),
-});
+import { SnackbarContext } from "./snackbar-context";
 
 export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -54,4 +35,4 @@ export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useSnackbar = () => useContext(SnackbarContext);
+export const useSnackbarContext = () => useContext(SnackbarContext);

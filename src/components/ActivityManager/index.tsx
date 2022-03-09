@@ -15,7 +15,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useSnackbar } from "contexts/snackbar-context";
+import { useSnackbarContext } from "contexts/snackbar-context";
 import { firestore } from "firebase-config/firebase";
 import useAuthListener from "hooks/useAuthListener";
 import useFirestore from "hooks/useFirestore";
@@ -35,7 +35,7 @@ const ActivityManager = () => {
   // TODO: unique activity name
   // tracking since: "shows exact time when activity was registered with this app"
   // TODO: loading state and empty state
-  const { handleOpenSnackbar, handleCloseSnackbar } = useSnackbar();
+  const { handleOpenSnackbar, handleCloseSnackbar } = useSnackbarContext();
 
   const theme = useTheme();
   const [user] = useAuthListener();

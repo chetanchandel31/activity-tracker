@@ -1,1 +1,1 @@
-export { SnackbarProvider, useSnackbar } from "./SnackbarProvider";
+export { SnackbarProvider, useSnackbarContext } from "./SnackbarProvider";
