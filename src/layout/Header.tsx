@@ -163,78 +163,76 @@ const Header = () => {
 
   return (
     <>
-      <Box sx={{ flexGrow: 1, mb: theme.spacing(3) }}>
-        <AppBar
-          color="transparent"
-          sx={{ backdropFilter: "blur(8px)" }}
-          elevation={trigger ? 4 : 0}
-          position="fixed"
-        >
-          <Toolbar>
-            <IconButton
-              // size="large"
-              edge="start"
-              aria-label="menu"
-              sx={{
-                mr: 2,
-                color: theme.palette.common.black,
-                display: { xs: "inline-flex", sm: "none" },
-              }}
-              onClick={handleDrawerToggle}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography
-              variant="h5"
-              component="h5"
-              // color="primary"
-              sx={{
-                flexGrow: 1,
-                textAlign: "left",
-                // fontWeight: 600,
-                ml: { sm: theme.spacing(7) },
-              }}
-            >
-              {navItems.find((el) => pathname.includes(el.pathName))?.name}
-            </Typography>
+      <AppBar
+        color="transparent"
+        sx={{ backdropFilter: "blur(8px)" }}
+        elevation={trigger ? 4 : 0}
+        position="fixed"
+      >
+        <Toolbar>
+          <IconButton
+            // size="large"
+            edge="start"
+            aria-label="menu"
+            sx={{
+              mr: 2,
+              color: theme.palette.common.black,
+              display: { xs: "inline-flex", sm: "none" },
+            }}
+            onClick={handleDrawerToggle}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography
+            variant="h5"
+            component="h5"
+            // color="primary"
+            sx={{
+              flexGrow: 1,
+              textAlign: "left",
+              // fontWeight: 600,
+              ml: { sm: theme.spacing(7) },
+            }}
+          >
+            {navItems.find((el) => pathname.includes(el.pathName))?.name}
+          </Typography>
 
-            <Box sx={{ display: { xs: "none", sm: "block" } }}>
-              {navItems.map((navItem) => (
-                <Tooltip
-                  key={navItem.name}
-                  disableInteractive
-                  TransitionComponent={Zoom}
-                  title={navItem.name}
+          <Box sx={{ display: { xs: "none", sm: "block" } }}>
+            {navItems.map((navItem) => (
+              <Tooltip
+                key={navItem.name}
+                disableInteractive
+                TransitionComponent={Zoom}
+                title={navItem.name}
+              >
+                <IconButton
+                  sx={{ ml: 0.5 }}
+                  onClick={() => navigateTo(navItem.pathName)}
                 >
-                  <IconButton
-                    sx={{ ml: 0.5 }}
-                    onClick={() => navigateTo(navItem.pathName)}
-                  >
-                    {renderIcon(navItem, isSelected(navItem.pathName))}
-                  </IconButton>
-                </Tooltip>
-              ))}
-            </Box>
-            <IconButton
-              sx={{ ml: 2, mr: -1, cursor: "pointer" }}
-              onClick={handleUserAvatarClick}
-            >
-              <Avatar />
-            </IconButton>
-            <Popover
-              open={openProfilePopover}
-              anchorEl={anchorEl}
-              onClose={handleProfilePopoverClose}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-            >
-              <Button onClick={() => auth.signOut()}>Logout</Button>
-            </Popover>
-          </Toolbar>
-        </AppBar>
-      </Box>
+                  {renderIcon(navItem, isSelected(navItem.pathName))}
+                </IconButton>
+              </Tooltip>
+            ))}
+          </Box>
+          <IconButton
+            sx={{ ml: 2, mr: -1, cursor: "pointer" }}
+            onClick={handleUserAvatarClick}
+          >
+            <Avatar />
+          </IconButton>
+          <Popover
+            open={openProfilePopover}
+            anchorEl={anchorEl}
+            onClose={handleProfilePopoverClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+          >
+            <Button onClick={() => auth.signOut()}>Logout</Button>
+          </Popover>
+        </Toolbar>
+      </AppBar>
 
       <Box
         component="nav"
@@ -262,7 +260,7 @@ const Header = () => {
           {drawer}
         </SwipeableDrawer>
       </Box>
-      <Toolbar />
+      <Toolbar sx={{ mb: theme.spacing(3) }} />
     </>
   );
 };
