@@ -19,9 +19,11 @@ import {
   LAST_30_DAYS,
   LAST_7_DAYS,
 } from "./helpers/getGraphDataLastNDays";
+import { useTheme } from "@mui/material/styles";
 
 // TODO: test scenario when 0 activities
 const Charts = () => {
+  const theme = useTheme();
   const [user] = useAuthListener();
 
   const [selectedActivity, setSelectedActivity] = useState("");
@@ -70,11 +72,16 @@ const Charts = () => {
             <Box
               sx={{
                 display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
                 justifyContent: "space-between",
+                alignItems: "flex-start",
+                gap: theme.spacing(2),
                 mb: 5,
               }}
             >
-              <FormControl sx={{ minWidth: 165 }}>
+              <FormControl
+                sx={{ minWidth: 165, width: { xs: "100%", sm: "auto" } }}
+              >
                 <TextField
                   select
                   id="demo-simple-select"
@@ -97,8 +104,9 @@ const Charts = () => {
                 id="disable-close-on-select"
                 size="small"
                 sx={{
-                  minWidth: 145,
+                  minWidth: 165,
                   flexGrow: { xs: 1, sm: 0 },
+                  width: { xs: "100%", sm: "auto" },
                 }}
                 renderInput={(params) => (
                   <TextField {...params} label="Select Activity" />
