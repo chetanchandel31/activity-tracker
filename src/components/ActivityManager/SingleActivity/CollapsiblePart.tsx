@@ -114,10 +114,10 @@ const CollapsiblePart = (props: CollapsiblePartProps) => {
                 ? {
                     "&::-webkit-scrollbar": {
                       width: "5px",
-                      height: "8px",
+                      background: "rgba(0, 0, 0, 0.15)",
                     },
                     "&::-webkit-scrollbar-thumb": {
-                      background: theme.palette.text.disabled,
+                      background: "rgba(0, 0, 0, 0.25)",
                       borderRadius: "50px",
                     },
                   }
