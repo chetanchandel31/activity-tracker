@@ -80,7 +80,7 @@ const CollapsiblePart = (props: CollapsiblePartProps) => {
   return (
     <>
       <Collapse in={openCollapsiblePart} timeout="auto" unmountOnExit>
-        <Box sx={{ margin: 1, px: 5 }}>
+        <Box sx={{ m: 1, px: 4 }}>
           <Typography
             variant={isSmUp ? "h6" : "inherit"}
             gutterBottom
@@ -110,18 +110,15 @@ const CollapsiblePart = (props: CollapsiblePartProps) => {
             sx={{
               maxHeight: "50vh",
               overflowY: "scroll",
-              ...(isSmUp
-                ? {
-                    "&::-webkit-scrollbar": {
-                      width: "5px",
-                      background: "rgba(0, 0, 0, 0.15)",
-                    },
-                    "&::-webkit-scrollbar-thumb": {
-                      background: "rgba(0, 0, 0, 0.25)",
-                      borderRadius: "50px",
-                    },
-                  }
-                : {}),
+
+              "&::-webkit-scrollbar": {
+                width: "5px",
+                background: "rgba(0, 0, 0, 0.15)",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                background: "rgba(0, 0, 0, 0.25)",
+                borderRadius: "50px",
+              },
             }}
           >
             {activityHistoryItems}
