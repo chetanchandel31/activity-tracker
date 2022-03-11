@@ -14,9 +14,12 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
-import { Activity, DateSpeceficActivity, Timestamp } from "../../types";
+import NoActivities from "assets/images/no-activities.svg";
+import { RefObject } from "react";
+import { Activity, DateSpeceficActivity, Timestamp } from "types";
 
 interface DateSpecificActivitiesListProps {
+  activityMenuRef: RefObject<HTMLDivElement>;
   isDateSpecificActivitiesListLoading: boolean;
   dateSpecificActivitiesList: DateSpeceficActivity[] | null;
   updateFrequency: (
@@ -33,6 +36,7 @@ interface DateSpecificActivitiesListProps {
 
 const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
   const {
+    activityMenuRef,
     isDateSpecificActivitiesListLoading,
     dateSpecificActivitiesList,
     updateFrequency,
@@ -225,7 +229,26 @@ const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
         </Container>
       )}
 
-      {dateSpecificActivitiesList?.length === 0 && <div>empty state</div>}
+      {dateSpecificActivitiesList?.length === 0 && (
+        <Box sx={{ textAlign: "center", mb: 4 }}>
+          <img
+            alt="no-activities"
+            src={NoActivities}
+            style={{ maxWidth: "400px", width: "80%" }}
+          />
+          <Typography sx={{ m: 1 }} variant="h6">
+            There are no activities added to this date
+          </Typography>
+          <Button
+            disableElevation
+            onClick={() => activityMenuRef.current?.click()}
+            sx={{ textTransform: "none" }}
+            variant="contained"
+          >
+            Add an activity
+          </Button>
+        </Box>
+      )}
 
       {isDateSpecificActivitiesListNonEmpty && (
         <Box

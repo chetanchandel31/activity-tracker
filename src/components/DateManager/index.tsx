@@ -12,12 +12,14 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
+import Zoom from "@mui/material/Zoom";
 import { firestore } from "firebase-config/firebase";
 import useAuthListener from "hooks/useAuthListener";
 import useFirestore from "hooks/useFirestore";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useHistory, useParams } from "react-router-dom";
 import { ActivitiesList, DateSpeceficActivitiesList, Timestamp } from "types";
@@ -26,8 +28,6 @@ import { v4 as uuidv4 } from "uuid";
 import DateSpecificActivitiesList from "./DateSpeceficActivitiesList";
 
 const DateManager = () => {
-  //TODO: tooltip for add button
-  //TODO: can add debounce for counters in frequency
   // TODO: prevent user from adding activities to future dates
   // TODO: create new activity right from here, mui autocomplete > createable. use same dialog component
   // TODO: seperate out helper functions? currently can't copy paste/reuse
@@ -258,6 +258,8 @@ const DateManager = () => {
     history.push(`/date-manager/${getDateStringFromMoment(nextDate)}`);
   };
 
+  const activityMenuRef = useRef<HTMLDivElement>(null);
+
   return (
     <>
       <Helmet>
@@ -342,7 +344,6 @@ const DateManager = () => {
               onInputChange={(event, newInputValue) => {
                 setSelectedActivity(newInputValue);
               }}
-              id="disable-close-on-select"
               size="small"
               sx={{
                 minWidth: 145,
@@ -354,6 +355,7 @@ const DateManager = () => {
                   label="Select Activity"
                   // helperText="ok"
                   // color="warning"
+                  ref={activityMenuRef}
                   sx={{
                     "& .MuiInputBase-root": {
                       borderRadius: "4px 0 0 4px",
@@ -363,28 +365,37 @@ const DateManager = () => {
               )}
             />
 
-            <Button
-              variant="contained"
-              size="small"
-              sx={{
-                boxShadow: "none",
-                textTransform: "none",
-                height: "40px",
-                minWidth: "40px",
-                maxWidth: "40px",
-                borderRadius: "0 4px 4px 0",
-              }}
-              disabled={isAddActivityBtnDisabled()}
-              onClick={addActivityToDate}
+            <Tooltip
+              disableInteractive
+              TransitionComponent={Zoom}
+              title={`Add "${selectedActivity}" to ${selectedDate.format(
+                "LL"
+              )}`}
             >
-              <AddRoundedIcon />
-            </Button>
+              <Button
+                variant="contained"
+                size="small"
+                sx={{
+                  boxShadow: "none",
+                  textTransform: "none",
+                  height: "40px",
+                  minWidth: "40px",
+                  maxWidth: "40px",
+                  borderRadius: "0 4px 4px 0",
+                }}
+                disabled={isAddActivityBtnDisabled()}
+                onClick={addActivityToDate}
+              >
+                <AddRoundedIcon />
+              </Button>
+            </Tooltip>
           </Box>
         </Box>
 
         <Divider sx={{ m: theme.spacing(3, 0) }} />
 
         <DateSpecificActivitiesList
+          activityMenuRef={activityMenuRef}
           isDateSpecificActivitiesListLoading={
             isDateSpecificActivitiesListLoading
           }
