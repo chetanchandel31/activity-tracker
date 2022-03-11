@@ -24,10 +24,18 @@ ChartJS.register(
 );
 
 interface GraphProps {
+  datasetLabel?: string;
+  graphName?: string;
   graphData: GraphData;
 }
 
-const Graph = ({ graphData }: GraphProps) => {
+const Graph = (props: GraphProps) => {
+  const {
+    datasetLabel = "Dataset 1",
+    graphData,
+    graphName = "Chart.js Line Chart",
+  } = props;
+
   const theme = useTheme();
 
   const options = {
@@ -38,7 +46,7 @@ const Graph = ({ graphData }: GraphProps) => {
       },
       title: {
         display: true,
-        text: "Chart.js Line Chart",
+        text: graphName,
       },
     },
     maintainAspectRatio: false,
@@ -49,7 +57,7 @@ const Graph = ({ graphData }: GraphProps) => {
     labels,
     datasets: [
       {
-        label: "Dataset 1",
+        label: datasetLabel,
         data: graphData.yAxisData,
         borderColor: theme.palette.success.main,
         backgroundColor: theme.palette.success.dark,

@@ -1,17 +1,21 @@
 import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Container from "@mui/material/Container";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
+import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import PersonChooseingImg from "assets/images/choose.svg";
+import NoActivities from "assets/images/no-activities-charts.svg";
 import useAuthListener from "hooks/useAuthListener";
 import useFirestore from "hooks/useFirestore";
 import useGraphData from "hooks/useGraphData";
 import { useState } from "react";
 import { Helmet } from "react-helmet";
+import { useHistory } from "react-router-dom";
 import { ActivitiesList } from "types";
 import Graph from "./Graph";
 import {
@@ -19,11 +23,10 @@ import {
   LAST_30_DAYS,
   LAST_7_DAYS,
 } from "./helpers/getGraphDataLastNDays";
-import { useTheme } from "@mui/material/styles";
 
-// TODO: test scenario when 0 activities
 const Charts = () => {
   const theme = useTheme();
+  const history = useHistory();
   const [user] = useAuthListener();
 
   const [selectedActivity, setSelectedActivity] = useState("");
@@ -65,7 +68,26 @@ const Charts = () => {
 
       <Container>
         {/* when 0 activities */}
-        {activitiesList?.length === 0 && <div>empty state</div>}
+        {activitiesList?.length === 0 && (
+          <Box sx={{ textAlign: "center", mt: 10 }}>
+            <img
+              alt="no-activities"
+              style={{ maxWidth: "800px", width: "90%" }}
+              src={NoActivities}
+            />
+            <Typography sx={{ my: 2 }} variant="h6">
+              You currently don't have any activities to view chart for.
+            </Typography>
+            <Button
+              disableElevation
+              onClick={() => history.push("/activity-manager")}
+              sx={{ textTransform: "none" }}
+              variant="contained"
+            >
+              Create one from Activity Manager
+            </Button>
+          </Box>
+        )}
 
         {activitiesList && activitiesList?.length > 0 && (
           <>
@@ -132,7 +154,11 @@ const Charts = () => {
               </Box>
             )}
             {!graphDataError && !isGraphDataLoading && (
-              <Graph graphData={graphData} />
+              <Graph
+                datasetLabel={`${selectedActivity}`}
+                graphName={`${selectedActivity} Line Chart`}
+                graphData={graphData}
+              />
             )}
           </>
         )}
