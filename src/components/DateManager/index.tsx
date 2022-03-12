@@ -368,26 +368,30 @@ const DateManager = () => {
             <Tooltip
               disableInteractive
               TransitionComponent={Zoom}
-              title={`Add "${selectedActivity}" to ${selectedDate.format(
-                "LL"
-              )}`}
+              title={
+                isAddActivityBtnDisabled()
+                  ? ""
+                  : `Add "${selectedActivity}" to ${selectedDate.format("LL")}`
+              }
             >
-              <Button
-                variant="contained"
-                size="small"
-                sx={{
-                  boxShadow: "none",
-                  textTransform: "none",
-                  height: "40px",
-                  minWidth: "40px",
-                  maxWidth: "40px",
-                  borderRadius: "0 4px 4px 0",
-                }}
-                disabled={isAddActivityBtnDisabled()}
-                onClick={addActivityToDate}
-              >
-                <AddRoundedIcon />
-              </Button>
+              <span>
+                <Button
+                  variant="contained"
+                  size="small"
+                  sx={{
+                    boxShadow: "none",
+                    textTransform: "none",
+                    height: "40px",
+                    minWidth: "40px",
+                    maxWidth: "40px",
+                    borderRadius: "0 4px 4px 0",
+                  }}
+                  disabled={isAddActivityBtnDisabled()}
+                  onClick={addActivityToDate}
+                >
+                  <AddRoundedIcon />
+                </Button>
+              </span>
             </Tooltip>
           </Box>
         </Box>

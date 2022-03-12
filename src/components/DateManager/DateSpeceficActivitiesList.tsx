@@ -241,7 +241,10 @@ const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
           </Typography>
           <Button
             disableElevation
-            onClick={() => activityMenuRef.current?.click()}
+            onClick={() => {
+              activityMenuRef.current?.scrollIntoView(false);
+              activityMenuRef.current?.click();
+            }}
             sx={{ textTransform: "none" }}
             variant="contained"
           >

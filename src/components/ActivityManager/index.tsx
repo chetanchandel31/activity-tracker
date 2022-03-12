@@ -12,6 +12,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
+import WelcomeImg from "assets/images/welcome.svg";
 import { useSnackbarContext } from "contexts/snackbar-context";
 import { firestore } from "firebase-config/firebase";
 import useAuthListener from "hooks/useAuthListener";
@@ -25,13 +26,11 @@ import { getDateStringFromMoment } from "utils";
 import { v4 as uuidv4 } from "uuid";
 import CreateNewActivityDialog from "./CreateNewActivityDialog";
 import SingleActivity from "./SingleActivity/SingleActivity";
+import { Link as RouterLink } from "react-router-dom";
+import Link from "@mui/material/Link";
 
 const ActivityManager = () => {
   //TODO: search and sort, maybe filters and labels?
-  //TODO: show exact date on hover
-  // TODO: unique activity name
-  // tracking since: "shows exact time when activity was registered with this app"
-  // TODO: loading state and empty state
   const { handleCloseSnackbar, showAlert } = useSnackbarContext();
 
   const theme = useTheme();
@@ -104,8 +103,6 @@ const ActivityManager = () => {
   };
 
   const handleRecordNow = async (activity: Activity) => {
-    // activity received as arg will be doc from activitiesCollection
-    // TODO: make sure this fn runs only once within a sec
     if (dateSpecificActivitiesList === null) return;
     setIsRecordNowBtnLoading(true);
 
@@ -199,9 +196,11 @@ const ActivityManager = () => {
       </Helmet>
 
       <Container sx={{ pb: theme.spacing(8.5) }}>
-        <Typography sx={{ mb: theme.spacing(3) }}>
-          Here is the list of activities you are currently tracking
-        </Typography>
+        {isActivitiesListNonEmpty && (
+          <Typography sx={{ mb: theme.spacing(3) }}>
+            Here is the list of activities you are currently tracking
+          </Typography>
+        )}
 
         {/* 1. loading state */}
         {areActivitiesLoading && (
@@ -240,9 +239,6 @@ const ActivityManager = () => {
           </TableContainer>
         )}
 
-        {/* 3. empty state */}
-        {activitiesList?.length === 0 && <div>empty state</div>}
-
         {isActivitiesListNonEmpty && (
           <Box
             sx={{
@@ -256,33 +252,68 @@ const ActivityManager = () => {
           </Box>
         )}
 
-        {/* TODO: virtualised list, transition and activity name character limit */}
-        {/* TODO: extra padding after last item to prevent fab overlapping */}
-        <Box
-          sx={{
-            position: "fixed",
-            bottom: 0,
-            left: 0,
-            right: 0,
-          }}
-        >
-          <Container sx={{ position: "relative" }}>
-            <Fab
-              color="primary"
-              aria-label="add"
-              sx={{
-                position: "absolute",
-                bottom: 16,
-                right: 16,
-                //   transition: "min-width 2s",
-                //   width: "135px",
-              }}
+        {/* 3. empty state */}
+        {activitiesList?.length === 0 && (
+          <Box sx={{ textAlign: "center", mt: 10 }}>
+            <img
+              alt="welcome"
+              src={WelcomeImg}
+              style={{ maxWidth: "600px", width: "90%" }}
+            />
+
+            <Typography sx={{ my: 2 }} variant="h6">
+              Start creating activities that can be assigned to individual dates
+              via{" "}
+              <Link
+                component={RouterLink}
+                to={`/date-manager/${getDateStringFromMoment(moment())}`}
+                underline="none"
+              >
+                date manager
+              </Link>{" "}
+              and alayzed from{" "}
+              <Link component={RouterLink} to="/charts" underline="none">
+                charts
+              </Link>
+            </Typography>
+            <Button
               onClick={() => setIsCreateNewActivityDialogOpen(true)}
+              sx={{ boxShadow: "none", textTransform: "none" }}
+              variant="contained"
             >
-              <AddRoundedIcon />
-            </Fab>
-          </Container>
-        </Box>
+              Create your first activity
+            </Button>
+          </Box>
+        )}
+
+        {/* TODO: virtualised list, transition and activity name character limit */}
+        {isActivitiesListNonEmpty && (
+          <Box
+            sx={{
+              position: "fixed",
+              bottom: 0,
+              left: 0,
+              right: 0,
+            }}
+          >
+            <Container sx={{ position: "relative" }}>
+              <Fab
+                color="primary"
+                aria-label="add"
+                sx={{
+                  position: "absolute",
+                  bottom: 16,
+                  right: 16,
+                  //   transition: "min-width 2s",
+                  //   width: "135px",
+                }}
+                onClick={() => setIsCreateNewActivityDialogOpen(true)}
+              >
+                <AddRoundedIcon />
+              </Fab>
+            </Container>
+          </Box>
+        )}
 
         <CreateNewActivityDialog
           activitiesList={activitiesList}
