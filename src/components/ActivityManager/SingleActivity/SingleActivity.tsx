@@ -23,6 +23,7 @@ import Stopwatch from "components/Stopwatch";
 import React, { useState } from "react";
 import { Activity } from "types";
 import { getFormattedDateForTooltip } from "utils";
+import EditSingleActivityTextfield from "./EditSingleActivityTextfield";
 import ExpandableArea from "./ExpandableArea";
 
 interface SingleActivityProps {
@@ -70,6 +71,8 @@ const SingleActivity = (props: SingleActivityProps) => {
   // expand icon
   const [openExpandableArea, setOpenExpandableArea] = useState(false);
 
+  const [isEditMode, setIsEditMode] = useState(false);
+
   return (
     <>
       {view === "tableRow" && (
@@ -99,7 +102,16 @@ const SingleActivity = (props: SingleActivityProps) => {
                     }}
                   />
                 </IconButton>
-                <Typography component="span">{activity.name}</Typography>
+                <Typography component="span">
+                  {isEditMode ? (
+                    <EditSingleActivityTextfield
+                      activity={activity}
+                      setIsEditMode={setIsEditMode}
+                    />
+                  ) : (
+                    activity.name
+                  )}
+                </Typography>
               </Box>
             </TableCell>
             <TableCell align="right">
@@ -165,7 +177,14 @@ const SingleActivity = (props: SingleActivityProps) => {
           >
             <div>
               <Typography variant="h6" sx={{ mb: theme.spacing(1) }}>
-                {activity.name}
+                {isEditMode ? (
+                  <EditSingleActivityTextfield
+                    activity={activity}
+                    setIsEditMode={setIsEditMode}
+                  />
+                ) : (
+                  activity.name
+                )}
               </Typography>
               <Typography
                 variant="caption"
@@ -269,7 +288,7 @@ const SingleActivity = (props: SingleActivityProps) => {
         onClick={handleMenuClose}
       >
         <MenuList dense>
-          <MenuItem>
+          <MenuItem disabled={isEditMode} onClick={() => setIsEditMode(true)}>
             <ListItemIcon>
               <EditRoundedIcon />
             </ListItemIcon>

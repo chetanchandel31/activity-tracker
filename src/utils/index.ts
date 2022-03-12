@@ -1,6 +1,6 @@
 import { firestore } from "firebase-config/firebase";
 import moment, { Moment } from "moment";
-import { Activity, DateSpeceficActivity } from "types";
+import { Activity } from "types";
 
 /**
  * substitute for moment().toDate().toLocaleDateString() to prevent inconsistent date string issue
@@ -65,9 +65,7 @@ export const getAllFirestoreDocs = async (collection: string) => {
   return docs;
 };
 
-type ActivityObj = Activity | DateSpeceficActivity;
-
-export const findActivityById = (list: ActivityObj[], id: string) =>
+export const findActivityById = (list: Activity[], id: string) =>
   list.find((el) => el.id === id);
 
 export const findActivityByName = (list: Activity[] | null, name: string) =>
@@ -75,3 +73,7 @@ export const findActivityByName = (list: Activity[] | null, name: string) =>
 
 export const getFormattedDateForTooltip = (timestamp?: number) =>
   timestamp ? moment.unix(timestamp).format("LLL") : "";
+
+export { deleteFirestoreDoc } from "./deleteFirestoreDoc";
+
+export { editFirestoreDoc } from "./editFirestoreDoc";

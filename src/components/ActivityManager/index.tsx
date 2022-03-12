@@ -22,12 +22,13 @@ import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { useHistory } from "react-router-dom";
 import { ActivitiesList, Activity, DateSpeceficActivitiesList } from "types";
-import { getDateStringFromMoment } from "utils";
+import { findActivityById, getDateStringFromMoment } from "utils";
 import { v4 as uuidv4 } from "uuid";
 import CreateNewActivityDialog from "./CreateNewActivityDialog";
 import SingleActivity from "./SingleActivity/SingleActivity";
 import { Link as RouterLink } from "react-router-dom";
 import Link from "@mui/material/Link";
+import { deleteFirestoreDoc } from "utils";
 
 const ActivityManager = () => {
   //TODO: search and sort, maybe filters and labels?
@@ -69,10 +70,10 @@ const ActivityManager = () => {
     try {
       if (
         window.confirm(
-          `delete ${activitiesList.find((el) => el.id === docId)?.name} ?`
+          `delete ${findActivityById(activitiesList, docId)?.name} ?`
         )
       )
-        await activitiesCollectionRef.doc(docId).delete();
+        await deleteFirestoreDoc(activitiesCollectionRef, docId);
     } catch (err) {
       console.log(err);
     }
