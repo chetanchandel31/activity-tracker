@@ -23,7 +23,7 @@ import Stopwatch from "components/Stopwatch";
 import React, { useState } from "react";
 import { Activity } from "types";
 import { getFormattedDateForTooltip } from "utils";
-import CollapsiblePart from "./CollapsiblePart";
+import ExpandableArea from "./ExpandableArea";
 
 interface SingleActivityProps {
   view: "card" | "tableRow";
@@ -68,7 +68,7 @@ const SingleActivity = (props: SingleActivityProps) => {
   );
 
   // expand icon
-  const [openCollapsiblePart, setOpenCollapsiblePart] = useState(false); // TODO: better naming
+  const [openExpandableArea, setOpenExpandableArea] = useState(false);
 
   return (
     <>
@@ -86,11 +86,11 @@ const SingleActivity = (props: SingleActivityProps) => {
                 <IconButton
                   size="small"
                   sx={{ ml: 0 }}
-                  onClick={() => setOpenCollapsiblePart((prev) => !prev)}
+                  onClick={() => setOpenExpandableArea((prev) => !prev)}
                 >
                   <KeyboardArrowDownIcon
                     sx={{
-                      transform: !openCollapsiblePart
+                      transform: !openExpandableArea
                         ? "rotate(0deg)"
                         : "rotate(-180deg)",
                       transition: theme.transitions.create("transform", {
@@ -149,8 +149,8 @@ const SingleActivity = (props: SingleActivityProps) => {
 
           <TableRow>
             <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-              <CollapsiblePart
-                openCollapsiblePart={openCollapsiblePart}
+              <ExpandableArea
+                openExpandableArea={openExpandableArea}
                 timestampsArr={activity.performedAt}
               />
             </TableCell>
@@ -207,11 +207,11 @@ const SingleActivity = (props: SingleActivityProps) => {
                   height: "30px",
                   width: "30px",
                 }}
-                onClick={() => setOpenCollapsiblePart((prev) => !prev)}
+                onClick={() => setOpenExpandableArea((prev) => !prev)}
               >
                 <KeyboardArrowDownIcon
                   sx={{
-                    transform: !openCollapsiblePart
+                    transform: !openExpandableArea
                       ? "rotate(0deg)"
                       : "rotate(180deg)",
                     transition: theme.transitions.create("transform", {
@@ -223,8 +223,8 @@ const SingleActivity = (props: SingleActivityProps) => {
             </Box>
           </CardContent>
 
-          <CollapsiblePart
-            openCollapsiblePart={openCollapsiblePart}
+          <ExpandableArea
+            openExpandableArea={openExpandableArea}
             timestampsArr={activity.performedAt}
           />
 

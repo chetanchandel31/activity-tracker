@@ -15,13 +15,13 @@ import { useHistory } from "react-router-dom";
 import { Timestamp } from "types";
 import { getDateStringFromMoment } from "utils";
 
-interface CollapsiblePartProps {
+interface ExpandableAreaProps {
   timestampsArr: Timestamp[];
-  openCollapsiblePart: boolean;
+  openExpandableArea: boolean;
 }
 
-const CollapsiblePart = (props: CollapsiblePartProps) => {
-  const { timestampsArr, openCollapsiblePart } = props;
+const ExpandableArea = (props: ExpandableAreaProps) => {
+  const { timestampsArr, openExpandableArea } = props;
 
   const history = useHistory();
 
@@ -79,7 +79,7 @@ const CollapsiblePart = (props: CollapsiblePartProps) => {
 
   return (
     <>
-      <Collapse in={openCollapsiblePart} timeout="auto" unmountOnExit>
+      <Collapse in={openExpandableArea} timeout="auto" unmountOnExit>
         <Box sx={{ m: 1, px: 4 }}>
           <Typography
             variant={isSmUp ? "h6" : "inherit"}
@@ -129,4 +129,4 @@ const CollapsiblePart = (props: CollapsiblePartProps) => {
   );
 };
 
-export default CollapsiblePart;
+export default ExpandableArea;

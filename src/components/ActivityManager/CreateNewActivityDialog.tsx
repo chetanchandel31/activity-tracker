@@ -19,11 +19,9 @@ interface CreateNewActivityDialogProps {
   handleClose: () => void;
 }
 
-const CreateNewActivityDialog = ({
-  activitiesList,
-  handleClose,
-  open,
-}: CreateNewActivityDialogProps) => {
+const CreateNewActivityDialog = (props: CreateNewActivityDialogProps) => {
+  const { activitiesList, handleClose, open } = props;
+
   const theme = useTheme();
 
   const [user] = useAuthListener();
