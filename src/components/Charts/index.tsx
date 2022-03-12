@@ -79,9 +79,8 @@ const Charts = () => {
               You currently don't have any activities to view chart for.
             </Typography>
             <Button
-              disableElevation
               onClick={() => history.push("/activity-manager")}
-              sx={{ textTransform: "none" }}
+              sx={{ boxShadow: "none", textTransform: "none" }}
               variant="contained"
             >
               Create one from Activity Manager

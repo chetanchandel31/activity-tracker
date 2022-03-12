@@ -240,12 +240,11 @@ const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
             There are no activities added to this date
           </Typography>
           <Button
-            disableElevation
             onClick={() => {
               activityMenuRef.current?.scrollIntoView(false);
               activityMenuRef.current?.click();
             }}
-            sx={{ textTransform: "none" }}
+            sx={{ boxShadow: "none", textTransform: "none" }}
             variant="contained"
           >
             Add an activity

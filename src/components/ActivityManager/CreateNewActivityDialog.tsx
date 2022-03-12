@@ -1,4 +1,4 @@
-import Button from "@mui/material/Button";
+import LoadingButton from "@mui/lab/LoadingButton";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -35,8 +35,8 @@ const CreateNewActivityDialog = ({
 
   // TODO: add notes (optional). placeholder: any additional info you'd like to attach with this activity
   const [newActivityName, setNewActivityName] = useState("");
-
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const existingActivitiesNames = activitiesList?.map(
     (activity) => activity.name
@@ -55,6 +55,7 @@ const CreateNewActivityDialog = ({
 
   const handleCreateNewActivity = async () => {
     const now = moment().unix();
+    setIsLoading(true);
     try {
       await activitiesCollectionRef.add({
         createdAt: now,
@@ -78,6 +79,8 @@ const CreateNewActivityDialog = ({
         alertColor: "error",
       });
       console.log(err);
+    } finally {
+      setIsLoading(false);
     }
     // TODO: success or failure alert or snackbar
   };
@@ -93,9 +96,9 @@ const CreateNewActivityDialog = ({
         </DialogContentText>
         <TextField
           autoFocus
+          fullWidth
           margin="dense"
           label=""
-          fullWidth
           //   variant="standard"
           value={newActivityName}
           required
@@ -108,22 +111,24 @@ const CreateNewActivityDialog = ({
         />
       </DialogContent>
       <DialogActions sx={{ padding: theme.spacing(0, 3, 3, 3) }}>
-        <Button
+        <LoadingButton
+          loading={isLoading}
           onClick={() => {
             handleClose();
             setNewActivityName("");
           }}
         >
           Cancel
-        </Button>
-        <Button
-          onClick={handleCreateNewActivity}
+        </LoadingButton>
+        <LoadingButton
           disabled={Boolean(error)}
-          variant="contained"
+          loading={isLoading}
+          onClick={handleCreateNewActivity}
           sx={{ boxShadow: "none" }}
+          variant="contained"
         >
           Create
-        </Button>
+        </LoadingButton>
         {/* if activity created, close dialog, use await or then */}
       </DialogActions>
     </Dialog>
