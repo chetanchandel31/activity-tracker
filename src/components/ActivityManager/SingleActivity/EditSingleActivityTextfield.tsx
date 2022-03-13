@@ -45,6 +45,7 @@ const EditSingleActivityTextfield = (
     activityName: string,
     editedActivityName: string
   ) => {
+    if (activityName === editedActivityName) return cancelEdit();
     setIsLoading(true);
 
     try {
