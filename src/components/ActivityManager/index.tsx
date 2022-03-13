@@ -152,8 +152,12 @@ const ActivityManager = () => {
       }
 
       showSuccessMessage(activity);
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
+      showAlert({
+        message: err?.message || "something went wrong 😭",
+        alertColor: "error",
+      });
     } finally {
       setIsRecordNowBtnLoading(false);
     }

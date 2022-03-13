@@ -71,9 +71,9 @@ const CreateNewActivityDialog = (props: CreateNewActivityDialogProps) => {
       });
       setNewActivityName("");
       handleClose();
-    } catch (err) {
+    } catch (err: any) {
       showAlert({
-        message: "something went wrong 😭",
+        message: err?.message || "something went wrong 😭",
         alertColor: "error",
       });
       console.log(err);

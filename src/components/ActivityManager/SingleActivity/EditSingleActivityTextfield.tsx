@@ -2,6 +2,7 @@ import Link from "@mui/material/Link";
 import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { useSnackbarContext } from "contexts/snackbar-context";
 import { firestore } from "firebase-config/firebase";
 import useAuthListener from "hooks/useAuthListener";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
@@ -24,6 +25,8 @@ const EditSingleActivityTextfield = (
     `users/${user?.uid}/activities`
   );
 
+  const { showAlert } = useSnackbarContext();
+
   const isSmUp = useMediaQuery(theme.breakpoints.up("sm"));
 
   const [editedActivityName, setEditedActivityName] = useState(activity.name);
@@ -38,8 +41,10 @@ const EditSingleActivityTextfield = (
 
   const cancelEdit = () => setIsEditMode(false);
 
-  const editActivityName = async () => {
-    // TODO: think if we need snackbars here 🤔
+  const editActivityName = async (
+    activityName: string,
+    editedActivityName: string
+  ) => {
     setIsLoading(true);
 
     try {
@@ -50,8 +55,20 @@ const EditSingleActivityTextfield = (
       });
 
       cancelEdit();
-    } catch (err) {
+      showAlert({
+        message: (
+          <>
+            updated <strong>{activityName}</strong> to{" "}
+            <strong>{editedActivityName}</strong>
+          </>
+        ),
+      });
+    } catch (err: any) {
       console.log(err);
+      showAlert({
+        message: err?.message || "something went wrong",
+        alertColor: "error",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -65,7 +82,7 @@ const EditSingleActivityTextfield = (
       </Link>{" "}
       • enter to{" "}
       <Link
-        onClick={editActivityName}
+        onClick={() => editActivityName(activity.name, editedActivityName)}
         sx={{ cursor: "pointer" }}
         underline="hover"
       >
@@ -85,7 +102,8 @@ const EditSingleActivityTextfield = (
         onChange={({ target }) => setEditedActivityName(target.value)}
         onKeyDown={(event) => {
           if (event.key === "Escape") cancelEdit();
-          else if (event.key === "Enter") editActivityName();
+          else if (event.key === "Enter")
+            editActivityName(activity.name, editedActivityName);
         }}
         ref={textFieldRef}
         size="small"
