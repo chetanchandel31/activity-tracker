@@ -7,6 +7,7 @@ interface Args {
   updatedDoc: object;
 }
 
+/** edit any firestore doc. if `merge` isn't passed as `false`, it merges new fields instead of overwriting entire firestore document */
 export const editFirestoreDoc = async ({
   collectionRef,
   docId,

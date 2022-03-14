@@ -13,8 +13,11 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
+import Zoom from "@mui/material/Zoom";
 import NoActivities from "assets/images/no-activities.svg";
+import moment from "moment";
 import { RefObject } from "react";
 import { Activity, DateSpeceficActivity, Timestamp } from "types";
 
@@ -32,16 +35,18 @@ interface DateSpecificActivitiesListProps {
     activityId: string,
     dateSpecificActivitiesPerformedAtArr: Timestamp[]
   ) => void;
+  selectedDate: moment.Moment;
 }
 
 const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
   const {
-    activityMenuRef,
-    isDateSpecificActivitiesListLoading,
-    dateSpecificActivitiesList,
-    updateFrequency,
     activitiesList,
+    activityMenuRef,
+    dateSpecificActivitiesList,
     deleteActivityFromDate,
+    isDateSpecificActivitiesListLoading,
+    selectedDate,
+    updateFrequency,
   } = props;
 
   const theme = useTheme();
@@ -105,11 +110,17 @@ const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
           </Box>
         </TableCell>
         <TableCell align="right">
-          <IconButton onClick={handleDelete}>
-            <RemoveCircleOutlineRoundedIcon
-              sx={{ color: theme.palette.error.main }}
-            />
-          </IconButton>
+          <Tooltip
+            disableInteractive
+            title={`remove ${activity?.name} from ${selectedDate.format("LL")}`}
+            TransitionComponent={Zoom}
+          >
+            <IconButton onClick={handleDelete}>
+              <RemoveCircleOutlineRoundedIcon
+                sx={{ color: theme.palette.error.main }}
+              />
+            </IconButton>
+          </Tooltip>
         </TableCell>
       </TableRow>
     );

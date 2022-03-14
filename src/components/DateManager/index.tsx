@@ -23,9 +23,17 @@ import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useHistory, useParams } from "react-router-dom";
 import { ActivitiesList, DateSpeceficActivitiesList, Timestamp } from "types";
-import { deleteFirestoreDoc, getDateStringFromMoment } from "utils";
-import { v4 as uuidv4 } from "uuid";
+import {
+  deleteFirestoreDoc,
+  editFirestoreDoc,
+  findActivityByName,
+  getDateStringFromMoment,
+} from "utils";
 import DateSpecificActivitiesList from "./DateSpeceficActivitiesList";
+import { areTwoDatesSame } from "./helpers/areTwoDatesSame";
+import { getAppropriateTimestamp } from "./helpers/getAppropriateTimestamp";
+import { getFilteredTimestampsArr } from "./helpers/getFilteredTimestampsArr";
+import { getSortedTimestampArr } from "./helpers/getSortedTimestampArr";
 
 const DateManager = () => {
   // TODO: prevent user from adding activities to future dates
@@ -65,46 +73,18 @@ const DateManager = () => {
     });
   });
 
-  const isSelectedDateSameAsCurrentDate =
-    selectedDate.toDate().toLocaleDateString() ===
-    moment().toDate().toLocaleDateString();
-
-  const getAppropriateTimestamp = () => {
-    // can't use now() as timestamp if activity is being added to a past date, hence all this
-
-    const selectedDateString = getDateStringFromMoment(selectedDate); //"22/2/2222"
-
-    if (isSelectedDateSameAsCurrentDate)
-      return { timestamp: moment().unix(), timestampId: `t-${uuidv4()}` };
-    else
-      return {
-        timestamp: moment(selectedDateString).add(6, "hours").unix(),
-        timestampId: `t-${uuidv4()}`,
-      };
-  };
-
-  const getSortedTimestampArr = (timestampArr: Timestamp[]) => {
-    return timestampArr.sort((a, b) => a.timestamp - b.timestamp);
-  };
-
-  const getFilteredTimestampsArr = (
-    timestampsArr: Timestamp[],
-    timestampsToBeFilteredArr: Timestamp[]
-  ) => {
-    return timestampsArr.filter(
-      (el) =>
-        !timestampsToBeFilteredArr.find((x) => x.timestampId === el.timestampId)
-    );
-  };
+  const isSelectedDateSameAsCurrentDate = areTwoDatesSame(
+    selectedDate,
+    moment()
+  );
 
   //whenever frequency gets updated in any way, two places have to be updated:
   // 1. performedAt in "activities" collection 2. performedAt in "date-specific-activities" collection
   const addActivityToDate = () => {
-    const activity = activitiesList?.find(
-      (activity) => activity.name === selectedActivity
-    );
+    const activity = findActivityByName(activitiesList, selectedActivity);
+
     if (!activity) return;
-    const newTimestamp = getAppropriateTimestamp();
+    const newTimestamp = getAppropriateTimestamp(selectedDate);
 
     // activities-collection
     activitiesCollectionRef.doc(activity.id).set(
@@ -139,21 +119,19 @@ const DateManager = () => {
     if (!activity) return;
     const activitiesCollectionPerformedAtArr = activity.performedAt;
 
-    activitiesCollectionRef.doc(activityId).set(
-      {
+    editFirestoreDoc({
+      collectionRef: activitiesCollectionRef,
+      docId: activityId,
+      updatedDoc: {
         performedAt: getFilteredTimestampsArr(
           activitiesCollectionPerformedAtArr,
           dateSpecificActivitiesPerformedAtArr
         ),
       },
-      { merge: true }
-    );
+    });
 
     // date-specific-activities-collection
-    dateSpecificActivitiesCollectionRef
-      .doc(activityId)
-      .delete()
-      .then(() => console.log("deleted activity from date"));
+    deleteFirestoreDoc(dateSpecificActivitiesCollectionRef, activityId);
   };
 
   const updateFrequency = (
@@ -196,7 +174,7 @@ const DateManager = () => {
         { merge: true }
       );
     } else if (updateType === "increase") {
-      const newTimestamp = getAppropriateTimestamp();
+      const newTimestamp = getAppropriateTimestamp(selectedDate);
 
       // date-specific-activities-collection
       dateSpecificActivitiesCollectionRef.doc(activityId).set(
@@ -399,14 +377,15 @@ const DateManager = () => {
         <Divider sx={{ m: theme.spacing(3, 0) }} />
 
         <DateSpecificActivitiesList
+          activitiesList={activitiesList}
           activityMenuRef={activityMenuRef}
+          dateSpecificActivitiesList={dateSpecificActivitiesList}
+          deleteActivityFromDate={deleteActivityFromDate}
           isDateSpecificActivitiesListLoading={
             isDateSpecificActivitiesListLoading
           }
-          dateSpecificActivitiesList={dateSpecificActivitiesList}
+          selectedDate={selectedDate}
           updateFrequency={updateFrequency}
-          deleteActivityFromDate={deleteActivityFromDate}
-          activitiesList={activitiesList}
         />
       </Container>
     </>

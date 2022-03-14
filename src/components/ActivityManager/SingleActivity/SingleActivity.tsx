@@ -54,7 +54,6 @@ const SingleActivity = (props: SingleActivityProps) => {
       disableInteractive
       TransitionComponent={Zoom}
       title={"More actions"}
-      sx={{ ml: theme.spacing(1) }}
     >
       <IconButton onClick={handleMenuBtnClick}>
         <MoreVertRoundedIcon />
@@ -118,7 +117,6 @@ const SingleActivity = (props: SingleActivityProps) => {
                 title={getFormattedDateForTooltip(
                   activity.performedAt.at(-1)?.timestamp
                 )}
-                sx={{ ml: theme.spacing(1) }}
               >
                 <Typography variant="caption">
                   {activity.performedAt.length === 0 ? (
@@ -136,7 +134,6 @@ const SingleActivity = (props: SingleActivityProps) => {
               <Tooltip
                 TransitionComponent={Zoom}
                 title={getFormattedDateForTooltip(activity.createdAt)}
-                sx={{ ml: theme.spacing(1) }}
               >
                 <Typography variant="caption">
                   <Stopwatch date={activity.createdAt} />
