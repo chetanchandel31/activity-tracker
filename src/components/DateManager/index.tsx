@@ -23,7 +23,7 @@ import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useHistory, useParams } from "react-router-dom";
 import { ActivitiesList, DateSpeceficActivitiesList, Timestamp } from "types";
-import { getDateStringFromMoment } from "utils";
+import { deleteFirestoreDoc, getDateStringFromMoment } from "utils";
 import { v4 as uuidv4 } from "uuid";
 import DateSpecificActivitiesList from "./DateSpeceficActivitiesList";
 
@@ -61,7 +61,7 @@ const DateManager = () => {
       );
 
       if (!isActivityFoundInActivitiesCollection)
-        dateSpecificActivitiesCollectionRef.doc(el.activityId).delete();
+        deleteFirestoreDoc(dateSpecificActivitiesCollectionRef, el.activityId);
     });
   });
 

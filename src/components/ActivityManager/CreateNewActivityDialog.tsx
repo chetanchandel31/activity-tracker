@@ -127,7 +127,6 @@ const CreateNewActivityDialog = (props: CreateNewActivityDialogProps) => {
         >
           Create
         </LoadingButton>
-        {/* if activity created, close dialog, use await or then */}
       </DialogActions>
     </Dialog>
   );

@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Container from "@mui/material/Container";
 import Fab from "@mui/material/Fab";
+import Link from "@mui/material/Link";
 import { useTheme } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -20,15 +21,12 @@ import useFirestore from "hooks/useFirestore";
 import moment from "moment";
 import { useState } from "react";
 import { Helmet } from "react-helmet";
-import { useHistory } from "react-router-dom";
+import { Link as RouterLink, useHistory } from "react-router-dom";
 import { ActivitiesList, Activity, DateSpeceficActivitiesList } from "types";
-import { findActivityById, getDateStringFromMoment } from "utils";
+import { getDateStringFromMoment } from "utils";
 import { v4 as uuidv4 } from "uuid";
 import CreateNewActivityDialog from "./CreateNewActivityDialog";
 import SingleActivity from "./SingleActivity/SingleActivity";
-import { Link as RouterLink } from "react-router-dom";
-import Link from "@mui/material/Link";
-import { deleteFirestoreDoc } from "utils";
 
 const ActivityManager = () => {
   //TODO: search and sort, maybe filters and labels?
@@ -63,23 +61,6 @@ const ActivityManager = () => {
 
   const [isCreateNewActivityDialogOpen, setIsCreateNewActivityDialogOpen] =
     useState(false);
-
-  const deleteActivity = async (docId: string) => {
-    if (!activitiesList) return;
-
-    try {
-      if (
-        window.confirm(
-          `delete ${findActivityById(activitiesList, docId)?.name} ?`
-        )
-      )
-        await deleteFirestoreDoc(activitiesCollectionRef, docId);
-    } catch (err) {
-      console.log(err);
-    }
-    // TODO: 1. success or failure alert or snackbar 2. seperate dialog with red button and text 3. only delete from activities list. store it somewhere. setTimeout before we delete it from dates list. give undo option during this span.
-    // on clicking undo: 1. clear timeout so we don't delete activity from dates list 2. restore activity in "activities list" from backup
-  };
 
   const showSuccessMessage = (activity: Activity) => {
     showAlert({
@@ -172,7 +153,6 @@ const ActivityManager = () => {
       <SingleActivity
         view="tableRow"
         activity={activity}
-        deleteActivity={deleteActivity}
         handleRecordNow={handleRecordNow}
         isRecordNowBtnLoading={isRecordNowBtnLoading}
         key={activity.id}
@@ -184,7 +164,6 @@ const ActivityManager = () => {
       <SingleActivity
         view="card"
         activity={activity}
-        deleteActivity={deleteActivity}
         handleRecordNow={handleRecordNow}
         isRecordNowBtnLoading={isRecordNowBtnLoading}
         key={activity.id}

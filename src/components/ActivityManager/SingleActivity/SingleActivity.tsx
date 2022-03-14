@@ -23,25 +23,19 @@ import Stopwatch from "components/Stopwatch";
 import React, { useState } from "react";
 import { Activity } from "types";
 import { getFormattedDateForTooltip } from "utils";
+import DeleteActivityDialog from "./DeleteActivityDialog";
 import EditSingleActivityTextfield from "./EditSingleActivityTextfield";
 import ExpandableArea from "./ExpandableArea";
 
 interface SingleActivityProps {
   view: "card" | "tableRow";
   activity: Activity;
-  deleteActivity: (docId: string) => Promise<void>;
   isRecordNowBtnLoading: boolean;
   handleRecordNow: (activity: Activity) => Promise<void>;
 }
 
 const SingleActivity = (props: SingleActivityProps) => {
-  const {
-    activity,
-    deleteActivity,
-    isRecordNowBtnLoading,
-    handleRecordNow,
-    view,
-  } = props;
+  const { activity, isRecordNowBtnLoading, handleRecordNow, view } = props;
 
   const theme = useTheme();
 
@@ -71,7 +65,11 @@ const SingleActivity = (props: SingleActivityProps) => {
   // expand icon
   const [openExpandableArea, setOpenExpandableArea] = useState(false);
 
+  // edit and delete
   const [isEditMode, setIsEditMode] = useState(false);
+
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const handleClose = () => setIsDeleteDialogOpen(false);
 
   return (
     <>
@@ -294,7 +292,7 @@ const SingleActivity = (props: SingleActivityProps) => {
             </ListItemIcon>
             Edit
           </MenuItem>
-          <MenuItem onClick={() => deleteActivity(activity.id)}>
+          <MenuItem onClick={() => setIsDeleteDialogOpen(true)}>
             <ListItemIcon>
               <DeleteForeverRoundedIcon
                 sx={{ color: theme.palette.error.main }}
@@ -307,6 +305,12 @@ const SingleActivity = (props: SingleActivityProps) => {
           <Divider />
         </MenuList>
       </Menu>
+
+      <DeleteActivityDialog
+        activity={activity}
+        handleClose={handleClose}
+        open={isDeleteDialogOpen}
+      />
     </>
   );
 };
