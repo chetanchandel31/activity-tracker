@@ -12,6 +12,7 @@ import useAuthListener from "hooks/useAuthListener";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { Activity } from "types";
+import { createNewFirestoreDoc } from "utils/createNewFirestoreDoc";
 
 interface CreateNewActivityDialogProps {
   activitiesList: Activity[] | null;
@@ -55,11 +56,14 @@ const CreateNewActivityDialog = (props: CreateNewActivityDialogProps) => {
     const now = moment().unix();
     setIsLoading(true);
     try {
-      await activitiesCollectionRef.add({
-        createdAt: now,
-        performedAt: [],
-        name: newActivityName,
-        lastUpdatedAt: now,
+      await createNewFirestoreDoc({
+        collectionRef: activitiesCollectionRef,
+        doc: {
+          createdAt: now,
+          performedAt: [],
+          name: newActivityName,
+          lastUpdatedAt: now,
+        },
       });
 
       showAlert({

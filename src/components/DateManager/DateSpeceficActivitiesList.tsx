@@ -23,7 +23,6 @@ import { Activity, DateSpeceficActivity, Timestamp } from "types";
 
 interface DateSpecificActivitiesListProps {
   activityMenuRef: RefObject<HTMLDivElement>;
-  isDateSpecificActivitiesListLoading: boolean;
   dateSpecificActivitiesList: DateSpeceficActivity[] | null;
   updateFrequency: (
     activityId: string,
@@ -44,12 +43,14 @@ const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
     activityMenuRef,
     dateSpecificActivitiesList,
     deleteActivityFromDate,
-    isDateSpecificActivitiesListLoading,
     selectedDate,
     updateFrequency,
   } = props;
 
   const theme = useTheme();
+
+  const isDateSpecificActivitiesListLoading =
+    dateSpecificActivitiesList === null;
 
   let tableRows: JSX.Element[] = [];
   let cards: JSX.Element[] = []; // same thing but for smaller screens
@@ -64,10 +65,7 @@ const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
       updateFrequency(activityId, "decrease", performedAt);
 
     tableRows.push(
-      <TableRow
-        key={activityId}
-        // sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-      >
+      <TableRow key={activityId}>
         <TableCell align="left">
           <Typography variant="h6" component="span">
             {activity?.name}

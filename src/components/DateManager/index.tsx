@@ -26,11 +26,14 @@ import { ActivitiesList, DateSpeceficActivitiesList, Timestamp } from "types";
 import {
   deleteFirestoreDoc,
   editFirestoreDoc,
+  findActivityById,
   findActivityByName,
   getDateStringFromMoment,
 } from "utils";
+import { createNewFirestoreDoc } from "utils/createNewFirestoreDoc";
 import DateSpecificActivitiesList from "./DateSpeceficActivitiesList";
 import { areTwoDatesSame } from "./helpers/areTwoDatesSame";
+import { doDisableActivityBtn } from "./helpers/doDisableActivityBtn";
 import { getAppropriateTimestamp } from "./helpers/getAppropriateTimestamp";
 import { getFilteredTimestampsArr } from "./helpers/getFilteredTimestampsArr";
 import { getSortedTimestampArr } from "./helpers/getSortedTimestampArr";
@@ -87,27 +90,29 @@ const DateManager = () => {
     const newTimestamp = getAppropriateTimestamp(selectedDate);
 
     // activities-collection
-    activitiesCollectionRef.doc(activity.id).set(
-      {
+    editFirestoreDoc({
+      collectionRef: activitiesCollectionRef,
+      docId: activity.id,
+      updatedDoc: {
         performedAt: getSortedTimestampArr([
           ...activity.performedAt,
           newTimestamp,
         ]),
       },
-      { merge: true }
-    );
+    });
 
     // date-specific-activities-collection
-    dateSpecificActivitiesCollectionRef
-      .doc(activity.id)
-      .set({
+    createNewFirestoreDoc({
+      collectionRef: dateSpecificActivitiesCollectionRef,
+      doc: {
         activityId: activity.id,
         performedAt: [newTimestamp],
         activityRef: firestore
           .collection(`users/${user?.uid}/activities/`)
           .doc(activity.id),
-      })
-      .then(() => console.log("added activity to date"));
+      },
+      docId: activity.id,
+    });
   };
 
   const deleteActivityFromDate = (
@@ -115,7 +120,7 @@ const DateManager = () => {
     dateSpecificActivitiesPerformedAtArr: Timestamp[]
   ) => {
     // activities-collection
-    const activity = activitiesList?.find((el) => el.id === activityId);
+    const activity = findActivityById(activitiesList, activityId);
     if (!activity) return;
     const activitiesCollectionPerformedAtArr = activity.performedAt;
 
@@ -139,9 +144,6 @@ const DateManager = () => {
     updateType: "increase" | "decrease",
     dateSpecificActivitiesPerformedAtArr: Timestamp[]
   ) => {
-    let x = dateSpecificActivitiesPerformedAtArr.at(-1);
-    if (x === undefined) return;
-
     if (
       updateType === "decrease" &&
       dateSpecificActivitiesPerformedAtArr?.length === 1
@@ -150,69 +152,62 @@ const DateManager = () => {
       return undefined;
     }
 
-    const activity = activitiesList?.find((el) => el.id === activityId);
+    const activity =
+      activitiesList && findActivityById(activitiesList, activityId);
     if (!activity) return;
     const activitiesCollectionPerformedAtArr = activity.performedAt;
 
     // TODO: update lastUpdatedAt
     if (updateType === "decrease") {
       // date-specific-activities-collection
-      dateSpecificActivitiesCollectionRef.doc(activityId).set(
-        {
+      editFirestoreDoc({
+        collectionRef: dateSpecificActivitiesCollectionRef,
+        docId: activityId,
+        updatedDoc: {
           performedAt: dateSpecificActivitiesPerformedAtArr.slice(0, -1),
         },
-        { merge: true }
-      );
+      });
       // activities-collection
-      activitiesCollectionRef.doc(activityId).set(
-        {
+      editFirestoreDoc({
+        collectionRef: activitiesCollectionRef,
+        docId: activityId,
+        updatedDoc: {
           performedAt: getFilteredTimestampsArr(
             activitiesCollectionPerformedAtArr,
             [dateSpecificActivitiesPerformedAtArr.at(-1) as Timestamp]
           ),
         },
-        { merge: true }
-      );
+      });
     } else if (updateType === "increase") {
       const newTimestamp = getAppropriateTimestamp(selectedDate);
 
       // date-specific-activities-collection
-      dateSpecificActivitiesCollectionRef.doc(activityId).set(
-        {
+      editFirestoreDoc({
+        collectionRef: dateSpecificActivitiesCollectionRef,
+        docId: activityId,
+        updatedDoc: {
           performedAt: [...dateSpecificActivitiesPerformedAtArr, newTimestamp],
         },
-        { merge: true }
-      );
+      });
       // activities-collection
-      activitiesCollectionRef.doc(activityId).set(
-        {
+      editFirestoreDoc({
+        collectionRef: activitiesCollectionRef,
+        docId: activityId,
+        updatedDoc: {
           performedAt: getSortedTimestampArr([
             ...activitiesCollectionPerformedAtArr,
             newTimestamp,
           ]),
         },
-        { merge: true }
-      );
+      });
     }
   };
 
-  const isAddActivityBtnDisabled = () => {
-    const isSelectedActivityInvalid =
-      activitiesList?.findIndex((el) => el.name === selectedActivity) === -1;
-
-    let isSelectedActivityAlreadyAdded;
-    if (!isSelectedActivityInvalid) {
-      const activity = activitiesList?.find(
-        (el) => el.name === selectedActivity
-      );
-      isSelectedActivityAlreadyAdded =
-        dateSpecificActivitiesList?.findIndex(
-          (el) => el.activityId === activity?.id
-        ) !== -1;
-    }
-
-    return isSelectedActivityInvalid || isSelectedActivityAlreadyAdded;
-  };
+  const isAddActivityBtnDisabled = doDisableActivityBtn({
+    activitiesList,
+    dateSpecificActivitiesList,
+    selectedActivity,
+  });
 
   const isDateValid =
     selectedDate?.toDate()?.toDateString() &&
@@ -347,7 +342,7 @@ const DateManager = () => {
               disableInteractive
               TransitionComponent={Zoom}
               title={
-                isAddActivityBtnDisabled()
+                isAddActivityBtnDisabled
                   ? ""
                   : `Add "${selectedActivity}" to ${selectedDate.format("LL")}`
               }
@@ -364,7 +359,7 @@ const DateManager = () => {
                     maxWidth: "40px",
                     borderRadius: "0 4px 4px 0",
                   }}
-                  disabled={isAddActivityBtnDisabled()}
+                  disabled={isAddActivityBtnDisabled}
                   onClick={addActivityToDate}
                 >
                   <AddRoundedIcon />
@@ -381,9 +376,6 @@ const DateManager = () => {
           activityMenuRef={activityMenuRef}
           dateSpecificActivitiesList={dateSpecificActivitiesList}
           deleteActivityFromDate={deleteActivityFromDate}
-          isDateSpecificActivitiesListLoading={
-            isDateSpecificActivitiesListLoading
-          }
           selectedDate={selectedDate}
           updateFrequency={updateFrequency}
         />

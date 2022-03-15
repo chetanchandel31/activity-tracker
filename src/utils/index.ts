@@ -44,7 +44,7 @@ export const getDaysBetween2Dates = (startDate: Moment, endDate: Moment) => {
 };
 
 /**
- * get firestore docs without subscribing to live changes in a firestore collection
+ * read firestore docs from a firestore collection once, without subscribing to live changes
  *
  * @param collection - firestore collection path. e.g. "users/uid/todos"
  * @returns all firestore docs in that collection
@@ -65,8 +65,8 @@ export const getAllFirestoreDocs = async (collection: string) => {
   return docs;
 };
 
-export const findActivityById = (list: Activity[], id: string) =>
-  list.find((el) => el.id === id);
+export const findActivityById = (list: Activity[] | null, id: string) =>
+  list?.find((el) => el.id === id);
 
 export const findActivityByName = (list: Activity[] | null, name: string) =>
   list?.find((el) => el.name === name);
