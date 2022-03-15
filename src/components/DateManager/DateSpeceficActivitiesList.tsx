@@ -17,18 +17,15 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import Zoom from "@mui/material/Zoom";
 import NoActivities from "assets/images/no-activities.svg";
+import useAuthListener from "hooks/useAuthListener";
 import moment from "moment";
 import { RefObject } from "react";
 import { Activity, DateSpeceficActivity, Timestamp } from "types";
+import { updateFrequency } from "./helpers/updateFrequency";
 
 interface DateSpecificActivitiesListProps {
   activityMenuRef: RefObject<HTMLDivElement>;
   dateSpecificActivitiesList: DateSpeceficActivity[] | null;
-  updateFrequency: (
-    activityId: string,
-    updateType: "increase" | "decrease",
-    dateSpecificActivitiesPerformedAtArr: Timestamp[]
-  ) => void;
   activitiesList: Activity[] | null;
   deleteActivityFromDate: (
     activityId: string,
@@ -44,9 +41,8 @@ const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
     dateSpecificActivitiesList,
     deleteActivityFromDate,
     selectedDate,
-    updateFrequency,
   } = props;
-
+  const [user] = useAuthListener();
   const theme = useTheme();
 
   const isDateSpecificActivitiesListLoading =
@@ -59,10 +55,17 @@ const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
     const activity = activitiesList?.find((el) => el.id === activityId);
 
     const handleDelete = () => deleteActivityFromDate(activityId, performedAt);
-    const handleIncreaseFrequency = () =>
-      updateFrequency(activityId, "increase", performedAt);
-    const handleDecreaseFrequency = () =>
-      updateFrequency(activityId, "decrease", performedAt);
+
+    const handleUpdateFrequency = (updateType: "increase" | "decrease") =>
+      updateFrequency({
+        activitiesList,
+        activityId,
+        dateSpecificActivitiesPerformedAtArr: performedAt,
+        deleteActivityFromDate,
+        selectedDate,
+        updateType,
+        user,
+      });
 
     tableRows.push(
       <TableRow key={activityId}>
@@ -89,7 +92,7 @@ const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
                 width: "30px",
                 minWidth: "30px",
               }}
-              onClick={handleDecreaseFrequency}
+              onClick={() => handleUpdateFrequency("decrease")}
             >
               <Typography variant="h6">-</Typography>
             </Button>
@@ -101,7 +104,7 @@ const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
                 width: "30px",
                 minWidth: "30px",
               }}
-              onClick={handleIncreaseFrequency}
+              onClick={() => handleUpdateFrequency("increase")}
             >
               <Typography variant="h6">+</Typography>
             </Button>
@@ -176,7 +179,7 @@ const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
                     width: "30px",
                     minWidth: "30px",
                   }}
-                  onClick={handleDecreaseFrequency}
+                  onClick={() => handleUpdateFrequency("decrease")}
                 >
                   <Typography variant="h6">-</Typography>
                 </Button>
@@ -189,7 +192,7 @@ const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
                     width: "30px",
                     minWidth: "30px",
                   }}
-                  onClick={handleIncreaseFrequency}
+                  onClick={() => handleUpdateFrequency("increase")}
                 >
                   <Typography variant="h6">+</Typography>
                 </Button>

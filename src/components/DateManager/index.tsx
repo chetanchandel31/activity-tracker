@@ -33,9 +33,9 @@ import DateSpecificActivitiesList from "./DateSpeceficActivitiesList";
 import { addActivityToDate } from "./helpers/addActivityToDate";
 import { areTwoDatesSame } from "./helpers/areTwoDatesSame";
 import { doDisableActivityBtn } from "./helpers/doDisableActivityBtn";
-import { getAppropriateTimestamp } from "./helpers/getAppropriateTimestamp";
 import { getFilteredTimestampsArr } from "./helpers/getFilteredTimestampsArr";
-import { getSortedTimestampArr } from "./helpers/getSortedTimestampArr";
+import { visitNextDate } from "./helpers/visitNextDate";
+import { visitPreviousDate } from "./helpers/visitPreviousDate";
 
 const DateManager = () => {
   // TODO: prevent user from adding activities to future dates
@@ -107,70 +107,6 @@ const DateManager = () => {
     deleteFirestoreDoc(dateSpecificActivitiesCollectionRef, activityId);
   };
 
-  const updateFrequency = (
-    activityId: string,
-    updateType: "increase" | "decrease",
-    dateSpecificActivitiesPerformedAtArr: Timestamp[]
-  ) => {
-    if (
-      updateType === "decrease" &&
-      dateSpecificActivitiesPerformedAtArr?.length === 1
-    ) {
-      deleteActivityFromDate(activityId, dateSpecificActivitiesPerformedAtArr);
-      return undefined;
-    }
-
-    const activity =
-      activitiesList && findActivityById(activitiesList, activityId);
-    if (!activity) return;
-    const activitiesCollectionPerformedAtArr = activity.performedAt;
-
-    // TODO: update lastUpdatedAt
-    if (updateType === "decrease") {
-      // date-specific-activities-collection
-      editFirestoreDoc({
-        collectionRef: dateSpecificActivitiesCollectionRef,
-        docId: activityId,
-        updatedDoc: {
-          performedAt: dateSpecificActivitiesPerformedAtArr.slice(0, -1),
-        },
-      });
-      // activities-collection
-      editFirestoreDoc({
-        collectionRef: activitiesCollectionRef,
-        docId: activityId,
-        updatedDoc: {
-          performedAt: getFilteredTimestampsArr(
-            activitiesCollectionPerformedAtArr,
-            [dateSpecificActivitiesPerformedAtArr.at(-1) as Timestamp]
-          ),
-        },
-      });
-    } else if (updateType === "increase") {
-      const newTimestamp = getAppropriateTimestamp(selectedDate);
-
-      // date-specific-activities-collection
-      editFirestoreDoc({
-        collectionRef: dateSpecificActivitiesCollectionRef,
-        docId: activityId,
-        updatedDoc: {
-          performedAt: [...dateSpecificActivitiesPerformedAtArr, newTimestamp],
-        },
-      });
-      // activities-collection
-      editFirestoreDoc({
-        collectionRef: activitiesCollectionRef,
-        docId: activityId,
-        updatedDoc: {
-          performedAt: getSortedTimestampArr([
-            ...activitiesCollectionPerformedAtArr,
-            newTimestamp,
-          ]),
-        },
-      });
-    }
-  };
-
   const isAddActivityBtnDisabled = doDisableActivityBtn({
     activitiesList,
     dateSpecificActivitiesList,
@@ -185,15 +121,6 @@ const DateManager = () => {
     //TODO: check and fix warning
     options: activitiesList || [],
     getOptionLabel: (option: any) => option.name || "", // TODO: fix type
-  };
-
-  const handleVisitPrevDate = () => {
-    const prevDate = selectedDate.subtract(1, "day");
-    history.push(`/date-manager/${getDateStringFromMoment(prevDate)}`);
-  };
-  const handleVisitNextDate = () => {
-    const nextDate = selectedDate.add(1, "day");
-    history.push(`/date-manager/${getDateStringFromMoment(nextDate)}`);
   };
 
   const activityMenuRef = useRef<HTMLDivElement>(null);
@@ -212,7 +139,10 @@ const DateManager = () => {
             justifyContent: "center",
           }}
         >
-          <IconButton size="small" onClick={handleVisitPrevDate}>
+          <IconButton
+            size="small"
+            onClick={() => visitPreviousDate(selectedDate, history)}
+          >
             <NavigateBeforeRoundedIcon />
           </IconButton>
           <Typography
@@ -226,7 +156,7 @@ const DateManager = () => {
           </Typography>
           <IconButton
             size="small"
-            onClick={handleVisitNextDate}
+            onClick={() => visitNextDate(selectedDate, history)}
             disabled={isSelectedDateSameAsCurrentDate}
           >
             <NavigateNextRoundedIcon />
@@ -349,7 +279,6 @@ const DateManager = () => {
           dateSpecificActivitiesList={dateSpecificActivitiesList}
           deleteActivityFromDate={deleteActivityFromDate}
           selectedDate={selectedDate}
-          updateFrequency={updateFrequency}
         />
       </Container>
     </>

@@ -23,7 +23,7 @@ export const addActivityToDate = ({
   selectedDate,
   user,
 }: Args) => {
-  // ****** collection refs ******
+  /* ****** collection refs ****** */
   const selectedDateString = getDateStringFromMoment(selectedDate);
   const activitiesCollectionRef = firestore.collection(
     `users/${user?.uid}/activities`
@@ -32,13 +32,13 @@ export const addActivityToDate = ({
     `users/${user?.uid}/dates/${selectedDateString}/date-specific-activities`
   );
 
-  // ****** look for corresponding activity in `activities` collection ******
+  /* ****** look for corresponding activity in `activities` collection ****** */
   const activity = findActivityByName(activitiesList, selectedActivity);
 
   if (!activity) return;
   const newTimestamp = getAppropriateTimestamp(selectedDate);
 
-  // ****** update firestore ******
+  /* ****** update firestore ****** */
   // activities-collection
   editFirestoreDoc({
     collectionRef: activitiesCollectionRef,
