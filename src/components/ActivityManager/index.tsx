@@ -23,7 +23,8 @@ import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { ActivitiesList, Activity, DateSpeceficActivitiesList } from "types";
-import { getDateStringFromMoment } from "utils";
+import { editFirestoreDoc, getDateStringFromMoment } from "utils";
+import { createNewFirestoreDoc } from "utils/createNewFirestoreDoc";
 import { v4 as uuidv4 } from "uuid";
 import CreateNewActivityDialog from "./CreateNewActivityDialog";
 import SingleActivity from "./SingleActivity/SingleActivity";
@@ -101,35 +102,42 @@ const ActivityManager = () => {
     try {
       if (isActivityAlreadyPerformedtoday) {
         // date-specific-activities-collection
-        await dateSpecificActivitiesCollectionRef.doc(activity.id).set(
-          {
+        await editFirestoreDoc({
+          collectionRef: dateSpecificActivitiesCollectionRef,
+          docId: activity.id,
+          updatedDoc: {
             performedAt: [...dateSpecificActivity.performedAt, newTimestamp],
           },
-          { merge: true }
-        );
-        // activities-collection
-        await activitiesCollectionRef.doc(activity.id).set(
-          {
-            performedAt: [...activity.performedAt, newTimestamp],
-          },
-          { merge: true }
-        );
-      } else {
-        // date-specific-activities-collection
-        await dateSpecificActivitiesCollectionRef.doc(activity.id).set({
-          activityId: activity.id,
-          performedAt: [newTimestamp],
-          activityRef: firestore
-            .collection(`users/${user?.uid}/activities/`)
-            .doc(activity.id),
         });
         // activities-collection
-        await activitiesCollectionRef.doc(activity.id).set(
-          {
+        await editFirestoreDoc({
+          collectionRef: activitiesCollectionRef,
+          docId: activity.id,
+          updatedDoc: {
             performedAt: [...activity.performedAt, newTimestamp],
           },
-          { merge: true }
-        );
+        });
+      } else {
+        // date-specific-activities-collection
+        await createNewFirestoreDoc({
+          collectionRef: dateSpecificActivitiesCollectionRef,
+          doc: {
+            activityId: activity.id,
+            performedAt: [newTimestamp],
+            activityRef: firestore
+              .collection(`users/${user?.uid}/activities/`)
+              .doc(activity.id),
+          },
+          docId: activity.id,
+        });
+        // activities-collection
+        await editFirestoreDoc({
+          collectionRef: activitiesCollectionRef,
+          docId: activity.id,
+          updatedDoc: {
+            performedAt: [...activity.performedAt, newTimestamp],
+          },
+        });
       }
 
       showSuccessMessage(activity);
