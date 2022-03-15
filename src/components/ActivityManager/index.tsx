@@ -15,7 +15,6 @@ import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import WelcomeImg from "assets/images/welcome.svg";
 import { useSnackbarContext } from "contexts/snackbar-context";
-import { firestore } from "firebase-config/firebase";
 import useAuthListener from "hooks/useAuthListener";
 import useFirestore from "hooks/useFirestore";
 import moment from "moment";
@@ -23,10 +22,9 @@ import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { ActivitiesList, Activity, DateSpeceficActivitiesList } from "types";
-import { editFirestoreDoc, getDateStringFromMoment } from "utils";
-import { createNewFirestoreDoc } from "utils/createNewFirestoreDoc";
-import { v4 as uuidv4 } from "uuid";
+import { getDateStringFromMoment } from "utils";
 import CreateNewActivityDialog from "./CreateNewActivityDialog";
+import { handleRecordNowInFirestore } from "./helpers/handleRecordNowInFirestore";
 import SingleActivity from "./SingleActivity/SingleActivity";
 
 const ActivityManager = () => {
@@ -40,19 +38,9 @@ const ActivityManager = () => {
   const { docs: activitiesList }: ActivitiesList = useFirestore(
     `users/${user?.uid}/activities`
   );
-
   const areActivitiesLoading = activitiesList === null;
 
-  const activitiesCollectionRef = firestore.collection(
-    `users/${user?.uid}/activities`
-  );
-
   const currentDateString = getDateStringFromMoment(moment());
-
-  const dateSpecificActivitiesCollectionRef = firestore.collection(
-    `users/${user?.uid}/dates/${currentDateString}/date-specific-activities`
-  );
-
   const { docs: dateSpecificActivitiesList }: DateSpeceficActivitiesList =
     useFirestore(
       `users/${user?.uid}/dates/${currentDateString}/date-specific-activities`
@@ -89,56 +77,18 @@ const ActivityManager = () => {
     if (dateSpecificActivitiesList === null) return;
     setIsRecordNowBtnLoading(true);
 
-    const newTimestamp = {
-      timestamp: moment().unix(),
-      timestampId: `t-${uuidv4()}`,
-    };
-
     const dateSpecificActivity = dateSpecificActivitiesList.find(
       (el) => el.activityId === activity.id
     );
     const isActivityAlreadyPerformedtoday = dateSpecificActivity !== undefined;
 
     try {
-      if (isActivityAlreadyPerformedtoday) {
-        // date-specific-activities-collection
-        await editFirestoreDoc({
-          collectionRef: dateSpecificActivitiesCollectionRef,
-          docId: activity.id,
-          updatedDoc: {
-            performedAt: [...dateSpecificActivity.performedAt, newTimestamp],
-          },
-        });
-        // activities-collection
-        await editFirestoreDoc({
-          collectionRef: activitiesCollectionRef,
-          docId: activity.id,
-          updatedDoc: {
-            performedAt: [...activity.performedAt, newTimestamp],
-          },
-        });
-      } else {
-        // date-specific-activities-collection
-        await createNewFirestoreDoc({
-          collectionRef: dateSpecificActivitiesCollectionRef,
-          doc: {
-            activityId: activity.id,
-            performedAt: [newTimestamp],
-            activityRef: firestore
-              .collection(`users/${user?.uid}/activities/`)
-              .doc(activity.id),
-          },
-          docId: activity.id,
-        });
-        // activities-collection
-        await editFirestoreDoc({
-          collectionRef: activitiesCollectionRef,
-          docId: activity.id,
-          updatedDoc: {
-            performedAt: [...activity.performedAt, newTimestamp],
-          },
-        });
-      }
+      handleRecordNowInFirestore({
+        activity,
+        dateSpecificActivity,
+        isActivityAlreadyPerformedtoday,
+        user,
+      });
 
       showSuccessMessage(activity);
     } catch (err: any) {
