@@ -27,11 +27,10 @@ import {
   deleteFirestoreDoc,
   editFirestoreDoc,
   findActivityById,
-  findActivityByName,
   getDateStringFromMoment,
 } from "utils";
-import { createNewFirestoreDoc } from "utils/createNewFirestoreDoc";
 import DateSpecificActivitiesList from "./DateSpeceficActivitiesList";
+import { addActivityToDate } from "./helpers/addActivityToDate";
 import { areTwoDatesSame } from "./helpers/areTwoDatesSame";
 import { doDisableActivityBtn } from "./helpers/doDisableActivityBtn";
 import { getAppropriateTimestamp } from "./helpers/getAppropriateTimestamp";
@@ -83,37 +82,6 @@ const DateManager = () => {
 
   //whenever frequency gets updated in any way, two places have to be updated:
   // 1. performedAt in "activities" collection 2. performedAt in "date-specific-activities" collection
-  const addActivityToDate = () => {
-    const activity = findActivityByName(activitiesList, selectedActivity);
-
-    if (!activity) return;
-    const newTimestamp = getAppropriateTimestamp(selectedDate);
-
-    // activities-collection
-    editFirestoreDoc({
-      collectionRef: activitiesCollectionRef,
-      docId: activity.id,
-      updatedDoc: {
-        performedAt: getSortedTimestampArr([
-          ...activity.performedAt,
-          newTimestamp,
-        ]),
-      },
-    });
-
-    // date-specific-activities-collection
-    createNewFirestoreDoc({
-      collectionRef: dateSpecificActivitiesCollectionRef,
-      doc: {
-        activityId: activity.id,
-        performedAt: [newTimestamp],
-        activityRef: firestore
-          .collection(`users/${user?.uid}/activities/`)
-          .doc(activity.id),
-      },
-      docId: activity.id,
-    });
-  };
 
   const deleteActivityFromDate = (
     activityId: string,
@@ -212,9 +180,6 @@ const DateManager = () => {
   const isDateValid =
     selectedDate?.toDate()?.toDateString() &&
     selectedDate?.toDate()?.toDateString() !== "Invalid Date";
-
-  const isDateSpecificActivitiesListLoading =
-    dateSpecificActivitiesList === null;
 
   const defaultProps = {
     //TODO: check and fix warning
@@ -360,7 +325,14 @@ const DateManager = () => {
                     borderRadius: "0 4px 4px 0",
                   }}
                   disabled={isAddActivityBtnDisabled}
-                  onClick={addActivityToDate}
+                  onClick={() =>
+                    addActivityToDate({
+                      activitiesList,
+                      selectedActivity,
+                      selectedDate,
+                      user,
+                    })
+                  }
                 >
                   <AddRoundedIcon />
                 </Button>
