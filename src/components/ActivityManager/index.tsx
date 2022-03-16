@@ -80,13 +80,11 @@ const ActivityManager = () => {
     const dateSpecificActivity = dateSpecificActivitiesList.find(
       (el) => el.activityId === activity.id
     );
-    const isActivityAlreadyPerformedtoday = dateSpecificActivity !== undefined;
 
     try {
-      handleRecordNowInFirestore({
+      await handleRecordNowInFirestore({
         activity,
         dateSpecificActivity,
-        isActivityAlreadyPerformedtoday,
         user,
       });
 
