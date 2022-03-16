@@ -77,3 +77,5 @@ export const getFormattedDateForTooltip = (timestamp?: number) =>
 export { deleteFirestoreDoc } from "./deleteFirestoreDoc";
 
 export { editFirestoreDoc } from "./editFirestoreDoc";
+
+export { doOpenCreateActivityDialogOnFirstRender } from "./doOpenCreateActivityDialogOnFirstRender";

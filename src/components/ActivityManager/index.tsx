@@ -18,14 +18,20 @@ import { useSnackbarContext } from "contexts/snackbar-context";
 import useAuthListener from "hooks/useAuthListener";
 import useFirestore from "hooks/useFirestore";
 import moment from "moment";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import { Link as RouterLink, useHistory, useLocation } from "react-router-dom";
 import { ActivitiesList, Activity, DateSpeceficActivitiesList } from "types";
 import { getDateStringFromMoment } from "utils";
 import CreateNewActivityDialog from "./CreateNewActivityDialog";
 import { handleRecordNowInFirestore } from "./helpers/handleRecordNowInFirestore";
 import SingleActivity from "./SingleActivity/SingleActivity";
+
+type RouterState =
+  | {
+      doOpenCreateActivityDialogOnFirstRender: boolean;
+    }
+  | undefined;
 
 const ActivityManager = () => {
   //TODO: search and sort, maybe filters and labels?
@@ -33,14 +39,16 @@ const ActivityManager = () => {
 
   const theme = useTheme();
   const [user] = useAuthListener();
+
   const history = useHistory();
+  const location = useLocation();
+  const routerState = location.state as RouterState;
+
+  const currentDateString = getDateStringFromMoment(moment());
 
   const { docs: activitiesList }: ActivitiesList = useFirestore(
     `users/${user?.uid}/activities`
   );
-  const areActivitiesLoading = activitiesList === null;
-
-  const currentDateString = getDateStringFromMoment(moment());
   const { docs: dateSpecificActivitiesList }: DateSpeceficActivitiesList =
     useFirestore(
       `users/${user?.uid}/dates/${currentDateString}/date-specific-activities`
@@ -50,6 +58,11 @@ const ActivityManager = () => {
 
   const [isCreateNewActivityDialogOpen, setIsCreateNewActivityDialogOpen] =
     useState(false);
+
+  useEffect(() => {
+    routerState?.doOpenCreateActivityDialogOnFirstRender &&
+      setIsCreateNewActivityDialogOpen(true);
+  }, [routerState?.doOpenCreateActivityDialogOnFirstRender]);
 
   const showSuccessMessage = (activity: Activity) => {
     showAlert({
@@ -128,6 +141,7 @@ const ActivityManager = () => {
   });
 
   const isActivitiesListNonEmpty = activitiesList && activitiesList.length > 0;
+  const areActivitiesLoading = activitiesList === null;
 
   return (
     <>
@@ -244,8 +258,6 @@ const ActivityManager = () => {
                   position: "absolute",
                   bottom: 16,
                   right: 16,
-                  //   transition: "min-width 2s",
-                  //   width: "135px",
                 }}
                 onClick={() => setIsCreateNewActivityDialogOpen(true)}
               >
