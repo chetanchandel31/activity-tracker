@@ -16,12 +16,13 @@ import { createNewFirestoreDoc } from "utils/createNewFirestoreDoc";
 
 interface CreateNewActivityDialogProps {
   activitiesList: Activity[] | null;
+  initialActivityName?: string;
   open: boolean;
   handleClose: () => void;
 }
 
 const CreateNewActivityDialog = (props: CreateNewActivityDialogProps) => {
-  const { activitiesList, handleClose, open } = props;
+  const { activitiesList, handleClose, initialActivityName, open } = props;
 
   const theme = useTheme();
 
@@ -33,7 +34,9 @@ const CreateNewActivityDialog = (props: CreateNewActivityDialogProps) => {
   const { showAlert } = useSnackbarContext();
 
   // TODO: add notes (optional). placeholder: any additional info you'd like to attach with this activity
-  const [newActivityName, setNewActivityName] = useState("");
+  const [newActivityName, setNewActivityName] = useState(
+    initialActivityName || ""
+  );
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 

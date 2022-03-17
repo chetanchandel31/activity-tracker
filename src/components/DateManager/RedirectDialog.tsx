@@ -6,7 +6,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useTheme } from "@mui/material/styles";
 import { useHistory } from "react-router-dom";
-import { doOpenCreateActivityDialogOnFirstRender } from "utils";
+import { openCreateActivityDialogOnFirstRender } from "utils";
 
 interface RedirectDialogProps {
   open: boolean;
@@ -31,7 +31,9 @@ const RedirectDialog = (props: RedirectDialogProps) => {
       <DialogActions sx={{ padding: theme.spacing(0, 3, 3, 3) }}>
         <Button onClick={handleClose}>Cancel</Button>
         <Button
-          onClick={() => doOpenCreateActivityDialogOnFirstRender(history)}
+          onClick={() =>
+            openCreateActivityDialogOnFirstRender(history, selectedActivity)
+          }
           sx={{ boxShadow: "none" }}
           variant="contained"
         >

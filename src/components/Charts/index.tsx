@@ -17,7 +17,7 @@ import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { useHistory } from "react-router-dom";
 import { ActivitiesList } from "types";
-import { doOpenCreateActivityDialogOnFirstRender } from "utils";
+import { openCreateActivityDialogOnFirstRender } from "utils";
 import Graph from "./Graph";
 import {
   LAST_15_DAYS,
@@ -80,7 +80,7 @@ const Charts = () => {
               You currently don't have any activities to view chart for.
             </Typography>
             <Button
-              onClick={() => doOpenCreateActivityDialogOnFirstRender(history)}
+              onClick={() => openCreateActivityDialogOnFirstRender(history)}
               sx={{ boxShadow: "none", textTransform: "none" }}
               variant="contained"
             >

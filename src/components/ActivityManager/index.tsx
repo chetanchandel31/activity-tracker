@@ -30,6 +30,7 @@ import SingleActivity from "./SingleActivity/SingleActivity";
 type RouterState =
   | {
       doOpenCreateActivityDialogOnFirstRender: boolean;
+      initialActivityName: string;
     }
   | undefined;
 
@@ -269,6 +270,7 @@ const ActivityManager = () => {
 
         <CreateNewActivityDialog
           activitiesList={activitiesList}
+          initialActivityName={routerState?.initialActivityName}
           handleClose={() => setIsCreateNewActivityDialogOpen(false)}
           open={isCreateNewActivityDialogOpen}
         />

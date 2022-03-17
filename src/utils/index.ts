@@ -1,5 +1,5 @@
 export { deleteFirestoreDoc } from "./deleteFirestoreDoc";
-export { doOpenCreateActivityDialogOnFirstRender } from "./doOpenCreateActivityDialogOnFirstRender";
+export { openCreateActivityDialogOnFirstRender } from "./openCreateActivityDialogOnFirstRender";
 export { editFirestoreDoc } from "./editFirestoreDoc";
 export { findActivityById } from "./findActivityById";
 export { findActivityByName } from "./findActivityByName";
