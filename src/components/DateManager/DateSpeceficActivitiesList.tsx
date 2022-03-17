@@ -20,17 +20,14 @@ import NoActivities from "assets/images/no-activities.svg";
 import useAuthListener from "hooks/useAuthListener";
 import moment from "moment";
 import { RefObject } from "react";
-import { Activity, DateSpeceficActivity, Timestamp } from "types";
+import { Activity, DateSpeceficActivity } from "types";
+import { deleteActivityFromDate } from "./helpers/deleteActivityFromDate";
 import { updateFrequency } from "./helpers/updateFrequency";
 
 interface DateSpecificActivitiesListProps {
   activityMenuRef: RefObject<HTMLDivElement>;
   dateSpecificActivitiesList: DateSpeceficActivity[] | null;
   activitiesList: Activity[] | null;
-  deleteActivityFromDate: (
-    activityId: string,
-    dateSpecificActivitiesPerformedAtArr: Timestamp[]
-  ) => void;
   selectedDate: moment.Moment;
 }
 
@@ -39,7 +36,6 @@ const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
     activitiesList,
     activityMenuRef,
     dateSpecificActivitiesList,
-    deleteActivityFromDate,
     selectedDate,
   } = props;
   const [user] = useAuthListener();
@@ -54,14 +50,20 @@ const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
   dateSpecificActivitiesList?.forEach(({ activityId, performedAt }) => {
     const activity = activitiesList?.find((el) => el.id === activityId);
 
-    const handleDelete = () => deleteActivityFromDate(activityId, performedAt);
+    const handleDelete = () =>
+      deleteActivityFromDate({
+        activitiesList,
+        activityId,
+        dateSpecificActivitiesPerformedAtArr: performedAt,
+        selectedDate,
+        user,
+      });
 
     const handleUpdateFrequency = (updateType: "increase" | "decrease") =>
       updateFrequency({
         activitiesList,
         activityId,
         dateSpecificActivitiesPerformedAtArr: performedAt,
-        deleteActivityFromDate,
         selectedDate,
         updateType,
         user,

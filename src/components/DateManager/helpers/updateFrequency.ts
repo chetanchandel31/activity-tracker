@@ -6,6 +6,7 @@ import {
   findActivityById,
   getDateStringFromMoment,
 } from "utils";
+import { deleteActivityFromDate } from "./deleteActivityFromDate";
 import { getAppropriateTimestamp } from "./getAppropriateTimestamp";
 import { getFilteredTimestampsArr } from "./getFilteredTimestampsArr";
 import { getSortedTimestampArr } from "./getSortedTimestampArr";
@@ -14,10 +15,6 @@ interface Args {
   activityId: string;
   activitiesList: Activity[] | null;
   dateSpecificActivitiesPerformedAtArr: Timestamp[];
-  deleteActivityFromDate: (
-    activityId: string,
-    dateSpecificActivitiesPerformedAtArr: Timestamp[]
-  ) => void; // TODO: REMOVE IT AND IMPORT INSTEAD. IF IT MANAGES TO GET EXTRACTED OUT
   selectedDate: moment.Moment;
   updateType: "increase" | "decrease";
   user: firebase.User | null;
@@ -27,7 +24,6 @@ export const updateFrequency = ({
   activitiesList,
   activityId,
   dateSpecificActivitiesPerformedAtArr,
-  deleteActivityFromDate,
   selectedDate,
   updateType,
   user,
@@ -46,7 +42,13 @@ export const updateFrequency = ({
     updateType === "decrease" &&
     dateSpecificActivitiesPerformedAtArr?.length === 1
   ) {
-    deleteActivityFromDate(activityId, dateSpecificActivitiesPerformedAtArr);
+    deleteActivityFromDate({
+      activitiesList,
+      activityId,
+      dateSpecificActivitiesPerformedAtArr,
+      selectedDate,
+      user,
+    });
     return undefined;
   }
 

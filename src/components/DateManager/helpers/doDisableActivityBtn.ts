@@ -12,18 +12,12 @@ export const doDisableActivityBtn = ({
   dateSpecificActivitiesList,
   selectedActivity,
 }: Args) => {
-  const isSelectedActivityInvalid =
-    activitiesList?.findIndex((el) => el.name === selectedActivity) === -1;
+  const activity = findActivityByName(activitiesList, selectedActivity);
 
-  let isSelectedActivityAlreadyAdded;
-  if (!isSelectedActivityInvalid) {
-    const activity = findActivityByName(activitiesList, selectedActivity);
+  const isSelectedActivityAlreadyAdded =
+    dateSpecificActivitiesList?.findIndex(
+      (el) => el.activityId === activity?.id
+    ) !== -1;
 
-    isSelectedActivityAlreadyAdded =
-      dateSpecificActivitiesList?.findIndex(
-        (el) => el.activityId === activity?.id
-      ) !== -1;
-  }
-
-  return isSelectedActivityInvalid || isSelectedActivityAlreadyAdded;
+  return !selectedActivity || isSelectedActivityAlreadyAdded;
 };

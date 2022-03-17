@@ -22,36 +22,28 @@ import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useHistory, useParams } from "react-router-dom";
-import { ActivitiesList, DateSpeceficActivitiesList, Timestamp } from "types";
-import {
-  deleteFirestoreDoc,
-  editFirestoreDoc,
-  findActivityById,
-  getDateStringFromMoment,
-} from "utils";
+import { ActivitiesList, DateSpeceficActivitiesList } from "types";
+import { deleteFirestoreDoc, getDateStringFromMoment } from "utils";
 import DateSpecificActivitiesList from "./DateSpeceficActivitiesList";
-import { addActivityToDate } from "./helpers/addActivityToDate";
+import { addActivity } from "./helpers/addActivity";
 import { areTwoDatesSame } from "./helpers/areTwoDatesSame";
 import { doDisableActivityBtn } from "./helpers/doDisableActivityBtn";
-import { getFilteredTimestampsArr } from "./helpers/getFilteredTimestampsArr";
 import { visitNextDate } from "./helpers/visitNextDate";
 import { visitPreviousDate } from "./helpers/visitPreviousDate";
+import RedirectDialog from "./RedirectDialog";
 
 const DateManager = () => {
   // TODO: prevent user from adding activities to future dates
-  // TODO: create new activity right from here, mui autocomplete > createable. use same dialog component
-  // TODO: seperate out helper functions? currently can't copy paste/reuse
   const theme = useTheme();
   const [user] = useAuthListener();
   const history = useHistory();
-  const { date: selectedDateString } = useParams<{ date: string }>();
 
+  const { date: selectedDateString } = useParams<{ date: string }>();
   const selectedDate = moment(selectedDateString);
   const [selectedActivity, setSelectedActivity] = useState("");
 
-  const activitiesCollectionRef = firestore.collection(
-    `users/${user?.uid}/activities`
-  );
+  const [isRedirectDialogOpen, setIsRedirectDialogOpen] = useState(false);
+
   const dateSpecificActivitiesCollectionRef = firestore.collection(
     `users/${user?.uid}/dates/${selectedDateString}/date-specific-activities`
   );
@@ -79,33 +71,6 @@ const DateManager = () => {
     selectedDate,
     moment()
   );
-
-  //whenever frequency gets updated in any way, two places have to be updated:
-  // 1. performedAt in "activities" collection 2. performedAt in "date-specific-activities" collection
-
-  const deleteActivityFromDate = (
-    activityId: string,
-    dateSpecificActivitiesPerformedAtArr: Timestamp[]
-  ) => {
-    // activities-collection
-    const activity = findActivityById(activitiesList, activityId);
-    if (!activity) return;
-    const activitiesCollectionPerformedAtArr = activity.performedAt;
-
-    editFirestoreDoc({
-      collectionRef: activitiesCollectionRef,
-      docId: activityId,
-      updatedDoc: {
-        performedAt: getFilteredTimestampsArr(
-          activitiesCollectionPerformedAtArr,
-          dateSpecificActivitiesPerformedAtArr
-        ),
-      },
-    });
-
-    // date-specific-activities-collection
-    deleteFirestoreDoc(dateSpecificActivitiesCollectionRef, activityId);
-  };
 
   const isAddActivityBtnDisabled = doDisableActivityBtn({
     activitiesList,
@@ -192,12 +157,10 @@ const DateManager = () => {
                     selectedDate?.toDate()?.toDateString() === "Invalid Date" ||
                     !selectedDate
                   }
-                  // helperText={params?.inputProps?.placeholder}
                   sx={{ width: { xs: "100%", sm: 150 } }}
                 />
               )}
             />
-            {/* <TextField size="small" error={false} /> */}
           </LocalizationProvider>
 
           <Box
@@ -209,6 +172,7 @@ const DateManager = () => {
             <Autocomplete
               {...defaultProps}
               // value={selectedActivity}
+              freeSolo
               onInputChange={(event, newInputValue) => {
                 setSelectedActivity(newInputValue);
               }}
@@ -221,8 +185,6 @@ const DateManager = () => {
                 <TextField
                   {...params}
                   label="Select Activity"
-                  // helperText="ok"
-                  // color="warning"
                   ref={activityMenuRef}
                   sx={{
                     "& .MuiInputBase-root": {
@@ -256,8 +218,9 @@ const DateManager = () => {
                   }}
                   disabled={isAddActivityBtnDisabled}
                   onClick={() =>
-                    addActivityToDate({
+                    addActivity({
                       activitiesList,
+                      openRedirectDialog: () => setIsRedirectDialogOpen(true),
                       selectedActivity,
                       selectedDate,
                       user,
@@ -277,10 +240,15 @@ const DateManager = () => {
           activitiesList={activitiesList}
           activityMenuRef={activityMenuRef}
           dateSpecificActivitiesList={dateSpecificActivitiesList}
-          deleteActivityFromDate={deleteActivityFromDate}
           selectedDate={selectedDate}
         />
       </Container>
+
+      <RedirectDialog
+        open={isRedirectDialogOpen}
+        handleClose={() => setIsRedirectDialogOpen(false)}
+        selectedActivity={selectedActivity}
+      />
     </>
   );
 };

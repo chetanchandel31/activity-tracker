@@ -3,12 +3,6 @@ import { firestore } from "firebase-config/firebase";
 import { useEffect, useState } from "react";
 
 const useFirestore = (collection: string) => {
-  // type Doc =
-  //   | {
-  //       [key: string]: any;
-  //     }
-  //   | DocumentType;
-
   const [docs, setDocs] = useState<any[] | null>(null);
 
   useEffect(() => {

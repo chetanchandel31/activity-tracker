@@ -11,13 +11,13 @@ import useAuthListener from "hooks/useAuthListener";
 import { Activity } from "types";
 import { deleteFirestoreDoc } from "utils";
 
-interface DeleteActivity {
+interface DeleteActivityDialogProps {
   activity: Activity;
   open: boolean;
   handleClose: () => void;
 }
 
-const DeleteActivityDialog = (props: DeleteActivity) => {
+const DeleteActivityDialog = (props: DeleteActivityDialogProps) => {
   const { activity, handleClose, open } = props;
 
   const theme = useTheme();
