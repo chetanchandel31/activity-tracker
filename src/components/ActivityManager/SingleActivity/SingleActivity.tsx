@@ -1,18 +1,10 @@
-import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
-import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import MenuList from "@mui/material/MenuList";
 import { useTheme } from "@mui/material/styles";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
@@ -20,12 +12,13 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import Zoom from "@mui/material/Zoom";
 import Stopwatch from "components/Stopwatch";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Activity } from "types";
 import { getFormattedDateForTooltip } from "utils";
 import DeleteActivityDialog from "./DeleteActivityDialog";
 import EditSingleActivityTextfield from "./EditSingleActivityTextfield";
 import ExpandableArea from "./ExpandableArea";
+import MoreActionsMenuButton from "./MoreActionsMenuButton";
 
 interface SingleActivityProps {
   view: "card" | "tableRow";
@@ -39,28 +32,6 @@ const SingleActivity = (props: SingleActivityProps) => {
 
   const theme = useTheme();
 
-  // more-actions menu
-  const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null);
-  const menuOpen = Boolean(menuAnchorEl);
-  const handleMenuBtnClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setMenuAnchorEl(event.currentTarget);
-  };
-  const handleMenuClose = () => {
-    setMenuAnchorEl(null);
-  };
-
-  const moreActionsMenuBtn = (
-    <Tooltip
-      disableInteractive
-      TransitionComponent={Zoom}
-      title={"More actions"}
-    >
-      <IconButton onClick={handleMenuBtnClick}>
-        <MoreVertRoundedIcon />
-      </IconButton>
-    </Tooltip>
-  );
-
   // expand icon
   const [openExpandableArea, setOpenExpandableArea] = useState(false);
 
@@ -69,6 +40,14 @@ const SingleActivity = (props: SingleActivityProps) => {
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const handleClose = () => setIsDeleteDialogOpen(false);
+
+  const moreActionsMenuBtn = (
+    <MoreActionsMenuButton
+      isEditMode={isEditMode}
+      openDeleteDialog={() => setIsDeleteDialogOpen(true)}
+      openEditMode={() => setIsEditMode(true)}
+    />
+  );
 
   return (
     <>
@@ -256,52 +235,6 @@ const SingleActivity = (props: SingleActivityProps) => {
           </CardActions>
         </Card>
       )}
-
-      {/* menu */}
-      <Menu
-        id="basic-menu"
-        anchorEl={menuAnchorEl}
-        open={menuOpen}
-        onClose={handleMenuClose}
-        MenuListProps={{
-          "aria-labelledby": "basic-button",
-        }}
-        elevation={4}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        sx={{
-          "& .MuiPaper-root": {
-            minWidth: 180,
-          },
-        }}
-        onClick={handleMenuClose}
-      >
-        <MenuList dense>
-          <MenuItem disabled={isEditMode} onClick={() => setIsEditMode(true)}>
-            <ListItemIcon>
-              <EditRoundedIcon />
-            </ListItemIcon>
-            Edit
-          </MenuItem>
-          <MenuItem onClick={() => setIsDeleteDialogOpen(true)}>
-            <ListItemIcon>
-              <DeleteForeverRoundedIcon
-                sx={{ color: theme.palette.error.main }}
-              />
-            </ListItemIcon>
-            <Typography sx={{ color: theme.palette.error.main }}>
-              Delete
-            </Typography>
-          </MenuItem>
-          <Divider />
-        </MenuList>
-      </Menu>
 
       <DeleteActivityDialog
         activity={activity}
