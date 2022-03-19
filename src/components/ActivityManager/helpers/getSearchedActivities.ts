@@ -1,12 +1,17 @@
 import { Activity } from "types";
+import Fuse from "fuse.js";
 
 export const getSearchedActivities = (
-  activitieslist: Activity[] | null,
+  activitiesList: Activity[] | null,
   searchTerm: string
 ): Activity[] => {
-  if (!activitieslist) return [];
-  // TODO: add fuzzy search
-  return activitieslist.filter((activity) =>
-    activity.name.toLowerCase().startsWith(searchTerm.toLowerCase())
-  );
+  if (!activitiesList) return [];
+  if (!searchTerm) return [...activitiesList];
+
+  const fuse = new Fuse(activitiesList, {
+    keys: ["name"],
+    threshold: 0.4,
+  });
+
+  return fuse.search(searchTerm).map((el) => el.item);
 };

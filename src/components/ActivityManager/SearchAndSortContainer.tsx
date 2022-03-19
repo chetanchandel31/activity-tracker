@@ -7,13 +7,14 @@ import { SortOption, sortOptions } from "./helpers/getSortedActivities";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 
 interface SearchAndSortContainerProps {
+  searchTerm: string;
   setSortType: Dispatch<SetStateAction<SortOption>>;
   setSearchTerm: Dispatch<SetStateAction<string>>;
   sortType: SortOption;
 }
 
 const SearchAndSortContainer = (props: SearchAndSortContainerProps) => {
-  const { setSearchTerm, setSortType, sortType } = props;
+  const { searchTerm, setSearchTerm, setSortType, sortType } = props;
 
   const theme = useTheme();
 
@@ -38,6 +39,7 @@ const SearchAndSortContainer = (props: SearchAndSortContainerProps) => {
               <SearchRoundedIcon sx={{ color: theme.palette.text.disabled }} />
             ),
           }}
+          value={searchTerm}
         />
         <TextField
           select

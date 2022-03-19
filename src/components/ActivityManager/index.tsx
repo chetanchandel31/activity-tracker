@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Container from "@mui/material/Container";
 import { useTheme } from "@mui/material/styles";
@@ -10,6 +11,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import NoSearchResults from "assets/images/no-search-results.svg";
 import useAuthListener from "hooks/useAuthListener";
 import useFirestore from "hooks/useFirestore";
 import moment from "moment";
@@ -104,6 +106,7 @@ const ActivityManager = () => {
       <Container sx={{ pb: theme.spacing(8.5) }}>
         {activitiesList && activitiesList.length > 1 && (
           <SearchAndSortContainer
+            searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
             setSortType={setSortType}
             sortType={sortType}
@@ -167,8 +170,19 @@ const ActivityManager = () => {
 
         {/* 4. when no search results */}
         {isActivitiesListNonEmpty && sortedActivities.length === 0 && (
-          <Box sx={{ textAlign: "center", mt: 15 }}>
-            no matching results found 😭
+          <Box sx={{ textAlign: "center", mt: 10 }}>
+            <img
+              alt="no-search-results"
+              src={NoSearchResults}
+              style={{ width: "90%", maxWidth: "400px" }}
+            />
+            <Typography sx={{ mt: 2 }}>no matching results found </Typography>
+            <Button
+              onClick={() => setSearchTerm("")}
+              sx={{ textTransform: "none" }}
+            >
+              clear search
+            </Button>
           </Box>
         )}
 
