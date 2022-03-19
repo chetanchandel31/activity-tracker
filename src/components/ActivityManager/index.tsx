@@ -9,6 +9,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import useAuthListener from "hooks/useAuthListener";
 import useFirestore from "hooks/useFirestore";
 import moment from "moment";
@@ -33,6 +34,7 @@ const ActivityManager = () => {
   //TODO: search and sort, maybe filters and labels?
 
   const theme = useTheme();
+  const isSmUp = useMediaQuery(theme.breakpoints.up("sm"));
   const [user] = useAuthListener();
 
   const location = useLocation();
@@ -105,8 +107,8 @@ const ActivityManager = () => {
         )}
 
         {/* 2. actual list */}
-        {isActivitiesListNonEmpty && (
-          <TableContainer sx={{ display: { xs: "none", sm: "block" } }}>
+        {isActivitiesListNonEmpty && isSmUp && (
+          <TableContainer>
             <Table>
               <TableHead>
                 <TableRow>
@@ -134,11 +136,9 @@ const ActivityManager = () => {
           </TableContainer>
         )}
 
-        {isActivitiesListNonEmpty && (
+        {isActivitiesListNonEmpty && !isSmUp && (
           <Box
             sx={{
-              // border: "solid 2px black"
-              display: { xs: "flex", sm: "none" },
               flexDirection: "column",
               gap: theme.spacing(1.5),
             }}
