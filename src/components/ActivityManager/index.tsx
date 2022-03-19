@@ -14,17 +14,15 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import WelcomeImg from "assets/images/welcome.svg";
-import { useSnackbarContext } from "contexts/snackbar-context";
 import useAuthListener from "hooks/useAuthListener";
 import useFirestore from "hooks/useFirestore";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { Link as RouterLink, useHistory, useLocation } from "react-router-dom";
-import { ActivitiesList, Activity, DateSpeceficActivitiesList } from "types";
+import { Link as RouterLink, useLocation } from "react-router-dom";
+import { ActivitiesList, DateSpeceficActivitiesList } from "types";
 import { getDateStringFromMoment } from "utils";
 import CreateNewActivityDialog from "./CreateNewActivityDialog";
-import { handleRecordNowInFirestore } from "./helpers/handleRecordNowInFirestore";
 import SingleActivity from "./SingleActivity/SingleActivity";
 
 type RouterState =
@@ -36,12 +34,10 @@ type RouterState =
 
 const ActivityManager = () => {
   //TODO: search and sort, maybe filters and labels?
-  const { handleCloseSnackbar, showAlert } = useSnackbarContext();
 
   const theme = useTheme();
   const [user] = useAuthListener();
 
-  const history = useHistory();
   const location = useLocation();
   const routerState = location.state as RouterState;
 
@@ -55,8 +51,6 @@ const ActivityManager = () => {
       `users/${user?.uid}/dates/${currentDateString}/date-specific-activities`
     );
 
-  const [isRecordNowBtnLoading, setIsRecordNowBtnLoading] = useState(false);
-
   const [isCreateNewActivityDialogOpen, setIsCreateNewActivityDialogOpen] =
     useState(false);
 
@@ -65,64 +59,15 @@ const ActivityManager = () => {
       setIsCreateNewActivityDialogOpen(true);
   }, [routerState?.doOpenCreateActivityDialogOnFirstRender]);
 
-  const showSuccessMessage = (activity: Activity) => {
-    showAlert({
-      message: (
-        <>
-          Added <strong>{activity.name}</strong> to{" "}
-          <strong>{currentDateString}</strong>{" "}
-          <Button
-            color="success"
-            onClick={() => {
-              history.push(`./date-manager/${currentDateString}`);
-              handleCloseSnackbar();
-            }}
-          >
-            Check
-          </Button>
-        </>
-      ),
-    });
-  };
-
-  const handleRecordNow = async (activity: Activity) => {
-    if (dateSpecificActivitiesList === null) return;
-    setIsRecordNowBtnLoading(true);
-
-    const dateSpecificActivity = dateSpecificActivitiesList.find(
-      (el) => el.activityId === activity.id
-    );
-
-    try {
-      await handleRecordNowInFirestore({
-        activity,
-        dateSpecificActivity,
-        user,
-      });
-
-      showSuccessMessage(activity);
-    } catch (err: any) {
-      console.log(err);
-      showAlert({
-        message: err?.message || "something went wrong 😭",
-        alertColor: "error",
-      });
-    } finally {
-      setIsRecordNowBtnLoading(false);
-    }
-  };
-
   const activityTableRows: JSX.Element[] = [];
   const activityCards: JSX.Element[] = [];
 
   activitiesList?.forEach((activity) => {
-    // TODO: see if props can be pushed down
     activityTableRows.push(
       <SingleActivity
         view="tableRow"
         activity={activity}
-        handleRecordNow={handleRecordNow}
-        isRecordNowBtnLoading={isRecordNowBtnLoading}
+        dateSpecificActivitiesList={dateSpecificActivitiesList}
         key={activity.id}
       />
     );
@@ -132,8 +77,7 @@ const ActivityManager = () => {
       <SingleActivity
         view="card"
         activity={activity}
-        handleRecordNow={handleRecordNow}
-        isRecordNowBtnLoading={isRecordNowBtnLoading}
+        dateSpecificActivitiesList={dateSpecificActivitiesList}
         key={activity.id}
       />
     );
