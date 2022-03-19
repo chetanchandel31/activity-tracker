@@ -62,6 +62,10 @@ const DeleteActivityDialog = (props: DeleteActivityDialogProps) => {
       });
     } catch (err: any) {
       console.log(err);
+      showAlert({
+        message: err.message || "something went wrong 😭",
+        alertColor: "error",
+      });
     }
   };
 
@@ -72,8 +76,8 @@ const DeleteActivityDialog = (props: DeleteActivityDialogProps) => {
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Deleting an activity will also delete all records of it from{" "}
-          <strong>Date Manager</strong>
+          Deleting <strong>{activity.name}</strong> will also delete all records
+          of it from <strong>Date Manager</strong>
         </DialogContentText>
       </DialogContent>
       <DialogActions sx={{ padding: theme.spacing(0, 3, 3, 3) }}>

@@ -21,6 +21,9 @@ import { getDateStringFromMoment } from "utils";
 import ActivityManagerEmptyState from "./ActivityManagerEmptyState";
 import CreateNewActivityDialog from "./CreateNewActivityDialog";
 import CreateNewActivityFab from "./CreateNewActivityFab";
+import { getSearchedActivities } from "./helpers/getSearchedActivities";
+import { getSortedActivities, SortOption } from "./helpers/getSortedActivities";
+import SearchAndSortContainer from "./SearchAndSortContainer";
 import SingleActivity from "./SingleActivity/SingleActivity";
 
 type RouterState =
@@ -31,7 +34,7 @@ type RouterState =
   | undefined;
 
 const ActivityManager = () => {
-  //TODO: search and sort, maybe filters and labels?
+  //TODO: maybe filters and labels?
 
   const theme = useTheme();
   const isSmUp = useMediaQuery(theme.breakpoints.up("sm"));
@@ -54,6 +57,9 @@ const ActivityManager = () => {
     useState(false);
   const openCreateActivityDialog = () => setIsCreateNewActivityDialogOpen(true);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortType, setSortType] = useState<SortOption>("");
+
   useEffect(() => {
     routerState?.doOpenCreateActivityDialogOnFirstRender &&
       setIsCreateNewActivityDialogOpen(true);
@@ -62,7 +68,10 @@ const ActivityManager = () => {
   const activityTableRows: JSX.Element[] = [];
   const activityCards: JSX.Element[] = [];
 
-  activitiesList?.forEach((activity) => {
+  const searchedActivities = getSearchedActivities(activitiesList, searchTerm);
+  const sortedActivities = getSortedActivities(searchedActivities, sortType);
+
+  sortedActivities.forEach((activity) => {
     activityTableRows.push(
       <SingleActivity
         view="tableRow"
@@ -93,10 +102,12 @@ const ActivityManager = () => {
       </Helmet>
 
       <Container sx={{ pb: theme.spacing(8.5) }}>
-        {isActivitiesListNonEmpty && (
-          <Typography sx={{ mb: theme.spacing(3) }}>
-            Here is the list of activities you are currently tracking
-          </Typography>
+        {activitiesList && activitiesList.length > 1 && (
+          <SearchAndSortContainer
+            setSearchTerm={setSearchTerm}
+            setSortType={setSortType}
+            sortType={sortType}
+          />
         )}
 
         {/* 1. loading state */}
@@ -107,7 +118,7 @@ const ActivityManager = () => {
         )}
 
         {/* 2. actual list */}
-        {isActivitiesListNonEmpty && isSmUp && (
+        {sortedActivities.length > 0 && isSmUp && (
           <TableContainer>
             <Table>
               <TableHead>
@@ -136,9 +147,10 @@ const ActivityManager = () => {
           </TableContainer>
         )}
 
-        {isActivitiesListNonEmpty && !isSmUp && (
+        {sortedActivities.length > 0 && !isSmUp && (
           <Box
             sx={{
+              display: "flex",
               flexDirection: "column",
               gap: theme.spacing(1.5),
             }}
@@ -152,6 +164,13 @@ const ActivityManager = () => {
           activitiesListLength={activitiesList?.length}
           openCreateActivityDialog={openCreateActivityDialog}
         />
+
+        {/* 4. when no search results */}
+        {isActivitiesListNonEmpty && sortedActivities.length === 0 && (
+          <Box sx={{ textAlign: "center", mt: 15 }}>
+            no matching results found 😭
+          </Box>
+        )}
 
         {/* TODO: virtualised list, transition and activity name character limit */}
         <CreateNewActivityFab

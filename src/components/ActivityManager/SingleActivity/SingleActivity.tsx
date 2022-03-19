@@ -84,7 +84,6 @@ const SingleActivity = (props: SingleActivityProps) => {
   const [isEditMode, setIsEditMode] = useState(false);
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const handleClose = () => setIsDeleteDialogOpen(false);
 
   const moreActionsMenuBtn = (
     <MoreActionsMenuButton
@@ -127,7 +126,7 @@ const SingleActivity = (props: SingleActivityProps) => {
 
       <DeleteActivityDialog
         activity={activity}
-        handleClose={handleClose}
+        handleClose={() => setIsDeleteDialogOpen(false)}
         open={isDeleteDialogOpen}
       />
     </>
