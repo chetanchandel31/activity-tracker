@@ -19,8 +19,8 @@ export interface SingleActivityTableRowProps {
   isRecordNowBtnLoading: boolean;
   moreActionsMenuBtn: JSX.Element;
   openExpandableArea: boolean;
-  recordActivity: () => void; // () => handleRecordNow(activity)
-  toggleExpandableArea: () => void; // () => setOpenExpandableArea((prev) => !prev)
+  recordActivity: () => void;
+  toggleExpandableArea: () => void;
 }
 
 const SingleActivityTableRow = (props: SingleActivityTableRowProps) => {

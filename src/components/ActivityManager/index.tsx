@@ -1,10 +1,6 @@
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Container from "@mui/material/Container";
-import Fab from "@mui/material/Fab";
-import Link from "@mui/material/Link";
 import { useTheme } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -13,16 +9,17 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
-import WelcomeImg from "assets/images/welcome.svg";
 import useAuthListener from "hooks/useAuthListener";
 import useFirestore from "hooks/useFirestore";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { ActivitiesList, DateSpeceficActivitiesList } from "types";
 import { getDateStringFromMoment } from "utils";
+import ActivityManagerEmptyState from "./ActivityManagerEmptyState";
 import CreateNewActivityDialog from "./CreateNewActivityDialog";
+import CreateNewActivityFab from "./CreateNewActivityFab";
 import SingleActivity from "./SingleActivity/SingleActivity";
 
 type RouterState =
@@ -53,6 +50,7 @@ const ActivityManager = () => {
 
   const [isCreateNewActivityDialogOpen, setIsCreateNewActivityDialogOpen] =
     useState(false);
+  const openCreateActivityDialog = () => setIsCreateNewActivityDialogOpen(true);
 
   useEffect(() => {
     routerState?.doOpenCreateActivityDialogOnFirstRender &&
@@ -101,9 +99,9 @@ const ActivityManager = () => {
 
         {/* 1. loading state */}
         {areActivitiesLoading && (
-          <div style={{ textAlign: "center" }}>
+          <Box sx={{ textAlign: "center" }}>
             <CircularProgress sx={{ mt: theme.spacing(5) }} />
-          </div>
+          </Box>
         )}
 
         {/* 2. actual list */}
@@ -150,65 +148,16 @@ const ActivityManager = () => {
         )}
 
         {/* 3. empty state */}
-        {activitiesList?.length === 0 && (
-          <Box sx={{ textAlign: "center", mt: 10 }}>
-            <img
-              alt="welcome"
-              src={WelcomeImg}
-              style={{ maxWidth: "600px", width: "90%" }}
-            />
-
-            <Typography sx={{ my: 2 }} variant="h6">
-              Start creating activities that can be assigned to individual dates
-              via{" "}
-              <Link
-                component={RouterLink}
-                to={`/date-manager/${getDateStringFromMoment(moment())}`}
-                underline="none"
-              >
-                date manager
-              </Link>{" "}
-              and alayzed from{" "}
-              <Link component={RouterLink} to="/charts" underline="none">
-                charts
-              </Link>
-            </Typography>
-            <Button
-              onClick={() => setIsCreateNewActivityDialogOpen(true)}
-              sx={{ boxShadow: "none", textTransform: "none" }}
-              variant="contained"
-            >
-              Create your first activity
-            </Button>
-          </Box>
-        )}
+        <ActivityManagerEmptyState
+          activitiesListLength={activitiesList?.length}
+          openCreateActivityDialog={openCreateActivityDialog}
+        />
 
         {/* TODO: virtualised list, transition and activity name character limit */}
-        {isActivitiesListNonEmpty && (
-          <Box
-            sx={{
-              position: "fixed",
-              bottom: 0,
-              left: 0,
-              right: 0,
-            }}
-          >
-            <Container sx={{ position: "relative" }}>
-              <Fab
-                color="primary"
-                aria-label="add"
-                sx={{
-                  position: "absolute",
-                  bottom: 16,
-                  right: 16,
-                }}
-                onClick={() => setIsCreateNewActivityDialogOpen(true)}
-              >
-                <AddRoundedIcon />
-              </Fab>
-            </Container>
-          </Box>
-        )}
+        <CreateNewActivityFab
+          isActivitiesListNonEmpty={Boolean(isActivitiesListNonEmpty)}
+          openCreateActivityDialog={openCreateActivityDialog}
+        />
 
         <CreateNewActivityDialog
           activitiesList={activitiesList}
