@@ -74,9 +74,7 @@ const ActivityManager = () => {
           <Button
             color="success"
             onClick={() => {
-              history.push(
-                `./date-manager/${getDateStringFromMoment(moment())}`
-              );
+              history.push(`./date-manager/${currentDateString}`);
               handleCloseSnackbar();
             }}
           >
