@@ -244,13 +244,17 @@ const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
       )}
 
       {dateSpecificActivitiesList?.length === 0 && (
-        <Box sx={{ textAlign: "center", mb: 4 }}>
+        <Box sx={{ textAlign: "center" }}>
           <img
             alt="no-activities"
             src={NoActivities}
             style={{ maxWidth: "400px", width: "80%" }}
           />
-          <Typography sx={{ m: 1 }} variant="h6">
+          <Typography
+            color="text.primary"
+            sx={{ m: 1, userSelect: "none" }}
+            variant="h6"
+          >
             There are no activities added to this date
           </Typography>
           <Button
@@ -258,7 +262,7 @@ const DateSpecificActivitiesList = (props: DateSpecificActivitiesListProps) => {
               activityMenuRef.current?.scrollIntoView(false);
               activityMenuRef.current?.click();
             }}
-            sx={{ boxShadow: "none", textTransform: "none" }}
+            sx={{ boxShadow: "none", textTransform: "none", mb: 4 }}
             variant="contained"
           >
             Add an activity

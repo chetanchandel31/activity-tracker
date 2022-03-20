@@ -25,7 +25,7 @@ const ActivityManagerEmptyState = (props: ActivityManagerEmptyStateProps) => {
             style={{ maxWidth: "600px", width: "90%" }}
           />
 
-          <Typography sx={{ my: 2 }} variant="h6">
+          <Typography color="text.primary" sx={{ my: 2 }} variant="h6">
             Start creating activities that can be assigned to individual dates
             via{" "}
             <Link

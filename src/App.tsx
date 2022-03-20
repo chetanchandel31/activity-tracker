@@ -1,3 +1,5 @@
+import Box from "@mui/material/Box";
+import { useTheme } from "@mui/material/styles";
 import { BrowserRouter as Router, Switch } from "react-router-dom";
 import "./App.css";
 import ActivityManager from "./components/ActivityManager";
@@ -11,9 +13,16 @@ import Header from "./layout/Header";
 function App() {
   // TODO: navigator.online to show some screen when user is offline
   const [user] = useAuthListener();
+  const theme = useTheme();
 
   return (
-    <div className="App">
+    <Box
+      className="App"
+      sx={{
+        backgroundColor: theme.palette.primary.contrastText,
+        minHeight: "100vh",
+      }}
+    >
       <Router>
         {user && <Header />}
 
@@ -49,7 +58,7 @@ function App() {
           <ProtectedRoute path="/" redirectPath="/login" />
         </Switch>
       </Router>
-    </div>
+    </Box>
   );
 }
 

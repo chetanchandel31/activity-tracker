@@ -76,7 +76,7 @@ const Charts = () => {
               style={{ maxWidth: "800px", width: "90%" }}
               src={NoActivities}
             />
-            <Typography sx={{ my: 2 }} variant="h6">
+            <Typography color="text.primary" sx={{ my: 2 }} variant="h6">
               You currently don't have any activities to view chart for.
             </Typography>
             <Button
@@ -143,7 +143,11 @@ const Charts = () => {
                   src={PersonChooseingImg}
                   style={{ maxWidth: "400px", width: "90%" }}
                 />
-                <Typography sx={{ mt: 2 }} variant="h6">
+                <Typography
+                  color="text.primary"
+                  sx={{ mt: 2, userSelect: "none" }}
+                  variant="h6"
+                >
                   {graphDataError}
                 </Typography>
               </Box>

@@ -111,6 +111,7 @@ const DateManager = () => {
             <NavigateBeforeRoundedIcon />
           </IconButton>
           <Typography
+            color="text.primary"
             variant="h4"
             sx={{
               textAlign: "center",

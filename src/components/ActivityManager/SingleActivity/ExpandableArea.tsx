@@ -126,7 +126,11 @@ const ExpandableArea = (props: ExpandableAreaProps) => {
 
           {activityHistoryItems.length === 0 && (
             <Box sx={{ textAlign: "center", mt: 2, mb: 6 }}>
-              <Typography color="GrayText" variant="body2">
+              <Typography
+                sx={{ userSelect: "none" }}
+                color="GrayText"
+                variant="body2"
+              >
                 Datewise history of an activity will appear here as they're
                 added to various dates
               </Typography>

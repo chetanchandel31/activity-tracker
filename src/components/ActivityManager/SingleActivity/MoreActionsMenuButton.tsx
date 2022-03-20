@@ -1,7 +1,6 @@
 import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
-import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
@@ -88,7 +87,7 @@ const MoreActionsMenuButton = (props: MoreActionsMenuButtonProps) => {
               Delete
             </Typography>
           </MenuItem>
-          <Divider />
+          {/* <Divider /> */}
         </MenuList>
       </Menu>
     </>

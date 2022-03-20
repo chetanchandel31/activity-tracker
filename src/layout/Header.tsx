@@ -1,11 +1,14 @@
 import EventRoundedIcon from "@mui/icons-material/EventRounded";
+import LightModeRoundedIcon from "@mui/icons-material/LightModeRounded";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import MenuIcon from "@mui/icons-material/Menu";
+import NightlightRoundedIcon from "@mui/icons-material/NightlightRounded";
 import TimelineRoundedIcon from "@mui/icons-material/TimelineRounded";
 import AppBar from "@mui/material/AppBar";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -19,6 +22,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 import Zoom from "@mui/material/Zoom";
+import { useThemeContext } from "contexts/theme-context";
 import { auth } from "firebase-config/firebase";
 import moment from "moment";
 import React, { useState } from "react";
@@ -28,6 +32,8 @@ import { getDateStringFromMoment } from "utils";
 const Header = () => {
   const theme = useTheme();
   const trigger = useScrollTrigger({ threshold: 0, disableHysteresis: true });
+
+  const { isDarkMode, toggleDarkMode } = useThemeContext();
 
   // profile popover
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -79,7 +85,7 @@ const Header = () => {
     let icon;
     const color = isSelected
       ? theme.palette.primary.main
-      : theme.palette.common.black;
+      : theme.palette.text.primary;
 
     if (navItem.name === "Activity Manager") {
       icon = (
@@ -176,7 +182,7 @@ const Header = () => {
             aria-label="menu"
             sx={{
               mr: 2,
-              color: theme.palette.common.black,
+              color: theme.palette.text.primary,
               display: { xs: "inline-flex", sm: "none" },
             }}
             onClick={handleDrawerToggle}
@@ -186,7 +192,7 @@ const Header = () => {
           <Typography
             variant="h5"
             component="h5"
-            // color="primary"
+            color="text.primary"
             sx={{
               flexGrow: 1,
               textAlign: "left",
@@ -229,7 +235,31 @@ const Header = () => {
               horizontal: "left",
             }}
           >
-            <Button onClick={() => auth.signOut()}>Logout</Button>
+            <Box sx={{ width: "200px" }}>
+              {isDarkMode ? (
+                <Button
+                  fullWidth
+                  startIcon={<LightModeRoundedIcon />}
+                  sx={{ textTransform: "none" }}
+                  onClick={toggleDarkMode}
+                >
+                  Light
+                </Button>
+              ) : (
+                <Button
+                  fullWidth
+                  startIcon={<NightlightRoundedIcon />}
+                  sx={{ textTransform: "none" }}
+                  onClick={toggleDarkMode}
+                >
+                  Dark
+                </Button>
+              )}
+              <Divider />
+              <Button fullWidth onClick={() => auth.signOut()}>
+                Logout
+              </Button>
+            </Box>
           </Popover>
         </Toolbar>
       </AppBar>

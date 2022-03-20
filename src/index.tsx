@@ -1,14 +1,17 @@
+import { SnackbarProvider } from "contexts/snackbar-context";
+import { ThemeProvider } from "contexts/theme-context";
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
 import App from "./App";
-import { SnackbarProvider } from "contexts/snackbar-context";
+import "./index.css";
 
 ReactDOM.render(
   <React.StrictMode>
-    <SnackbarProvider>
-      <App />
-    </SnackbarProvider>
+    <ThemeProvider>
+      <SnackbarProvider>
+        <App />
+      </SnackbarProvider>
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

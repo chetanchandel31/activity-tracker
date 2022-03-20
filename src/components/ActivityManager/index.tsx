@@ -176,7 +176,9 @@ const ActivityManager = () => {
               src={NoSearchResults}
               style={{ width: "90%", maxWidth: "400px" }}
             />
-            <Typography sx={{ mt: 2 }}>no matching results found </Typography>
+            <Typography color="text.primary" sx={{ mt: 2 }}>
+              no matching results found
+            </Typography>
             <Button
               onClick={() => setSearchTerm("")}
               sx={{ textTransform: "none" }}

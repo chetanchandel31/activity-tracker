@@ -98,7 +98,7 @@ const SingleActivityCard = (props: SingleActivityCardProps) => {
           variant="contained"
           // size="small"
           fullWidth
-          sx={{ boxShadow: "none", textTransform: "none" }}
+          sx={{ boxShadow: "none", textTransform: "none", mb: 1 }}
           onClick={recordActivity}
         >
           Record now
