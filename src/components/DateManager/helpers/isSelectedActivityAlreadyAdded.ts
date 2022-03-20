@@ -7,17 +7,16 @@ interface Args {
   activitiesList: Activity[] | null;
 }
 
-export const doDisableActivityBtn = ({
+export const isSelectedActivityAlreadyAdded = ({
   activitiesList,
   dateSpecificActivitiesList,
   selectedActivity,
 }: Args) => {
   const activity = findActivityByName(activitiesList, selectedActivity);
 
-  const isSelectedActivityAlreadyAdded =
+  return (
     dateSpecificActivitiesList?.findIndex(
       (el) => el.activityId === activity?.id
-    ) !== -1;
-
-  return !selectedActivity || isSelectedActivityAlreadyAdded;
+    ) !== -1
+  );
 };
