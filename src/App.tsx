@@ -6,9 +6,9 @@ import ActivityManager from "./components/ActivityManager";
 import Login from "./components/Auth/Login";
 import Charts from "./components/Charts";
 import DateManager from "./components/DateManager";
+import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import useAuthListener from "./hooks/useAuthListener";
-import Header from "./layout/Header";
 
 function App() {
   // TODO: navigator.online to show some screen when user is offline
