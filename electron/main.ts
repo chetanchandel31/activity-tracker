@@ -4,19 +4,27 @@ const path = require("path");
 
 const createMainWindow = () => {
   let mainWindow = new BrowserWindow({
-    width: electronScreen.getPrimaryDisplay().workArea.width,
-    height: electronScreen.getPrimaryDisplay().workArea.height,
+    // width: electronScreen.getPrimaryDisplay().workArea.width,
+    // height: electronScreen.getPrimaryDisplay().workArea.height,
+    width: 1000,
+    height: 600,
     show: false,
     backgroundColor: "white",
     webPreferences: {
       nodeIntegration: false,
       devTools: isDev,
     },
+    // titleBarStyle: "hidden",
+    // titleBarOverlay: {
+    //   color: "#232323",
+    //   symbolColor: "#ffffff",
+    // },
   });
   const startURL = isDev
     ? "http://localhost:3000"
     : `file://${path.join(__dirname, "../build/index.html")}`;
 
+  mainWindow.removeMenu();
   mainWindow.loadURL(startURL);
 
   mainWindow.once("ready-to-show", () => mainWindow.show());
