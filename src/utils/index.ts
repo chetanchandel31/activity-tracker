@@ -1,5 +1,4 @@
 export { deleteFirestoreDoc } from "./deleteFirestoreDoc";
-export { openCreateActivityDialogOnFirstRender } from "./openCreateActivityDialogOnFirstRender";
 export { editFirestoreDoc } from "./editFirestoreDoc";
 export { findActivityById } from "./findActivityById";
 export { findActivityByName } from "./findActivityByName";
@@ -7,3 +6,5 @@ export { getAllFirestoreDocs } from "./getAllFirestoreDocs";
 export { getDateStringFromMoment } from "./getDateStringFromMoment";
 export { getDaysBetween2Dates } from "./getDaysBetween2Dates";
 export { getFormattedDateForTooltip } from "./getFormattedDateForTooltip";
+export { isElectron } from "./isElectron";
+export { openCreateActivityDialogOnFirstRender } from "./openCreateActivityDialogOnFirstRender";

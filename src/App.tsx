@@ -1,6 +1,8 @@
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
-import { BrowserRouter as Router, Switch } from "react-router-dom";
+import { createBrowserHistory, createHashHistory } from "history";
+import { Router, Switch } from "react-router-dom";
+import { isElectron } from "utils";
 import "./App.css";
 import ActivityManager from "./components/ActivityManager";
 import Login from "./components/Auth/Login";
@@ -9,6 +11,8 @@ import DateManager from "./components/DateManager";
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import useAuthListener from "./hooks/useAuthListener";
+
+const history = isElectron() ? createHashHistory() : createBrowserHistory();
 
 function App() {
   // TODO: navigator.online to show some screen when user is offline
@@ -23,7 +27,7 @@ function App() {
         minHeight: "100vh",
       }}
     >
-      <Router>
+      <Router history={history}>
         {user && <Header />}
 
         <Switch>
