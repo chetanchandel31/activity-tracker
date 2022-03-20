@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "main": "electron/main.ts",
+  "homepage": "./",
   "dependencies": {
     "@date-io/moment": "2.11.0",
     "@emotion/react": "11.5.0",
@@ -11,8 +12,6 @@
     "@mui/lab": "5.0.0-alpha.55",
     "@mui/material": "5.1.0",
     "chart.js": "3.7.1",
-    "concurrently": "7.0.0",
-    "electron": "17.1.2",
     "electron-is-dev": "2.0.0",
     "firebase": "8.4.3",
     "fuse.js": "6.5.3",
@@ -36,14 +35,32 @@
     "@types/react-helmet": "6.1.5",
     "@types/react-router-dom": "5.3.2",
     "@types/uuid": "8.3.3",
+    "concurrently": "7.0.0",
+    "electron": "17.1.2",
+    "electron-builder": "^22.14.13",
     "typescript": "4.4.4"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "PUBLIC_URL=/ react-scripts build",
+    "build-electron": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron:start": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\""
+    "electron:start": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron:build": "npm run build-electron && electron-builder build --publish never"
+  },
+  "build": {
+    "appId": "com.activity-tracker.id",
+    "productName": "Activity-Tracker",
+    "files": [
+      "build/**/*",
+      "electron/main.ts",
+      "package.json"
+    ],
+    "extends": null,
+    "win": {
+      "target": "nsis"
+    }
   },
   "eslintConfig": {
     "extends": [
