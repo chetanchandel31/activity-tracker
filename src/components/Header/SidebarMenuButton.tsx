@@ -12,6 +12,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import { navItems } from "./constants";
 import { isSelected } from "./helpers/isSelected";
 import { navigateTo } from "./helpers/navigateTo";
+import Box from "@mui/material/Box";
 import { renderIcon } from "./helpers/renderIcon";
 
 const SidebarMenuButton = () => {
@@ -88,25 +89,26 @@ const SidebarMenuButton = () => {
       </IconButton>
 
       {/* the drawer itself */}
-
-      <SwipeableDrawer
-        variant="temporary"
-        open={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-        onOpen={() => setMobileOpen(true)}
-        ModalProps={{
-          keepMounted: true, // Better open performance on mobile.
-        }}
-        sx={{
-          display: { xs: "block", sm: "none" },
-          "& .MuiDrawer-paper": {
-            boxSizing: "border-box",
-            width: drawerWidth,
-          },
-        }}
-      >
-        {drawer}
-      </SwipeableDrawer>
+      <Box component="nav">
+        <SwipeableDrawer
+          variant="temporary"
+          open={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+          onOpen={() => setMobileOpen(true)}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile.
+          }}
+          sx={{
+            display: { xs: "block", sm: "none" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+            },
+          }}
+        >
+          {drawer}
+        </SwipeableDrawer>
+      </Box>
     </>
   );
 };
