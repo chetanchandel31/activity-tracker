@@ -89,7 +89,7 @@ const SidebarMenuButton = () => {
       </IconButton>
 
       {/* the drawer itself */}
-      <Box component="nav">
+      <Box component="nav" sx={{ "& > div": { height: "100vh" } }}>
         <SwipeableDrawer
           variant="temporary"
           open={mobileOpen}
