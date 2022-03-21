@@ -33,10 +33,10 @@ const createMainWindow = () => {
     mainWindow = null;
   });
 
-  mainWindow.webContents.on("new-window", (event, url) => {
-    event.preventDefault();
-    mainWindow.loadURL(url);
-  });
+  // mainWindow.webContents.on("new-window", (event, url) => {
+  //   event.preventDefault();
+  //   mainWindow.loadURL(url);
+  // });
 };
 
 app.whenReady().then(() => {
