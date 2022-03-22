@@ -3,7 +3,7 @@ import Fuse from "fuse.js";
 
 export const getSearchedActivities = (
   activitiesList: Activity[] | null,
-  searchTerm: string
+  searchTerm?: string | null
 ): Activity[] => {
   if (!activitiesList) return [];
   if (!searchTerm) return [...activitiesList];

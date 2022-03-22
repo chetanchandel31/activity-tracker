@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useLocation } from "react-router-dom";
 import { ActivitiesList, DateSpeceficActivitiesList } from "types";
+import { StringParam, useQueryParams } from "use-query-params";
 import { getDateStringFromMoment } from "utils";
 import ActivitiesTable from "./ActivitiesTable";
 import ActivityManagerEmptyState from "./ActivityManagerEmptyState";
@@ -54,8 +55,10 @@ const ActivityManager = () => {
     useState(false);
   const openCreateActivityDialog = () => setIsCreateNewActivityDialogOpen(true);
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortType, setSortType] = useState<SortOption>("");
+  const [{ search: searchTerm, sort: sortType }, setQuery] = useQueryParams({
+    search: StringParam,
+    sort: StringParam,
+  });
 
   useEffect(() => {
     routerState?.doOpenCreateActivityDialogOnFirstRender &&
@@ -66,7 +69,10 @@ const ActivityManager = () => {
   const activityCards: JSX.Element[] = [];
 
   const searchedActivities = getSearchedActivities(activitiesList, searchTerm);
-  const sortedActivities = getSortedActivities(searchedActivities, sortType);
+  const sortedActivities = getSortedActivities(
+    searchedActivities,
+    sortType as SortOption
+  );
 
   sortedActivities.forEach((activity) => {
     activityTableRows.push(
@@ -101,10 +107,9 @@ const ActivityManager = () => {
       <Container sx={{ pb: theme.spacing(8.5) }}>
         {activitiesList && activitiesList.length > 1 && (
           <SearchAndSortContainer
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            setSortType={setSortType}
-            sortType={sortType}
+            searchTerm={searchTerm || ""}
+            setQuery={setQuery}
+            sortType={(sortType as SortOption) || ""}
           />
         )}
 
@@ -150,7 +155,7 @@ const ActivityManager = () => {
               no matching results found
             </Typography>
             <Button
-              onClick={() => setSearchTerm("")}
+              onClick={() => setQuery({ search: undefined })}
               sx={{ textTransform: "none" }}
             >
               clear search

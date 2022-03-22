@@ -1,7 +1,8 @@
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import { createBrowserHistory } from "history";
-import { Router, Switch } from "react-router-dom";
+import { Route, Router, Switch } from "react-router-dom";
+import { QueryParamProvider } from "use-query-params";
 import "./App.css";
 import ActivityManager from "./components/ActivityManager";
 import Login from "./components/Auth/Login";
@@ -31,39 +32,41 @@ function App() {
       }}
     >
       <Router history={history}>
-        {user && <Header />}
+        <QueryParamProvider ReactRouterRoute={Route}>
+          {user && <Header />}
 
-        <Switch>
-          <ProtectedRoute
-            path="/activity-manager"
-            condition={!!user}
-            redirectPath="/login"
-          >
-            <ActivityManager />
-          </ProtectedRoute>
-          <ProtectedRoute
-            path="/date-manager/:date"
-            condition={!!user}
-            redirectPath="/login"
-          >
-            <DateManager />
-          </ProtectedRoute>
-          <ProtectedRoute
-            path="/charts"
-            condition={!!user}
-            redirectPath="/login"
-          >
-            <Charts />
-          </ProtectedRoute>
-          <ProtectedRoute
-            path="/login"
-            condition={!user}
-            redirectPath="/activity-manager"
-          >
-            <Login />
-          </ProtectedRoute>
-          <ProtectedRoute path="/" redirectPath="/login" />
-        </Switch>
+          <Switch>
+            <ProtectedRoute
+              path="/activity-manager"
+              condition={!!user}
+              redirectPath="/login"
+            >
+              <ActivityManager />
+            </ProtectedRoute>
+            <ProtectedRoute
+              path="/date-manager/:date"
+              condition={!!user}
+              redirectPath="/login"
+            >
+              <DateManager />
+            </ProtectedRoute>
+            <ProtectedRoute
+              path="/charts"
+              condition={!!user}
+              redirectPath="/login"
+            >
+              <Charts />
+            </ProtectedRoute>
+            <ProtectedRoute
+              path="/login"
+              condition={!user}
+              redirectPath="/activity-manager"
+            >
+              <Login />
+            </ProtectedRoute>
+            <ProtectedRoute path="/" redirectPath="/login" />
+          </Switch>
+        </QueryParamProvider>
       </Router>
     </Box>
   );

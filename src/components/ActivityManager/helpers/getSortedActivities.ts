@@ -12,7 +12,7 @@ export type SortOption = typeof sortOptions[number];
 
 export const getSortedActivities = (
   activitiesList: Activity[] | null,
-  sortType: SortOption
+  sortType?: SortOption | null
 ): Activity[] => {
   if (!activitiesList) return [];
 
@@ -25,5 +25,5 @@ export const getSortedActivities = (
   else if (sortType === "name (z - a)")
     return [...activitiesList.sort((a, b) => (a.name > b.name ? -1 : 1))];
 
-  return activitiesList;
+  return [...activitiesList];
 };

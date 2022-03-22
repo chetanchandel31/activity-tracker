@@ -1,20 +1,28 @@
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
 import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
-import { Dispatch, SetStateAction } from "react";
+import { QueryParamConfig, SetQuery } from "use-query-params";
 import { SortOption, sortOptions } from "./helpers/getSortedActivities";
-import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 
 interface SearchAndSortContainerProps {
   searchTerm: string;
-  setSortType: Dispatch<SetStateAction<SortOption>>;
-  setSearchTerm: Dispatch<SetStateAction<string>>;
+  setQuery: SetQuery<{
+    search: QueryParamConfig<
+      string | null | undefined,
+      string | null | undefined
+    >;
+    sort: QueryParamConfig<
+      string | null | undefined,
+      string | null | undefined
+    >;
+  }>;
   sortType: SortOption;
 }
 
 const SearchAndSortContainer = (props: SearchAndSortContainerProps) => {
-  const { searchTerm, setSearchTerm, setSortType, sortType } = props;
+  const { searchTerm, setQuery, sortType } = props;
 
   const theme = useTheme();
 
@@ -30,7 +38,9 @@ const SearchAndSortContainer = (props: SearchAndSortContainerProps) => {
         }}
       >
         <TextField
-          onChange={({ target }) => setSearchTerm(target.value)}
+          onChange={({ target }) =>
+            setQuery({ search: target.value || undefined })
+          }
           placeholder="Search"
           size="small"
           sx={{ width: { xs: "100%", sm: theme.spacing(40) } }}
@@ -39,15 +49,17 @@ const SearchAndSortContainer = (props: SearchAndSortContainerProps) => {
               <SearchRoundedIcon sx={{ color: theme.palette.text.disabled }} />
             ),
           }}
-          value={searchTerm}
+          value={searchTerm || ""}
         />
         <TextField
           select
           label="Sort by"
-          onChange={({ target }) => setSortType(target.value as SortOption)}
+          onChange={({ target }) =>
+            setQuery({ sort: target.value || undefined })
+          }
           size="small"
           sx={{ width: { xs: "100%", sm: theme.spacing(20) } }}
-          value={sortType}
+          value={sortType || ""}
         >
           {sortOptions.map((option) => (
             <MenuItem key={option} value={option}>
