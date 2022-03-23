@@ -15,6 +15,7 @@ import useScrollTrigger from "@mui/material/useScrollTrigger";
 import Zoom from "@mui/material/Zoom";
 import { useThemeContext } from "contexts/theme-context";
 import { auth } from "firebase-config/firebase";
+import useAuthListener from "hooks/useAuthListener";
 import { useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { navItems } from "./constants";
@@ -23,6 +24,7 @@ import { renderIcon } from "./helpers/renderIcon";
 import SidebarMenuButton from "./SidebarMenuButton";
 
 const Header = () => {
+  const [user] = useAuthListener();
   const theme = useTheme();
   const trigger = useScrollTrigger({ threshold: 0, disableHysteresis: true });
 
@@ -103,30 +105,39 @@ const Header = () => {
               horizontal: "left",
             }}
           >
-            <Box sx={{ width: "200px" }}>
-              {isDarkMode ? (
-                <Button
-                  fullWidth
-                  startIcon={<LightModeRoundedIcon />}
-                  sx={{ textTransform: "none" }}
-                  onClick={toggleDarkMode}
-                >
-                  Light
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <Box sx={{ textAlign: "center", m: 1 }}>{user?.email}</Box>
+              <Box sx={{ width: "200px" }}>
+                {isDarkMode ? (
+                  <Button
+                    fullWidth
+                    startIcon={<LightModeRoundedIcon />}
+                    sx={{ textTransform: "none" }}
+                    onClick={toggleDarkMode}
+                  >
+                    Light
+                  </Button>
+                ) : (
+                  <Button
+                    fullWidth
+                    startIcon={<NightlightRoundedIcon />}
+                    sx={{ textTransform: "none" }}
+                    onClick={toggleDarkMode}
+                  >
+                    Dark
+                  </Button>
+                )}
+                <Divider />
+                <Button fullWidth onClick={() => auth.signOut()}>
+                  Logout
                 </Button>
-              ) : (
-                <Button
-                  fullWidth
-                  startIcon={<NightlightRoundedIcon />}
-                  sx={{ textTransform: "none" }}
-                  onClick={toggleDarkMode}
-                >
-                  Dark
-                </Button>
-              )}
-              <Divider />
-              <Button fullWidth onClick={() => auth.signOut()}>
-                Logout
-              </Button>
+              </Box>
             </Box>
           </Popover>
         </Toolbar>
