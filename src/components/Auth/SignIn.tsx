@@ -1,13 +1,20 @@
+import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
+import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import { auth } from "firebase-config/firebase";
 import { useState } from "react";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const [doShowPassword, setDoShowPassword] = useState(false);
+  const toggleShowPassword = () => setDoShowPassword((prev) => !prev);
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -24,7 +31,6 @@ const SignIn = () => {
     }
   };
 
-  // TODO: show password
   return (
     <Box sx={{ display: "flex", justifyContent: "center" }}>
       <Box sx={{ width: "90%", maxWidth: "600px" }}>
@@ -39,10 +45,21 @@ const SignIn = () => {
         <TextField
           label="password"
           sx={{ mt: 2 }}
-          type="password"
+          type={doShowPassword ? "text" : "password"}
           fullWidth
           onChange={({ target }) => setPassword(target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSignIn(email, password)}
+          InputProps={{
+            endAdornment: (
+              <IconButton onClick={toggleShowPassword} size="small">
+                {doShowPassword ? (
+                  <VisibilityRoundedIcon />
+                ) : (
+                  <VisibilityOffRoundedIcon />
+                )}
+              </IconButton>
+            ),
+          }}
           size="small"
           value={password}
         />

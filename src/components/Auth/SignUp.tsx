@@ -1,5 +1,8 @@
+import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
+import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { auth } from "firebase-config/firebase";
@@ -10,10 +13,16 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [doShowPassword, setDoShowPassword] = useState(false);
+  const toggleShowPassword = () => setDoShowPassword((prev) => !prev);
+  const [doShowConfirmPassword, setDoShowConfirmPassword] = useState(false);
+  const toggleShowConfirmPassword = () =>
+    setDoShowConfirmPassword((prev) => !prev);
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSignIn = async (email: string, password: string) => {
+  const handleSignUp = async (email: string, password: string) => {
     try {
       setError("");
       setIsLoading(true);
@@ -29,7 +38,6 @@ const SignUp = () => {
   const doDisableButton =
     !email || !password || !confirmPassword || password !== confirmPassword;
 
-  // TODO: show password
   return (
     <Box sx={{ display: "flex", justifyContent: "center" }}>
       <Box sx={{ width: "90%", maxWidth: "600px" }}>
@@ -42,22 +50,44 @@ const SignUp = () => {
           value={email}
         />
         <TextField
-          label="password"
-          sx={{ mt: 2 }}
-          type="password"
           fullWidth
+          InputProps={{
+            endAdornment: (
+              <IconButton onClick={toggleShowPassword} size="small">
+                {doShowPassword ? (
+                  <VisibilityRoundedIcon />
+                ) : (
+                  <VisibilityOffRoundedIcon />
+                )}
+              </IconButton>
+            ),
+          }}
+          label="password"
           onChange={({ target }) => setPassword(target.value)}
           size="small"
+          sx={{ mt: 2 }}
+          type={doShowPassword ? "text" : "password"}
           value={password}
         />
         <TextField
-          label="confirm password"
-          sx={{ mt: 2 }}
-          type="password"
           fullWidth
+          InputProps={{
+            endAdornment: (
+              <IconButton onClick={toggleShowConfirmPassword} size="small">
+                {doShowConfirmPassword ? (
+                  <VisibilityRoundedIcon />
+                ) : (
+                  <VisibilityOffRoundedIcon />
+                )}
+              </IconButton>
+            ),
+          }}
+          label="confirm password"
           onChange={({ target }) => setConfirmPassword(target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSignIn(email, password)}
+          onKeyDown={(e) => e.key === "Enter" && handleSignUp(email, password)}
           size="small"
+          sx={{ mt: 2 }}
+          type={doShowConfirmPassword ? "text" : "password"}
           value={confirmPassword}
         />
 
@@ -85,7 +115,7 @@ const SignUp = () => {
           disabled={doDisableButton}
           fullWidth
           loading={isLoading}
-          onClick={() => handleSignIn(email, password)}
+          onClick={() => handleSignUp(email, password)}
           sx={{
             mt: 1,
           }}
