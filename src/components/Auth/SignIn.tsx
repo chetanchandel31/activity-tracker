@@ -6,28 +6,25 @@ import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { auth } from "firebase-config/firebase";
-import { useState } from "react";
+import { useReducer } from "react";
+import { initialSignInState, signInReducer } from "./reducers";
 
 const SignIn = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const [doShowPassword, setDoShowPassword] = useState(false);
-  const toggleShowPassword = () => setDoShowPassword((prev) => !prev);
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [{ doShowPassword, email, error, isLoading, password }, dispatch] =
+    useReducer(signInReducer, initialSignInState);
 
   const handleSignIn = async (email: string, password: string) => {
     try {
-      setError("");
-      setIsLoading(true);
+      dispatch({ type: "RESET_ERROR_AND_START_LOADING" });
       await auth.signInWithEmailAndPassword(email, password);
     } catch (error: any) {
       console.log(error);
-      setError(error?.message || "something went wrong");
+      dispatch({
+        type: "SET_ERROR",
+        payload: error?.message || "something went wrong",
+      });
     } finally {
-      setIsLoading(false);
+      dispatch({ type: "END_LOADING" });
     }
   };
 
@@ -38,7 +35,9 @@ const SignIn = () => {
           label="email"
           type="email"
           fullWidth
-          onChange={({ target }) => setEmail(target.value)}
+          onChange={({ target }) =>
+            dispatch({ type: "SET_EMAIL", payload: target.value })
+          }
           size="small"
           value={email}
         />
@@ -47,11 +46,16 @@ const SignIn = () => {
           sx={{ mt: 2 }}
           type={doShowPassword ? "text" : "password"}
           fullWidth
-          onChange={({ target }) => setPassword(target.value)}
+          onChange={({ target }) =>
+            dispatch({ type: "SET_PASSWORD", payload: target.value })
+          }
           onKeyDown={(e) => e.key === "Enter" && handleSignIn(email, password)}
           InputProps={{
             endAdornment: (
-              <IconButton onClick={toggleShowPassword} size="small">
+              <IconButton
+                onClick={() => dispatch({ type: "TOGGLE_SHOW_PASSWORD" })}
+                size="small"
+              >
                 {doShowPassword ? (
                   <VisibilityRoundedIcon />
                 ) : (

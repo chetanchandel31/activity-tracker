@@ -6,32 +6,35 @@ import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { auth } from "firebase-config/firebase";
-import { useState } from "react";
+import { useReducer } from "react";
+import { initialSignUpState, signUpReducer } from "./reducers";
 
 const SignUp = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
-  const [doShowPassword, setDoShowPassword] = useState(false);
-  const toggleShowPassword = () => setDoShowPassword((prev) => !prev);
-  const [doShowConfirmPassword, setDoShowConfirmPassword] = useState(false);
-  const toggleShowConfirmPassword = () =>
-    setDoShowConfirmPassword((prev) => !prev);
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [
+    {
+      confirmPassword,
+      doShowConfirmPassword,
+      doShowPassword,
+      email,
+      error,
+      isLoading,
+      password,
+    },
+    dispatch,
+  ] = useReducer(signUpReducer, initialSignUpState);
 
   const handleSignUp = async (email: string, password: string) => {
     try {
-      setError("");
-      setIsLoading(true);
+      dispatch({ type: "RESET_ERROR_AND_START_LOADING" });
       await auth.createUserWithEmailAndPassword(email, password);
     } catch (error: any) {
       console.log(error);
-      setError(error?.message || "something went wrong");
+      dispatch({
+        type: "SET_ERROR",
+        payload: error?.message || "something went wrong",
+      });
     } finally {
-      setIsLoading(false);
+      dispatch({ type: "END_LOADING" });
     }
   };
 
@@ -45,7 +48,9 @@ const SignUp = () => {
           label="email"
           type="email"
           fullWidth
-          onChange={({ target }) => setEmail(target.value)}
+          onChange={({ target }) =>
+            dispatch({ type: "SET_EMAIL", payload: target.value })
+          }
           size="small"
           value={email}
         />
@@ -53,7 +58,10 @@ const SignUp = () => {
           fullWidth
           InputProps={{
             endAdornment: (
-              <IconButton onClick={toggleShowPassword} size="small">
+              <IconButton
+                onClick={() => dispatch({ type: "TOGGLE_SHOW_PASSWORD" })}
+                size="small"
+              >
                 {doShowPassword ? (
                   <VisibilityRoundedIcon />
                 ) : (
@@ -63,7 +71,9 @@ const SignUp = () => {
             ),
           }}
           label="password"
-          onChange={({ target }) => setPassword(target.value)}
+          onChange={({ target }) =>
+            dispatch({ type: "SET_PASSWORD", payload: target.value })
+          }
           size="small"
           sx={{ mt: 2 }}
           type={doShowPassword ? "text" : "password"}
@@ -73,7 +83,12 @@ const SignUp = () => {
           fullWidth
           InputProps={{
             endAdornment: (
-              <IconButton onClick={toggleShowConfirmPassword} size="small">
+              <IconButton
+                onClick={() =>
+                  dispatch({ type: "TOGGLE_SHOW_CONFIRM_PASSWORD" })
+                }
+                size="small"
+              >
                 {doShowConfirmPassword ? (
                   <VisibilityRoundedIcon />
                 ) : (
@@ -83,7 +98,9 @@ const SignUp = () => {
             ),
           }}
           label="confirm password"
-          onChange={({ target }) => setConfirmPassword(target.value)}
+          onChange={({ target }) =>
+            dispatch({ type: "SET_CONFIRM_PASSWORD", payload: target.value })
+          }
           onKeyDown={(e) => e.key === "Enter" && handleSignUp(email, password)}
           size="small"
           sx={{ mt: 2 }}
