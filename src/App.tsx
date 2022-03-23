@@ -6,7 +6,7 @@ import { QueryParamProvider } from "use-query-params";
 import { isElectron } from "utils";
 import "./App.css";
 import ActivityManager from "./components/ActivityManager";
-import Login from "./components/Auth/Login";
+import Auth from "./components/Auth";
 import Charts from "./components/Charts";
 import DateManager from "./components/DateManager";
 import Header from "./components/Header";
@@ -59,7 +59,7 @@ function App() {
               condition={!user}
               redirectPath="/activity-manager"
             >
-              <Login />
+              <Auth />
             </ProtectedRoute>
             <ProtectedRoute path="/" redirectPath="/login" />
           </Switch>

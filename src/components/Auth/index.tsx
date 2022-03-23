@@ -10,7 +10,7 @@ import { isElectron } from "utils";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 
-const Login = () => {
+const Auth = () => {
   const theme = useTheme();
 
   const [isSignInScreen, setIsSignInScreen] = useState(true);
@@ -70,4 +70,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Auth;
