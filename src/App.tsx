@@ -1,8 +1,9 @@
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
-import { createBrowserHistory } from "history";
+import { createBrowserHistory, createHashHistory } from "history";
 import { Route, Router, Switch } from "react-router-dom";
 import { QueryParamProvider } from "use-query-params";
+import { isElectron } from "utils";
 import "./App.css";
 import ActivityManager from "./components/ActivityManager";
 import Login from "./components/Auth/Login";
@@ -11,12 +12,8 @@ import DateManager from "./components/DateManager";
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import useAuthListener from "./hooks/useAuthListener";
-// import {  createHashHistory } from "history";
-// import { isElectron } from "utils";
 
-// `<HashRouter />` is recommended for electron but it has limitations so trying to use `<BrowserRouter />` for the time being to see if any issues really arise
-// const history = isElectron() ? createHashHistory() : createBrowserHistory();
-const history = createBrowserHistory();
+const history = isElectron() ? createHashHistory() : createBrowserHistory();
 
 function App() {
   // TODO: navigator.online to show some screen when user is offline
