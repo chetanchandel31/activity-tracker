@@ -6,8 +6,8 @@ const createMainWindow = () => {
   let mainWindow = new BrowserWindow({
     // width: electronScreen.getPrimaryDisplay().workArea.width,
     // height: electronScreen.getPrimaryDisplay().workArea.height,
-    width: 1000,
-    height: 600,
+    width: 1100,
+    height: 700,
     show: false,
     backgroundColor: "white",
     webPreferences: {

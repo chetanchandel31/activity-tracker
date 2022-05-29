@@ -16,12 +16,12 @@ const ActivitiesTable = ({ children }: { children: ReactNode }) => {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell width="421">
+            <TableCell>
               <Typography sx={{ pl: theme.spacing(4) }}>
                 <strong>Activity</strong>
               </Typography>
             </TableCell>
-            <TableCell align="right">
+            <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
               <Typography>
                 <strong>Last performed</strong>
               </Typography>

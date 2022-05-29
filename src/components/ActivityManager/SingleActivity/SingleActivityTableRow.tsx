@@ -38,7 +38,7 @@ const SingleActivityTableRow = (props: SingleActivityTableRowProps) => {
   return (
     <>
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-        <TableCell>
+        <TableCell sx={{ width: "100%" }}>
           <Box
             sx={{
               display: "flex",
@@ -65,7 +65,7 @@ const SingleActivityTableRow = (props: SingleActivityTableRowProps) => {
             <Typography component="span">{editableActivityName}</Typography>
           </Box>
         </TableCell>
-        <TableCell align="right">
+        <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
           <Tooltip
             TransitionComponent={Zoom}
             title={getFormattedDateForTooltip(
@@ -84,7 +84,7 @@ const SingleActivityTableRow = (props: SingleActivityTableRowProps) => {
             </Typography>
           </Tooltip>
         </TableCell>
-        <TableCell align="right">
+        <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
           <Tooltip
             TransitionComponent={Zoom}
             title={getFormattedDateForTooltip(activity.createdAt)}
@@ -94,7 +94,7 @@ const SingleActivityTableRow = (props: SingleActivityTableRowProps) => {
             </Typography>
           </Tooltip>
         </TableCell>
-        <TableCell align="right" sx={{ width: 170 }}>
+        <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
           <LoadingButton
             loading={isRecordNowBtnLoading}
             variant="contained"
