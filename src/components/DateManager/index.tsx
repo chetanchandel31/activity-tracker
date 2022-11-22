@@ -32,7 +32,7 @@ const DateManager = () => {
   const history = useHistory();
 
   const { date: selectedDateString } = useParams<{ date: string }>();
-  const selectedDate = moment(selectedDateString);
+  const selectedDate = moment(selectedDateString, "MM-DD-YYYY");
   const [selectedActivity, setSelectedActivity] = useState("");
 
   const dateSpecificActivitiesCollectionRef = firestore.collection(
