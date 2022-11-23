@@ -1,73 +1,73 @@
 import { Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import {
-  CategoryScale,
-  Chart as ChartJS,
-  Legend,
-  LinearScale,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
 import { GraphData } from "types";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import ReactECharts from "echarts-for-react";
 
 interface GraphProps {
   datasetLabel?: string;
-  graphName?: string;
   graphData: GraphData;
 }
 
 const Graph = (props: GraphProps) => {
-  const {
-    datasetLabel = "Dataset 1",
-    graphData,
-    graphName = "Chart.js Line Chart",
-  } = props;
+  const { datasetLabel = "Dataset 1", graphData } = props;
 
   const theme = useTheme();
 
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top" as const,
-      },
-      title: {
-        display: true,
-        text: graphName,
+  const _options = {
+    backgroundColor: theme.palette.background.default,
+    color: ["#4DB6AC", "#FF8A65", "#FFB74D"],
+    tooltip: {
+      trigger: "axis",
+    },
+    legend: {
+      data: [datasetLabel],
+      y: "bottom",
+      type: "scroll",
+      orient: "horizontal",
+    },
+    toolbox: {
+      show: true,
+      orient: "vertical",
+      feature: {
+        magicType: { show: true, type: ["line", "bar"] },
+        saveAsImage: { show: true },
       },
     },
-    maintainAspectRatio: false,
-  };
-
-  const labels = graphData.xAxisData;
-  const data = {
-    labels,
-    datasets: [
+    calculable: true,
+    xAxis: [
       {
-        label: datasetLabel,
+        type: "category",
+        data: graphData.xAxisData,
+      },
+    ],
+    yAxis: [
+      {
+        type: "value",
+      },
+    ],
+    series: [
+      {
+        name: datasetLabel,
+        type: "line",
         data: graphData.yAxisData,
-        borderColor: theme.palette.success.main,
-        backgroundColor: theme.palette.success.dark,
+        markPoint: {
+          data: [
+            { type: "max", name: "Max" },
+            { type: "min", name: "Min" },
+          ],
+        },
+        markLine: {
+          data: [{ type: "average", name: "Avg" }],
+        },
       },
     ],
   };
 
   return (
     <Box sx={{ height: "570px" }}>
-      <Line options={options} data={data} />
+      <div>
+        <ReactECharts theme={theme.palette.mode} option={_options} />
+      </div>
     </Box>
   );
 };

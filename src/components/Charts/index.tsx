@@ -160,7 +160,6 @@ const Charts = () => {
             {!graphDataError && !isGraphDataLoading && (
               <Graph
                 datasetLabel={`${selectedActivity}`}
-                graphName={`${selectedActivity} Line Chart`}
                 graphData={graphData}
               />
             )}
